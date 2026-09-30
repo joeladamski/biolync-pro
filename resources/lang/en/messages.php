@@ -20,8 +20,8 @@ return [
     'by' => 'by',
 
     'HOME.MESSAGE' => '
-    <p>Take control of your online presence with&nbsp;<a href="https://linkstack.org/"><strong>LinkStack</strong></a>
-     the privacy-focused, open-source <strong>link management platform</strong>. Create a customizable profile page to manage <strong>
+    <p>Take control of your online presence with&nbsp;<a href="https://biolync.pro/"><strong>BioLync.Pro</strong></a>,
+     the identity-first <strong>link management platform</strong>. Create a customizable profile page to manage <strong>
      all your important links in one convenient location</strong> and give your audience a seamless browsing experience.</p>
      ',
 
@@ -619,7 +619,7 @@ return [
     'The server will never store more that two backups at a time' => 'The server will never store more that two backups at a time.',
 
     'SMTP.title' => 'Use built in SMTP server',
-    'SMTP.description' => 'Uses SMTP server provided by LinkStack. Might not be 100% reliable. Has to be disabled in order to user a custom SMTP server.',
+    'SMTP.description' => 'Uses the legacy built-in SMTP service. Disable it to configure a custom SMTP server.',
     'SMTP.description.alt' => '(Save changes with "Apply changes" below)',
     'Enable' => 'Enable',
     'Custom SMTP server:' => 'Custom SMTP server:',
@@ -751,10 +751,10 @@ return [
     */
 
     # Title Tag
-    'LinkStack setup' => 'LinkStack setup',
+    'LinkStack setup' => 'BioLync.Pro setup',
 
-    'Setup LinkStack' => 'Setup LinkStack',
-    'Welcome to the setup for LinkStack!' => 'Welcome to the setup for LinkStack!',
+    'Setup LinkStack' => 'Set up BioLync.Pro',
+    'Welcome to the setup for LinkStack!' => 'Welcome to the BioLync.Pro setup!',
     'This setup will:' => 'This setup will:',
     'Check the server dependencies' => '1. Check the server dependencies',
     'Setup the database' => '2. Setup the database',
@@ -812,7 +812,7 @@ return [
     */
 
     # Title Tag
-    'Update LinkStack' => 'Update LinkStack',
+    'Update LinkStack' => 'Update BioLync.Pro',
 
     'Latest beta version' => 'Latest beta version',
     'Installed beta version' => 'Installed beta version',
@@ -1005,7 +1005,7 @@ return [
     |
     */
 
-    'Learn more about LinkStack' => 'Learn more about LinkStack',
+    'Learn more about LinkStack' => 'Learn more about BioLync.Pro',
     'Learn more' => 'Learn more',
 
     /*
@@ -1031,14 +1031,14 @@ return [
     # Help Us Out Notification
     'Hide this notification' => 'Hide this notification',
     'Help Us Out' => 'Help Us Out',
-    'Enjoying Linkstack?' => 'Enjoying Linkstack?',
-    'Support Linkstack' => 'Support Linkstack',
-    'support.msg1' => 'If you\'re enjoying using Linkstack, we would greatly appreciate it if you could take a moment to',
+    'Enjoying Linkstack?' => 'Enjoying BioLync.Pro?',
+    'Support Linkstack' => 'About BioLync.Pro',
+    'support.msg1' => 'If you\'re enjoying BioLync.Pro, you can',
     'support.msg2' => 'give our project a star on GitHub',
-    'support.msg3' => 'Your support will help us reach a wider audience and improve the quality of our project.',
+    'support.msg3' => 'Your feedback helps us improve the platform.',
     'support.msg4' => 'If you\'re able to',
-    'support.msg5' => 'make a financial contribution</a>, even a small amount would help us cover the costs of maintaining and improving Linkstack.',
-    'support.msg6' => 'Thank you for your support and for being a part of the LinkStack community!',
+    'support.msg5' => 'review the source code</a> and follow development.',
+    'support.msg6' => 'Thank you for helping build the BioLync.Pro community.',
 
 
     /*
