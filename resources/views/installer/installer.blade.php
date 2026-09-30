@@ -65,7 +65,7 @@
 </form>
 {{-- end language --}}
 
-<p style="margin:25px;max-width:350px;">{{__('messages.setup.disclaimer')}} <a href="https://linkstack.org/terms-and-conditions/" target="_blank">{{__('messages.Terms and Conditions')}}</a>.</p>
+<p style="margin:25px;max-width:350px;">{{__('messages.setup.disclaimer')}} <a href="{{ config('branding.terms_url') }}" target="_blank" rel="noopener noreferrer">{{__('messages.Terms and Conditions')}}</a>.</p>
 
         &ensp;<a class="btn" href="{{url('?2')}}"><button>{{__('messages.Next')}}</button></a>&ensp;
 @endif
@@ -261,7 +261,7 @@ $("#select").change(function(){
 </script>
 
 <label>{{__('messages.App Name:')}}</label>
-<input style="max-width:275px;" class="form-control" value="LinkStack" name="app" type="text" required>
+<input style="max-width:275px;" class="form-control" value="BioLync.Pro" name="app" type="text" required>
 
 </div></div><br>
 <input type="hidden" name="_token" value="{{csrf_token()}}">

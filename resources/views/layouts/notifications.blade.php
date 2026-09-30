@@ -92,15 +92,6 @@ $notifyID = Auth::user()->id;
                 'dismiss' => '',
                 'adminonly' => true,
             ],
-            [
-                'id' => 'modal-star',
-                'icon' => 'bi bi-heart-fill',
-                'title' => __('messages.Enjoying Linkstack?'),
-                'message' => __('messages.Help Us Out'),
-                'condition' => UserData::getData($notifyID, 'hide-star-notification') !== true,
-                'dismiss' => __('messages.Hide this notification'),
-                'adminonly' => true,
-            ],
         ];
 
         $shownNotifications = array_filter($notifications, function($notification) {
@@ -126,7 +117,6 @@ $notifyID = Auth::user()->id;
 {{-- Notification Modals --}}
 @push('sidebar-scripts') @php
 notification('', 'modal-1', __('messages.Your security is at risk!'), '<b>'.__('messages.security.msg1').'</b> '.__('messages.security.msg2').'<br><br>'.__('messages.security.msg3').'<br><a href="'.url('admin/config#5').'">'.__('messages.security.msg3').'</a>.');
-notification('hide-star-notification', 'modal-star', __('messages.Support Linkstack'), ''.__('messages.support.msg1').' <a target="_blank" href="https://github.com/linkstackorg/linkstack">'.__('messages.support.msg2').'</a>. '.__('messages.support.msg3').'<br><br>'.__('messages.support.msg4').' <a target="_blank" href="https://linkstack.org/donate">'.__('messages.support.msg5').'<br><br>'.__('messages.support.msg6').'');
 @endphp @endpush
 
 @php 

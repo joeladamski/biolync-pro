@@ -10,10 +10,11 @@
 
 	@if(env('DISPLAY_CREDIT') === true)
 	{{-- Removed class spacing --}}
-	<a style="text-decoration: none;" class="" href="https://linkstack.org" target="_blank" title="{{__('messages.Learn more about LinkStack')}}">
-		<div style="vertical-align: middle;display: inline-block;padding-bottom:50px;" class="credit-hover hvr-grow fadein">
-			<img style="width:200px" class="" src="{{ asset('assets/linkstack/images/powered-by-linkstack.svg') }}" alt="LinkStack">
-		</div>
-	</a>
+	<div style="vertical-align:middle;display:inline-flex;flex-direction:column;align-items:center;gap:8px;padding-bottom:50px;" class="credit-hover fadein">
+		<a style="text-decoration:none;" href="{{ config('branding.url') }}" title="{{__('messages.Learn more about LinkStack')}}">
+			<span style="display:inline-flex;align-items:center;padding:10px 18px;border-radius:999px;background:#16121d;color:#fff;font-weight:700;letter-spacing:.02em;box-shadow:0 8px 24px rgba(0,0,0,.12);">Powered by {{ config('branding.name') }}</span>
+		</a>
+		<a style="font-size:12px;text-decoration:none;opacity:.72;" href="{{ config('branding.source_url') }}" target="_blank" rel="noopener noreferrer">Source</a>
+	</div>
 	@endif
 	</div>

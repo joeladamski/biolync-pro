@@ -6,6 +6,9 @@
 /vendor
 .env
 .env.backup
+/database/database.sqlite
+/INSTALLING
+/INSTALLERLOCK
 .phpunit.result.cache
 docker-compose.override.yml
 Homestead.json
