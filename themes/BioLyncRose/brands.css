@@ -1,0 +1,7 @@
+.rounded-avatar { border-radius: 50%; }
+.social-icon { font-size: 30px; padding: 9px; }
+.social-icon-div { padding-bottom: 24px; }
+.button, button { background: var(--biolync-link); color: var(--biolync-text); }
+.button.button-default, .button.button-custom, .button.button-custom_website, .button[class*="button-"] { background-color: var(--biolync-link); background-image: none; color: var(--biolync-text); }
+.button:hover, .button:focus { filter: none; }
+.icon { vertical-align: middle; }

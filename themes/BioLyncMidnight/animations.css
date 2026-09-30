@@ -1,0 +1,5 @@
+.fadein { animation: biolync-fade .45s ease both; }
+.button-entrance { animation: biolync-rise .38s ease both; animation-delay: var(--delay, 0s); }
+@keyframes biolync-fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes biolync-rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+@media (prefers-reduced-motion: reduce) { .fadein, .button-entrance { animation: none; } }
