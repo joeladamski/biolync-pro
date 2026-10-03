@@ -1,9 +1,9 @@
 {
     "name": "linkstackorg/linkstack",
     "type": "project",
-    "description": "LinkStack is a highly customizable link sharing platform",
+    "description": "BioLync.Pro is a self-hosted profile and link-sharing application based on LinkStack",
     "keywords": ["link"],
-    "license": "GPL-3.0-or-later",
+    "license": "AGPL-3.0-only",
     "require": {
         "php": ">=8.0",
         "awssat/laravel-visits": "^6.0",
