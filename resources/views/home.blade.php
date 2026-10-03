@@ -161,10 +161,21 @@
       </div>    </div>
     <!-- loader END -->
     
+    <style>
+      .home-layout {width:100%;min-height:100vh;}
+      .home-preview {min-height:100vh;display:flex;align-items:center;justify-content:center;}
+      .home-preview > div {width:100%;}
+      @media(max-width:767px){
+        .home-preview {min-height:0;padding:24px 12px!important;}
+        .home-preview .card-body {padding:0;}
+        .iframe-container {max-width:100%!important;width:370px!important;}
+        .footer.fixed-bottom {position:static;}
+      }
+    </style>
     <div class="wrapper d-flex">
       <section class="login-content">
-        <div class="row m-0 align-items-center bg-white vh-100 vw-100">
-          <div class="col-md-6 p-0">
+        <div class="row m-0 align-items-center bg-white home-layout">
+          <div class="col-md-6 p-0 order-2 order-md-1">
             <div class="card card-transparent auth-card shadow-none d-flex mb-0">
               <div class="card-body justify-content-center text-center">
     
@@ -205,11 +216,11 @@
               </div>
             </div>
           </div>
-          <div class="col-md-6 d-md-block d-none bg-light p-0 mt-n1 vh-100 overflow-hidden">
+          <div class="col-md-6 bg-light p-0 order-1 order-md-2 home-preview">
             <div class="d-flex align-items-center h-100">
               <div class="card-body justify-content-center text-center">
                 <style>.iframe-container{position:relative;width:100%;max-width:370px;height:650px;}.iframe-container iframe{position:absolute;top:0;left:0;width:100%;height:100%;border-radius:30px;border:16px solid black}@media only screen and (max-width:767px){.iframe-container{max-width:375px;margin:0 auto 20px}.iframe-container:after{content:"";display:block;padding-bottom:15px}}</style>
-<center><div class="iframe-container"><iframe src="{{url('/demo-page')}}"></iframe></div></center>
+<center><div class="iframe-container"><iframe title="Homepage profile preview" src="{{url('/demo-page')}}"></iframe></div></center>
               </div>
             </div>
           </div>

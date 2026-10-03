@@ -420,6 +420,26 @@ class AdminController extends Controller
     return back();
   }
 
+  // Save presentation overrides without rewriting the advanced PHP configuration.
+  public function editHomeUi(Request $request)
+  {
+    $buttons = config('advanced-config.buttons', []);
+    $rules = ['buttons' => 'required|array|size:' . count($buttons)];
+    foreach ($buttons as $index => $button) {
+      $rules["buttons.$index.title"] = 'required|string|max:100';
+      $rules["buttons.$index.link"] = ['required', 'url', 'max:2048', 'regex:/^https?:\/\//i'];
+    }
+    $data = $request->validate($rules);
+    $clean = [];
+    foreach ($buttons as $index => $button) {
+      $clean[] = ['title' => $data['buttons'][$index]['title'], 'link' => $data['buttons'][$index]['link']];
+    }
+    if (!\Illuminate\Support\Facades\Storage::disk('local')->put('home-ui.json', json_encode(['buttons' => $clean], JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR))) {
+      throw new \RuntimeException('Unable to save homepage links. Check storage permissions.');
+    }
+    return redirect(url('/admin/config') . '#ui-controls')->with('home_ui_saved', true);
+  }
+
   //Show home message for edit
   public function showSite()
   {

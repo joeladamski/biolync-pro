@@ -113,7 +113,7 @@
         <?php function strp($urlStrp){return str_replace(array('http://', 'https://'), '', $urlStrp);} ?>
         <?php $initial=1; // <-- Effectively sets the initial loading time of the buttons. This value should be left at 1. ?>
         @if(config('advanced-config.use_custom_buttons') == 'true')
-                <?php $array = config('advanced-config.buttons'); ?>
+                <?php $array = \App\Support\HomeUi::buttons(); ?>
                 @foreach($array as $button)
                  @php $linkName = str_replace('default ','',$button['button']) @endphp
                  @if($button['button'] === "custom" and ($button['custom_css'] === "" or $button['custom_css'] === "NULL") or (theme('allow_custom_buttons') == "false" and $button['button'] === "custom"))
@@ -138,7 +138,7 @@
                  @elseif($button['button'] === "heading")
                  <h2>{{ $button['title'] }}</h2>
                  @else
-                 <div style="--delay: {{ $initial++ }}s" class="button-entrance"><a class="button button-{{ $button['button'] }} button button-hover icon-hover" @if($button['link'] != '') href="{{ $button['link'] }}" target="_blank"@endif><img alt="button-icon" class="icon hvr-icon" src="{{ asset('\/assets/linkstack/icons\/') . $linkName }}.svg">{{ ucfirst($linkName) }}</a></div>
+                 <div style="--delay: {{ $initial++ }}s" class="button-entrance"><a class="button button-{{ $button['button'] }} button button-hover icon-hover" @if($button['link'] != '') href="{{ $button['link'] }}" target="_blank"@endif><img alt="button-icon" class="icon hvr-icon" src="{{ asset('\/assets/linkstack/icons\/') . $linkName }}.svg">{{ $button['title'] ?: ucfirst($linkName) }}</a></div>
                  @endif
                 @endforeach
         @else
