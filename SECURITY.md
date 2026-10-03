@@ -1,14 +1,7 @@
-# Security Policy
+# Security policy
 
-## About
+BioLync.Pro is a modified LinkStack fork maintained separately from the upstream project. The former `security@linkstack.org` address belongs to upstream and is **not** a BioLync.Pro vulnerability-reporting channel.
 
-The security of this application is left to the user. This application is distributed in the hope that it will be useful, but without any warranty; without even the implied warranty of merchantability or fitness for a particular purpose. The user is responsible for ensuring the security of their own system and data when using this application.
+A verified private security-reporting channel for this fork has not yet been published. Please do not disclose exploit details, credentials, or personal data in a public GitHub issue. Maintainers should configure GitHub private vulnerability reporting or publish a controlled BioLync.Pro security address before inviting sensitive reports.
 
-
-## Reporting a Vulnerability
-
-If you believe you have found a security vulnerability in this project, please contact the developer at [`security@linkstack.org`](mailto:security@linkstack.org). Include as much detail as possible about the potential issue, including the version of the project you are using. Thank you for helping to keep LinkStack secure!
-
-<br>
-
-*For any questions regarding this please contact: [`security@linkstack.org`](mailto:security@linkstack.org)*
+For non-sensitive bugs, use [this repository's issues](https://github.com/joeladamski/biolync-pro/issues). The software is provided without warranty as described in [LICENSE](LICENSE). Operators remain responsible for securing and updating their own deployment.
