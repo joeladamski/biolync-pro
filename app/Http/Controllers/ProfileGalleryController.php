@@ -13,8 +13,15 @@ use Illuminate\Validation\ValidationException;
 
 class ProfileGalleryController extends Controller
 {
+    public function show()
+    {
+        abort_unless(ProfileGallery::canUse(Auth::user()), 403, 'Photo Gallery is available to VIP members.');
+        return view('studio.gallery');
+    }
+
     public function save(Request $request)
     {
+        abort_unless(ProfileGallery::canUse(Auth::user()), 403, 'Photo Gallery is available to VIP members.');
         $data = $request->validate([
             'enabled' => 'required|boolean',
             'photos' => 'nullable|array|max:12',
@@ -71,6 +78,6 @@ class ProfileGalleryController extends Controller
         }
         Cache::forget('user_data_' . $userId);
         foreach ($deleted as $path) File::delete(base_path($path));
-        return redirect('/studio/page')->with('gallery_success', 'Photo gallery saved.');
+        return redirect('/studio/photo-gallery')->with('gallery_success', 'Photo gallery saved.');
     }
 }

@@ -116,6 +116,7 @@ Route::post('/studio/button-editor/{id}', [UserController::class, 'editCSS'])->n
 Route::get('/studio/page', [UserController::class, 'showPage'])->name('showPage');
 Route::get('/studio/no_page_name', [UserController::class, 'showPage'])->name('showPage');
 Route::post('/studio/page', [UserController::class, 'editPage'])->name('editPage');
+Route::get('/studio/photo-gallery', [App\Http\Controllers\ProfileGalleryController::class, 'show'])->name('showPhotoGallery');
 Route::post('/studio/photo-gallery', [App\Http\Controllers\ProfileGalleryController::class, 'save'])->name('savePhotoGallery')->middleware('throttle:10,1');
 Route::post('/studio/profile-header', [UserController::class, 'profileHeader'])->name('profileHeader');
 Route::post('/studio/background', [UserController::class, 'themeBackground'])->name('themeBackground');
