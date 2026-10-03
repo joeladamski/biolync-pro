@@ -15,7 +15,8 @@
 
 @endphp
 
-<div align="right" @if($ShowShrBtn == 'false') style="visibility:hidden" @endif class="sharediv">
+<style>.sharediv {position:absolute!important;top:12px!important;right:12px!important;padding:0!important;margin:0!important;z-index:10;} body:has(#linkstack-adminbar) .sharediv {top:60px!important;}</style>
+<div align="right" @if($ShowShrBtn == 'false') style="display:none" @endif class="sharediv">
   <div>
     <span class="sharebutton button-hover icon-hover share-button" data-share="{{url()->current()}}" tabindex="0" role="button" aria-label="{{__('messages.Share this page')}}">
       <i style="color: black;" class="fa-solid fa-share sharebutton-img share-icon hvr-icon"></i>
