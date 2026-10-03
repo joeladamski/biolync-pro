@@ -21,7 +21,7 @@ const fs=require('fs'),path=require('path');
    if(result.display!=='grid'||result.columns!==(width<768?2:3)||result.overflow||result.left<0||result.right>width||Math.abs(result.ratio-result.expected)>.01)throw Error(JSON.stringify({width,result}));
    const count=width<768?2:3;
    for(let i=1;i<count;i++)if(Math.abs(result.items[i].top-result.items[0].top)>1||result.items[i].left<=result.items[i-1].left)throw Error('Photos must read left to right');
-   if(result.items[count].top<Math.max(...result.items.slice(0,count).map(r=>r.bottom))-1||Math.abs(result.items[count].left-result.items[0].left)>1)throw Error('Next photo must start the next row');
+   if(result.items[count].top<Math.max(...result.items.slice(0,count).map(r=>r.bottom))-1||Math.abs(result.items[count].left-result.items[0].left)>1)throw Error('Next photo must start the next row '+JSON.stringify({width,result}));
    await page.locator('[data-gallery-photo]').first().click();
    if(!await page.locator('dialog').evaluate(d=>d.open))throw Error('Viewer did not open');
    await page.keyboard.press('Escape');
