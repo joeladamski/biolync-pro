@@ -1,7 +1,8 @@
 @php($gallery = \App\Support\ProfileGallery::get(Auth::id()))
 <div class="card mb-4"><div class="card-body">
-<h4>Photo gallery</h4>
-<p>Share up to 12 photos below your links. Three columns on desktop, two on mobile; photos keep their original proportions. Save this section separately from your profile.</p>
+<h4>Photo Gallery <span class="badge bg-primary">VIP</span></h4>
+@if($errors->any())<div class="alert alert-danger"><ul>@foreach($errors->all() as $error)<li>{{ $error }}</li>@endforeach</ul></div>@endif
+<p>Share up to 12 photos below your links. Three columns on desktop, two on mobile; photos keep their original proportions. Your header, avatar and gallery are saved separately.</p>
 @if(session('gallery_success'))<div class="alert alert-success">{{ session('gallery_success') }}</div>@endif
 <form action="{{ route('savePhotoGallery') }}" method="POST" enctype="multipart/form-data">
 @csrf

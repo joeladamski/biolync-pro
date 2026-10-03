@@ -12,19 +12,24 @@ class UserData extends Model
 
     public static function saveData($userId, $key, $value)
     {
-        $userData = self::getCachedUserData($userId);
+        return self::mutateData($userId, function ($data) use ($key, $value) {
+            $data[$key] = $value;
+            return $data;
+        });
+    }
 
-        if (!$userData) {
-            return "null";
-        }
-
-        $data = json_decode($userData->image, true) ?? [];
-        $data[$key] = $value;
-
-        $userData->image = json_encode($data);
-        $userData->save();
-
-        self::cacheUserData($userId, $userData);
+    private static function mutateData($userId, callable $change)
+    {
+        $result = \Illuminate\Support\Facades\DB::transaction(function () use ($userId, $change) {
+            $userData = self::whereKey($userId)->lockForUpdate()->first();
+            if (!$userData) return "null";
+            $data = json_decode($userData->image ?? '{}', true);
+            $userData->image = json_encode($change(is_array($data) ? $data : []), JSON_THROW_ON_ERROR);
+            $userData->save();
+            return null;
+        });
+        Cache::forget('user_data_' . $userId);
+        return $result;
     }
 
     public static function getData($userId, $key)
@@ -42,21 +47,10 @@ class UserData extends Model
 
     public static function removeData($userId, $key)
     {
-        $userData = self::getCachedUserData($userId);
-
-        if (!$userData || !$userData->image) {
-            return "null";
-        }
-
-        $data = json_decode($userData->image, true) ?? [];
-
-        if (isset($data[$key])) {
+        return self::mutateData($userId, function ($data) use ($key) {
             unset($data[$key]);
-            $userData->image = json_encode($data);
-            $userData->save();
-
-            self::cacheUserData($userId, $userData);
-        }
+            return $data;
+        });
     }
 
     private static function getCachedUserData($userId)
@@ -66,8 +60,4 @@ class UserData extends Model
         });
     }
 
-    private static function cacheUserData($userId, $userData)
-    {
-        Cache::put('user_data_' . $userId, $userData, now()->addMinutes(10));
-    }
 }

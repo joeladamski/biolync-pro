@@ -215,6 +215,13 @@ $usrhandl = Auth::user()->littlelink_name;
                             <span class="item-name">{{__('messages.Appearance')}}</span>
                         </a>
                     </li>
+                    @if(\App\Support\ProfileGallery::canUse(Auth::user()))
+                    <li class="nav-item">
+                        <a class="nav-link {{ Request::segment(2) == 'photo-gallery' ? 'active' : '' }}" href="{{ route('showPhotoGallery') }}">
+                            <i class="bi bi-images"></i><span class="item-name">Photo Gallery</span>
+                        </a>
+                    </li>
+                    @endif
                     <li class="nav-item">
                         <a class="nav-link {{ Request::segment(2) == 'theme' ? 'active' : ''}}" href="{{ url('/studio/theme') }}">
                             <i class="icon">

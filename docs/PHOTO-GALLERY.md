@@ -9,3 +9,9 @@ Metadata is stored in the user's existing image JSON under photo_gallery; no mig
 Configure PHP post_max_size for multi-file uploads (at least 32 MB), upload_max_filesize at least 2 MB, and max_file_uploads at least 12. Directory must be writable by PHP. Application validation rejects the whole batch if invalid or over the total photo limit. No image-processing extension added; native-sized originals are displayed as lazy-loaded thumbnails.
 
 CI covers upload persistence, account isolation, ordering, escaped captions, format/size limits, total limit, visibility and selective deletion. Chromium fixture checks cover column counts, aspect ratio, overflow, viewer opening and Escape closing. Production checks: Studio saves under real auth/CSRF, batch upload under Hostinger limits, and iPhone Safari viewer/layout. Also verify server rules prevent script execution within uploaded asset directories.
+
+## VIP access and editor
+
+Photo Gallery has its own Personalization sidebar entry at `/studio/photo-gallery`, available to VIP and admin accounts. Standard users receive 403 from the editor and save endpoint. Public galleries are shown only while the profile owner is VIP or admin; downgrading hides the gallery while retaining photos for later restoration. The public profile needs the Show gallery checkbox enabled.
+
+Metadata writes merge into a freshly locked database row, preserving header, gallery and other settings even if an older profile object was cached. Gallery saves return to the gallery editor.
