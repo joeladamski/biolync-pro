@@ -84,6 +84,7 @@ Route::get('/u/{id?}', [UserController::class, 'userRedirect'])->name('userRedir
 Route::get('/report', function () {return view('report');});
 Route::post('/report', [UserController::class, 'report'])->name('report');
 
+Route::get('/pages/{slug}', [App\Http\Controllers\SitePageController::class, 'show'])->name('publicSitePage')->where('slug', '[a-z0-9-]+')->middleware('disableCookies');
 Route::get('/demo-page', [App\Http\Controllers\HomeController::class, 'demo'])->name('demo')->middleware('disableCookies');
 
 Route::get('/block-asset/{type}', [LinkTypeViewController::class, 'blockAsset'])
@@ -166,6 +167,8 @@ Route::group([
     Route::get('/admin/new-user', [AdminController::class, 'createNewUser'])->name('createNewUser')->middleware('max.users');
     Route::get('/admin/delete-user/{id}', [AdminController::class, 'deleteUser'])->name('deleteUser');
     Route::post('/admin/delete-table-user/{id}', [AdminController::class, 'deleteTableUser'])->name('deleteTableUser');
+    Route::post('/admin/site-pages', [App\Http\Controllers\SitePageController::class, 'save'])->name('saveSitePage');
+    Route::post('/admin/site-pages/delete', [App\Http\Controllers\SitePageController::class, 'delete'])->name('deleteSitePage');
     Route::get('/admin/pages', [AdminController::class, 'showSitePage'])->name('showSitePage');
     Route::post('/admin/pages', [AdminController::class, 'editSitePage'])->name('editSitePage');
     Route::get('/admin/advanced-config', [AdminController::class, 'showFileEditor'])->name('showFileEditor');
