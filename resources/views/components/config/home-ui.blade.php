@@ -5,6 +5,7 @@
 @if(config('advanced-config.use_custom_buttons') != 'true')
 <div class="alert alert-info">Enable use_custom_buttons in Advanced Config to display these buttons.</div>
 @endif
+@include('components.config.featured-profile')
 <form method="POST" action="{{ route('editHomeUi') }}">
   @csrf
   @php($previewCopy = \App\Support\HomeUi::previewCopy())

@@ -5,6 +5,7 @@
 @include('layouts.lang')
   <head>
     <meta charset="utf-8">
+    @if(\App\Support\AiDiscovery::settings()['enabled'])<link rel="describedby" href="{{ url('/llms.txt') }}">@endif
     @php $GLOBALS['themeName'] = config('advanced-config.home_theme'); @endphp
       <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
       @if(env('CUSTOM_META_TAGS') == 'true' and config('advanced-config.title') != '')
@@ -173,7 +174,7 @@
           <div class="col-md-6 bg-light p-0 order-1 home-preview">
             <div class="d-flex">
               <div class="card-body justify-content-center text-center">
-                <div class="iframe-container"><iframe title="Homepage profile preview" src="{{url('/demo-page')}}"></iframe></div>
+                <div class="iframe-container"><iframe title="Homepage profile preview" src="{{ \App\Support\AiDiscovery::featuredUrl() }}"></iframe></div>
                 @include('components.home-preview-copy')
               </div>
             </div>
