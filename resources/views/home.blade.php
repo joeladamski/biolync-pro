@@ -87,7 +87,7 @@
 
   <body class=" " data-bs-spy="scroll" data-bs-target="#elements-section" data-bs-offset="0" tabindex="0">
         <!--Nav Start-->
-        <nav class="nav navbar navbar-expand-lg navbar-light iq-navbar fixed-top">
+        <nav class="nav navbar navbar-expand-lg navbar-light iq-navbar fixed-top home-nav">
           <div class="container-fluid navbar-inner">
             <a href="{{ route('panelIndex') }}" class="navbar-brand">
                 
@@ -165,11 +165,20 @@
       .home-layout {width:100%;min-height:100vh;}
       .home-preview {min-height:100vh;display:flex;align-items:center;justify-content:center;}
       .home-preview > div {width:100%;}
+      .iframe-container {position:relative;width:370px;max-width:100%;height:650px;margin:0 auto;}
+      .iframe-container iframe {position:absolute;top:0;left:0;width:100%;height:100%;border-radius:30px;border:16px solid black;box-sizing:border-box;transform-origin:top left;}
       @media(max-width:767px){
-        .home-preview {min-height:0;padding:24px 12px!important;}
+        .home-nav.fixed-top {position:sticky;top:0;}
+        .home-layout {min-height:0;}
+        .home-preview {min-height:0;padding:20px 16px!important;}
         .home-preview .card-body {padding:0;}
-        .iframe-container {max-width:100%!important;width:370px!important;}
+        .iframe-container {width:296px;height:520px;}
+        .iframe-container iframe {width:370px;height:650px;transform:scale(.8);}
         .footer.fixed-bottom {position:static;}
+      }
+      @media(max-width:359px){
+        .iframe-container {width:259px;height:455px;}
+        .iframe-container iframe {transform:scale(.7);}
       }
     </style>
     <div class="wrapper d-flex">
@@ -219,8 +228,7 @@
           <div class="col-md-6 bg-light p-0 order-1 order-md-2 home-preview">
             <div class="d-flex align-items-center h-100">
               <div class="card-body justify-content-center text-center">
-                <style>.iframe-container{position:relative;width:100%;max-width:370px;height:650px;}.iframe-container iframe{position:absolute;top:0;left:0;width:100%;height:100%;border-radius:30px;border:16px solid black}@media only screen and (max-width:767px){.iframe-container{max-width:375px;margin:0 auto 20px}.iframe-container:after{content:"";display:block;padding-bottom:15px}}</style>
-<center><div class="iframe-container"><iframe title="Homepage profile preview" src="{{url('/demo-page')}}"></iframe></div></center>
+                <div class="iframe-container"><iframe title="Homepage profile preview" src="{{url('/demo-page')}}"></iframe></div>
               </div>
             </div>
           </div>

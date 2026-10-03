@@ -27,4 +27,4 @@ jobs:
           node-version: '22'
       - run: npm install --no-save --package-lock=false playwright
       - run: npx playwright install --with-deps chromium
-      - run: node tests/profile-layout.cjs
+      - run: node tests/profile-layout.cjs && node tests/home-layout.cjs
