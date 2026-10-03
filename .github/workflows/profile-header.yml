@@ -1,0 +1,22 @@
+name: Profile header validation
+on:
+  pull_request:
+  push:
+    branches: [build-004-public-profile-header]
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: mbstring, xml, sqlite3, gd, zip
+          tools: composer
+      - run: php -l app/Http/Controllers/UserController.php && php -l routes/web.php
+      - run: composer install --no-interaction --prefer-dist --no-scripts
+      - name: Compile profile Blade views and lint generated PHP
+        run: |
+          php -r 'require "vendor/autoload.php"; $compiler = new Illuminate\View\Compilers\BladeCompiler(new Illuminate\Filesystem\Filesystem, sys_get_temp_dir()); foreach (["resources/views/linkstack/elements/profile-header.blade.php", "resources/views/studio/profile-header.blade.php", "resources/views/studio/page.blade.php", "resources/views/linkstack/linkstack.blade.php", "resources/views/linkstack/layout.blade.php"] as $path) { $out = tempnam(sys_get_temp_dir(), "blade"); file_put_contents($out, $compiler->compileString(file_get_contents($path))); passthru("php -l " . escapeshellarg($out), $code); unlink($out); if ($code) exit($code); }'

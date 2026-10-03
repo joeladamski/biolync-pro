@@ -669,6 +669,49 @@ class UserController extends Controller
         return Redirect('/studio/page');
     }
 
+    // Profile cover metadata is stored separately from the avatar and theme.
+    public function profileHeader(Request $request)
+    {
+        $data = $request->validate([
+            'header_media' => 'nullable|file|mimes:jpeg,jpg,png,webp,mp4,webm|max:10240',
+            'header_poster' => 'nullable|image|mimes:jpeg,jpg,png,webp|max:2048',
+            'header_position' => 'required|in:center,top,bottom',
+            'remove_header' => 'nullable|boolean',
+        ]);
+        $userId = Auth::id();
+        $header = UserData::getData($userId, 'profile_header');
+        $header = is_array($header) ? $header : [];
+        $oldFiles = [];
+        if ($request->boolean('remove_header')) {
+            $oldFiles = [$header['media'] ?? null, $header['poster'] ?? null];
+            $header = [];
+        } else {
+            foreach (['header_media' => 'media', 'header_poster' => 'poster'] as $field => $key) {
+                if ($request->hasFile($field)) {
+                    $file = $request->file($field);
+                    $directory = base_path('assets/profile-media');
+                    File::ensureDirectoryExists($directory);
+                    $name = $userId . '_' . bin2hex(random_bytes(16)) . '.' . $file->extension();
+                    $extension = $file->extension();
+                    $file->move($directory, $name);
+                    $oldFiles[] = $header[$key] ?? null;
+                    $header[$key] = 'assets/profile-media/' . $name;
+                    if ($key === 'media') {
+                        $header['type'] = in_array($extension, ['mp4', 'webm']) ? 'video' : 'image';
+                    }
+                }
+            }
+            $header['position'] = $data['header_position'];
+        }
+        UserData::saveData($userId, 'profile_header', $header);
+        foreach ($oldFiles as $path) {
+            if (is_string($path) && preg_match('#^assets/profile-media/' . $userId . '_[a-f0-9]{32}\.(jpg|jpeg|png|webp|mp4|webm)$#', $path)) {
+                File::delete(base_path($path));
+            }
+        }
+        return redirect('/studio/page')->with('success', 'Profile header saved.');
+    }
+
     //Upload custom theme background image
     public function themeBackground(Request $request)
     {
