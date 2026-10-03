@@ -87,7 +87,7 @@
 
   <body class=" " data-bs-spy="scroll" data-bs-target="#elements-section" data-bs-offset="0" tabindex="0">
         <!--Nav Start-->
-        <nav class="nav navbar navbar-expand-lg navbar-light iq-navbar fixed-top home-nav">
+        <nav class="nav navbar navbar-expand-lg navbar-light iq-navbar home-nav">
           <div class="container-fluid navbar-inner">
             <a href="{{ route('panelIndex') }}" class="navbar-brand">
                 
@@ -162,19 +162,25 @@
     <!-- loader END -->
     
     <style>
-      .home-layout {width:100%;min-height:100vh;}
-      .home-preview {min-height:100vh;display:flex;align-items:center;justify-content:center;}
+      .home-layout {width:100%;min-height:calc(100vh - 120px);min-height:calc(100svh - 120px);}
+      .home-nav {position:relative!important;top:auto;}
+      .home-footer {position:relative!important;bottom:auto;}
+      .wrapper, .login-content {width:100%;}
+      .home-copy .auth-card {padding:32px 24px;}
+      .home-preview {min-height:0;display:flex;align-items:center;justify-content:center;padding:32px 16px!important;}
       .home-preview > div {width:100%;}
       .iframe-container {position:relative;width:370px;max-width:100%;height:650px;margin:0 auto;}
       .iframe-container iframe {position:absolute;top:0;left:0;width:100%;height:100%;border-radius:30px;border:16px solid black;box-sizing:border-box;transform-origin:top left;}
       @media(max-width:767px){
-        .home-nav.fixed-top {position:sticky;top:0;}
         .home-layout {min-height:0;}
         .home-preview {min-height:0;padding:20px 16px!important;}
         .home-preview .card-body {padding:0;}
         .iframe-container {width:296px;height:520px;}
         .iframe-container iframe {width:370px;height:650px;transform:scale(.8);}
-        .footer.fixed-bottom {position:static;}
+      }
+      @media(min-width:768px) and (max-height:500px){
+        .iframe-container {width:259px;height:455px;}
+        .iframe-container iframe {width:370px;height:650px;transform:scale(.7);}
       }
       @media(max-width:359px){
         .iframe-container {width:259px;height:455px;}
@@ -184,7 +190,7 @@
     <div class="wrapper d-flex">
       <section class="login-content">
         <div class="row m-0 align-items-center bg-white home-layout">
-          <div class="col-md-6 p-0 order-2 order-md-1">
+          <div class="col-md-6 p-0 order-2 home-copy">
             <div class="card card-transparent auth-card shadow-none d-flex mb-0">
               <div class="card-body justify-content-center text-center">
     
@@ -225,7 +231,7 @@
               </div>
             </div>
           </div>
-          <div class="col-md-6 bg-light p-0 order-1 order-md-2 home-preview">
+          <div class="col-md-6 bg-light p-0 order-1 home-preview">
             <div class="d-flex align-items-center h-100">
               <div class="card-body justify-content-center text-center">
                 <div class="iframe-container"><iframe title="Homepage profile preview" src="{{url('/demo-page')}}"></iframe></div>
@@ -236,7 +242,7 @@
     </div>    
     
           <!-- Footer Section Start -->
-          <footer class="footer fixed-bottom">
+          <footer class="footer home-footer">
             <div class="footer-body">
                 <ul class="left-panel list-inline mb-0 p-0">
                   @if(env('DISPLAY_FOOTER') === true)
