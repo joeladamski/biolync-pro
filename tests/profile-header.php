@@ -42,7 +42,7 @@ try {
  @mkdir(base_path('test-output'));
  foreach (['Ocean','Paper','Midnight','Rose'] as $theme) {
   $css=file_get_contents(base_path('themes/BioLync'.$theme.'/skeleton-auto.css'));
-  file_put_contents(base_path('test-output/'.$theme.'.html'), '<!doctype html><meta name="viewport" content="width=device-width"><style>'.$css.'</style><div class="container biolync-profile"><div class="row"><div class="column biolync-profile-column">'.$html.'<div class="biolync-avatar"><img id="avatar" alt="avatar"></div><h1>Test profile</h1><p>Profile description</p><a class="button">Example link</a></div></div></div>');
+  file_put_contents(base_path('test-output/'.$theme.'.html'), '<!doctype html><style>body{margin:0}</style><meta name="viewport" content="width=device-width"><style>'.$css.'</style><div class="container biolync-profile"><div class="row"><div class="column biolync-profile-column">'.$html.'<div class="biolync-avatar"><img id="avatar" alt="avatar"></div><h1>Test profile</h1><p>Profile description</p><a class="button">Example link</a></div></div></div>');
  }
  submit($controller,['remove_header'=>1]);
  check(UserData::getData($user->id,'profile_header')===[] && !file_exists(base_path($video['media'])) && !file_exists(base_path($video['poster'])),'removal clears metadata and file');

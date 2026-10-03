@@ -20,6 +20,15 @@
                     <?php
                     if ($handle = opendir('themes')) {
                      while (false !== ($entry = readdir($handle))) {
+                            $verNr = null; $hasSource = false; $updateAv = false;
+                            $configFile = base_path('themes/'.$entry.'/config.php');
+                            $themeConfig = is_file($configFile) ? include $configFile : [];
+                            if (($themeConfig['update_channel'] ?? '') === 'repository') {
+                                $readme = file_get_contents(base_path('themes/'.$entry.'/readme.md'));
+                                preg_match('/Theme Version:\s*([^\r\n]+)/', $readme, $version);
+                                echo '<tr><th>'.e($entry).'</th><td><span class="badge bg-info">Repository managed</span><div class="small">Updated with BioLync.Pro deployments</div></td><td>'.e($version[1] ?? 'Unknown').'</td></tr>';
+                                continue;
+                            }
                             if(file_exists(base_path('themes') . '/' . $entry . '/readme.md')){
                             $text = file_get_contents(base_path('themes') . '/' . $entry . '/readme.md');
                             $pattern = '/Theme Version:.*/';

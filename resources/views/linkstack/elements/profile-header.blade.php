@@ -8,8 +8,10 @@
     $position = in_array($header['position'] ?? '', ['top', 'center', 'bottom']) ? $header['position'] : 'center';
 @endphp
 <style>
-.biolync-profile > .row > .biolync-profile-column { margin-top:0!important; padding-top:24px!important; }
-.biolync-cover { position:relative; width:min(600px,calc(100vw - 24px)); height:220px; left:50%; transform:translateX(-50%); border-radius:20px; overflow:hidden; background:var(--biolync-bg-art, #263342); }
+body {padding-top:0;}
+.biolync-profile {padding-top:0!important;margin-top:0!important;}
+.biolync-profile > .row > .biolync-profile-column { margin-top:0!important; padding-top:0!important; }
+.biolync-cover { position:relative; width:min(600px,calc(100vw - 24px)); height:220px; left:50%; transform:translateX(-50%); border-radius:0 0 20px 20px; overflow:hidden; background:var(--biolync-bg-art, #263342); }
 .biolync-cover img,.biolync-cover video { width:100%;height:100%;object-fit:cover;object-position:var(--cover-position);display:block; }
 .biolync-cover + .biolync-avatar { position:relative;margin-top:-56px; }
 .biolync-cover + .biolync-avatar #avatar { width:112px!important;height:112px!important;min-width:112px!important;border-radius:50%;border:4px solid var(--biolync-bg, #263342); }

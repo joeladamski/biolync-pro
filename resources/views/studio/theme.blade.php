@@ -12,6 +12,10 @@
                    <div class="col-sm-12">  
 
                     @foreach($pages as $page)
+@php
+$themeConfigFile = base_path('themes/'.$page->theme.'/config.php');
+$activeThemeConfig = is_file($themeConfigFile) ? include $themeConfigFile : [];
+@endphp
 
                     <section class='text-gray-400'>
                     <h3 class="mb-4 card-header"><i class="bi bi-brush">{{__('messages.Select a theme')}}</i></h3>
@@ -48,7 +52,7 @@
                                 @if(env('USE_THEME_PREVIEW_IFRAME') === false or $page->littlelink_name == '')
                                 <center><img style="width:95%;max-width:700px;argin-left:1rem!important;" src="@if(file_exists(base_path() . '/themes/' . $page->theme . '/preview.png')){{url('/themes/' . $page->theme . '/preview.png')}}@elseif($page->theme === 'default' or empty($page->theme)){{url('/assets/linkstack/images/themes/default.png')}}@else{{url('/assets/linkstack/images/themes/no-preview.png')}}@endif"></img></center>
                                  @else
-                                <iframe frameborder="0" allowtransparency="true" id="frPreview" style="background: #FFFFFF;height:400px;" class='w-100' src="{{ url('') }}/@<?= Auth::user()->littlelink_name ?>">{{__('messages.No compatible browser')}}</iframe>
+                                <iframe frameborder="0" allowtransparency="true" id="frPreview" title="Public profile preview" style="background:transparent;height:640px;display:block;border-radius:12px;" class='w-100' src="{{ url('') }}/@<?= Auth::user()->littlelink_name ?>">{{__('messages.No compatible browser')}}</iframe>
                                 @endif
                               </div>
                             </div>
@@ -67,7 +71,7 @@
            <div class="card-body">
               <div class="row">
                   <div class="col-sm-12">  
-                    @if(env('ALLOW_CUSTOM_BACKGROUNDS') == true)
+                    @if(env('ALLOW_CUSTOM_BACKGROUNDS') == true && ($activeThemeConfig['allow_custom_background'] ?? 'true') !== 'false')
                     <form action="{{ route('themeBackground') }}" enctype="multipart/form-data" method="post">
                         @csrf
                         <h3 class="mb-4 card-header">{{__('messages.Custom background')}}</h3>
@@ -92,6 +96,8 @@
                         </div>
                             <button type="submit" class="btn btn-primary">{{__('messages.Apply')}}</button>
                     </form>
+                    @elseif(env('ALLOW_CUSTOM_BACKGROUNDS') == true)
+                    <h4>Theme background</h4><p>This theme provides its own page background. Your profile cover can be changed under Appearance.</p>
                     @endif
                   </div>
               </div>
@@ -178,7 +184,7 @@ $(window).on('load', function() {
     });
 });
 </script>
-<script type="text/javascript">$("iframe").load(function() { $("iframe").contents().find("a").each(function(index) { $(this).on("click", function(event) { event.preventDefault(); event.stopPropagation(); }); }); });</script>
+<script type="text/javascript">$("iframe").load(function() { $("iframe").contents().find("html,body").scrollTop(0); $("iframe").contents().find("a").each(function(index) { $(this).on("click", function(event) { event.preventDefault(); event.stopPropagation(); }); }); });</script>
 
 @push('sidebar-scripts')
     <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -215,6 +221,7 @@ $(window).on('load', function() {
                                     <?php
                                         if ($handle = opendir('themes')) {
                                             while (false !== ($entry = readdir($handle))) {
+                                                unset($themeName);
                                                 if ($entry != "." && $entry != "..") {
                                                     if(file_exists(base_path('themes') . '/' . $entry . '/readme.md')){
                                                         $text = file_get_contents(base_path('themes') . '/' . $entry . '/readme.md');
