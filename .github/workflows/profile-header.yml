@@ -28,3 +28,24 @@ jobs:
       - run: npm install --no-save --package-lock=false playwright
       - run: npx playwright install --with-deps chromium
       - run: node tests/profile-layout.cjs && node tests/home-layout.cjs && node tests/gallery-layout.cjs
+  mysql-profile-metadata:
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: ci-only
+          MYSQL_DATABASE: biolync_test
+        ports: ['3306:3306']
+        options: >-
+          --health-cmd="mysqladmin ping -h localhost -pci-only"
+          --health-interval=10s --health-timeout=5s --health-retries=10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: mbstring, xml, pdo_mysql, gd, zip
+          tools: composer
+      - run: composer install --no-interaction --prefer-dist --no-scripts
+      - run: php -l database/migrations/2026_10_03_200000_expand_profile_metadata_storage.php && php tests/profile-metadata-mysql.php
