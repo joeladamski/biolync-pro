@@ -44,6 +44,8 @@ try {
  $html=view('linkstack.elements.photo-gallery',['userinfo'=>$owner])->render();
  verifyGallery(!str_contains($html,'<script>alert(1)</script>') && str_contains($html,'&lt;script&gt;'),'captions escape HTML');
  @mkdir(base_path('test-output'));
+ @mkdir(base_path('test-output/gallery-assets'));
+ foreach(ProfileGallery::get($owner->id)['photos'] as $photo) copy(base_path($photo['path']),base_path('test-output/gallery-assets/'.basename($photo['path'])));
  file_put_contents(base_path('test-output/gallery.html'),'<meta name="viewport" content="width=device-width"><style>body{margin:0;padding:16px;box-sizing:border-box}.biolync-gallery{color:#fff}body{background:#151826}</style>'.$html);
  foreach ([UploadedFile::fake()->create('bad.php',1,'application/x-php'),UploadedFile::fake()->image('huge.jpg')->size(2049)] as $bad) {
   try {saveGallery([],['photos'=>[$bad]]);throw new RuntimeException('Invalid upload accepted');}catch(Illuminate\Validation\ValidationException $e) {}

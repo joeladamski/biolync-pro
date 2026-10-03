@@ -7,13 +7,13 @@ const fs=require('fs'),path=require('path');
    const page=await browser.newPage({viewport:{width,height:900}});
    await page.route('**/assets/profile-gallery/**',async route=>{
     const filename=path.basename(new URL(route.request().url()).pathname);
-    const local=path.resolve('assets/profile-gallery',filename);
+    const local=path.resolve('test-output/gallery-assets',filename);
     if(fs.existsSync(local)) await route.fulfill({path:local}); else await route.fulfill({status:404,body:''});
    });
    await page.goto('file://'+path.resolve('test-output/gallery.html'));
    await page.evaluate(()=>{const g=document.querySelector('.biolync-gallery-columns');g.append(g.lastElementChild.cloneNode(true));});
-   // One deliberately removed fixture photo remains a layout placeholder, so use the surviving landscape.
-   await page.locator('.biolync-gallery-photo img').first().waitFor();
+   await page.locator('.biolync-gallery-photo img').evaluateAll(images=>images.forEach(img=>img.loading='eager'));
+   await page.waitForFunction(()=>[...document.querySelectorAll('.biolync-gallery-photo img')].every(img=>img.complete && img.naturalWidth>0));
    const result=await page.evaluate(()=>{
     const gallery=document.querySelector('.biolync-gallery-columns'),img=gallery.querySelector('img'),r=img.getBoundingClientRect();
     return {display:getComputedStyle(gallery).display,columns:getComputedStyle(gallery).gridTemplateColumns.split(' ').length,items:[...gallery.querySelectorAll('figure')].map(f=>{const r=f.getBoundingClientRect();return {left:r.left,top:r.top,bottom:r.bottom};}),ratio:r.width/r.height,expected:Number(img.getAttribute('width'))/Number(img.getAttribute('height')),overflow:document.documentElement.scrollWidth>innerWidth,left:r.left,right:r.right};
