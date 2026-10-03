@@ -2,6 +2,7 @@
 @extends('layouts.sidebar')
 
 @section('content')
+@include('studio.profile-header')
 
 <div class="conatiner-fluid content-inner mt-n5 py-0">
   <div class="row">   
@@ -231,9 +232,10 @@
                         <br>
                         <label for="littlelink_name" class="form-label">{{__('messages.Page URL')}}</label>
                         <div class="input-group mb-3 has-validation">
-                          <span class="input-group-text" id="basic-addon3">{{str_replace(['http://', 'https://'], '', url(''))}}/@</span>
-                          <input type="littlelink_name" class="form-control" id="littlelink_name" name="littlelink_name" aria-describedby="littlelink_name" value="{{ $page->littlelink_name ?? '' }}" :value="old('littlelink_name')" required autofocus >
+                          <span class="input-group-text" id="basic-addon3">@</span>
+                          <input type="text" class="form-control" id="littlelink_name" name="littlelink_name" aria-describedby="profile-url-prefix" value="{{ old('littlelink_name', $page->littlelink_name) }}" required autofocus >
                         </div>
+                        <div id="profile-url-prefix" class="text-muted" style="overflow-wrap:anywhere">{{ url('') }}/@{{ $page->littlelink_name }}</div>
                         <script>var exceptionvar = " value="{{ $page->littlelink_name }}";</script>
                         @include('auth.url-validation')
                 

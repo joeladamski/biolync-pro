@@ -6,9 +6,9 @@
 </head>
 <body>
    @stack('linkstack-body-start')
-   <div class="container">
+   <div class="container biolync-profile">
       <div class="row">
-         <div class="column" style="margin-top: 5%">
+         <div class="column biolync-profile-column" style="margin-top: 5%">
             @stack('linkstack-content')
          </div>
       </div>

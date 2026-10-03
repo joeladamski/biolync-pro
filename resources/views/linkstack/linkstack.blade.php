@@ -20,7 +20,8 @@
 
     @push('linkstack-content')
         @foreach($information as $info)
-            @include('linkstack.elements.avatar')
+            @include('linkstack.elements.profile-header')
+            <div class="biolync-avatar">@include('linkstack.elements.avatar')</div>
             @include('linkstack.elements.heading')
             @include('linkstack.elements.bio')
         @endforeach

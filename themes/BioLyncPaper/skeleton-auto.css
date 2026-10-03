@@ -12,11 +12,11 @@
 }
 
 * { box-sizing: border-box; }
-html { min-height: 100%; font-size: 100%; }
+html { min-height: 100%; font-size: 100%; background-color: var(--biolync-bg); }
 body {
   min-height: 100vh;
   margin: 0;
-  background: var(--biolync-bg-art);
+  background-color: var(--biolync-bg);
   background-attachment: fixed;
   color: var(--biolync-text);
   font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
