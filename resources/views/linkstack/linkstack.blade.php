@@ -27,6 +27,7 @@
         @endforeach
         @include('linkstack.elements.icons')
         @include('linkstack.elements.buttons')
+        @include('linkstack.elements.photo-gallery')
         @yield('content')
         @include('linkstack.modules.footer')
     @endpush
