@@ -6,6 +6,12 @@ use Illuminate\Support\Facades\Storage;
 
 class HomeUi
 {
+    public static function previewCopy(): array
+    {
+        $saved = json_decode(Storage::disk('local')->get('home-ui.json') ?? '{}', true) ?: [];
+        return array_merge(['title' => '', 'tagline' => '', 'description' => ''], $saved['preview_copy'] ?? []);
+    }
+
     public static function buttons(): array
     {
         $buttons = config('advanced-config.buttons', []);

@@ -424,7 +424,13 @@ class AdminController extends Controller
   public function editHomeUi(Request $request)
   {
     $buttons = config('advanced-config.buttons', []);
-    $rules = ['buttons' => 'required|array|size:' . count($buttons)];
+    $rules = [
+      'buttons' => 'required|array|size:' . count($buttons),
+      'preview_copy' => 'nullable|array',
+      'preview_copy.title' => 'nullable|string|max:120',
+      'preview_copy.tagline' => 'nullable|string|max:200',
+      'preview_copy.description' => 'nullable|string|max:2000',
+    ];
     foreach ($buttons as $index => $button) {
       $rules["buttons.$index.title"] = 'required|string|max:100';
       $rules["buttons.$index.link"] = ['required', 'url', 'max:2048', 'regex:/^https?:\/\//i'];
@@ -434,7 +440,13 @@ class AdminController extends Controller
     foreach ($buttons as $index => $button) {
       $clean[] = ['title' => $data['buttons'][$index]['title'], 'link' => $data['buttons'][$index]['link']];
     }
-    if (!\Illuminate\Support\Facades\Storage::disk('local')->put('home-ui.json', json_encode(['buttons' => $clean], JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR))) {
+    $copy = \App\Support\HomeUi::previewCopy();
+    foreach (['title', 'tagline', 'description'] as $key) {
+      if (array_key_exists($key, $data['preview_copy'] ?? [])) {
+        $copy[$key] = $data['preview_copy'][$key] ?? '';
+      }
+    }
+    if (!\Illuminate\Support\Facades\Storage::disk('local')->put('home-ui.json', json_encode(['buttons' => $clean, 'preview_copy' => $copy], JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR))) {
       throw new \RuntimeException('Unable to save homepage links. Check storage permissions.');
     }
     return redirect(url('/admin/config') . '#ui-controls')->with('home_ui_saved', true);

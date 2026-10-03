@@ -169,6 +169,10 @@
       .home-copy .auth-card {padding:32px 24px;}
       .home-preview {min-height:0;display:flex;align-items:center;justify-content:center;padding:32px 16px!important;}
       .home-preview > div {width:100%;}
+      .home-preview-copy {max-width:420px;margin:24px auto 0;text-align:center;overflow-wrap:anywhere;}
+      .home-preview-copy h2 {font-size:1.75rem;margin-bottom:12px;}
+      .home-preview-tagline {font-size:1.125rem;font-weight:600;}
+      .home-preview-description {white-space:pre-line;line-height:1.6;}
       .iframe-container {position:relative;width:370px;max-width:100%;height:650px;margin:0 auto;}
       .iframe-container iframe {position:absolute;top:0;left:0;width:100%;height:100%;border-radius:30px;border:16px solid black;box-sizing:border-box;transform-origin:top left;}
       @media(max-width:767px){
@@ -235,6 +239,7 @@
             <div class="d-flex align-items-center h-100">
               <div class="card-body justify-content-center text-center">
                 <div class="iframe-container"><iframe title="Homepage profile preview" src="{{url('/demo-page')}}"></iframe></div>
+                @include('components.home-preview-copy')
               </div>
             </div>
           </div>
