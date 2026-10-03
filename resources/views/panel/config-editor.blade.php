@@ -15,6 +15,7 @@
                   
                   <div id="exTab2" class="">
                       <ul id="myTab" class="nav nav-tabs">
+                        <li class="nav-item"><a class="nav-link" href="#ai-discovery" data-toggle="tab" id="ai-discovery-tab">AI Discovery</a></li>
                         <li class="nav-item"><a class="nav-link" href="#site-pages" data-toggle="tab" id="site-pages-tab">Site Pages</a></li>
                         <li class="nav-item"><a class="nav-link" href="#ui-controls" data-toggle="tab" id="ui-controls-tab">UI Controls</a></li>
                         <li class="nav-item"><a class="nav-link active" href="#1" data-toggle="tab" id="home-tab">{{__('messages.Config')}}</a></li>
@@ -25,6 +26,9 @@
                       </ul>
                   
                   <div class="tab-content ">
+                    <div class="tab-pane" role="tabpanel" aria-labelledby="ai-discovery-tab" id="ai-discovery">
+                      @include('components.config.ai-discovery')
+                    </div>
                     <div class="tab-pane" role="tabpanel" aria-labelledby="site-pages-tab" id="site-pages">
                       @include('components.config.site-pages')
                     </div>

@@ -69,6 +69,10 @@ Route::get('/panel/diagnose', function () {
 });
 
 //Public route
+Route::get('/llms.txt', [App\Http\Controllers\AiDiscoveryController::class, 'site'])->name('aiSiteSummary');
+Route::get('/llms-full.txt', [App\Http\Controllers\AiDiscoveryController::class, 'site'])->defaults('full', true)->name('aiSiteFull');
+Route::get('/@{littlelink}/llms.txt', [App\Http\Controllers\AiDiscoveryController::class, 'profile'])->name('aiProfileSummary');
+Route::get('/@{littlelink}/llms-full.txt', [App\Http\Controllers\AiDiscoveryController::class, 'profile'])->defaults('full', true)->name('aiProfileFull');
 $custom_prefix = config('advanced-config.custom_url_prefix');
 Route::get('/going/{id?}', [UserController::class, 'clickNumber'])->where('link', '.*')->name('clickNumber')->middleware('disableCookies');
 Route::get('/info/{id?}', [AdminController::class, 'redirectInfo'])->name('redirectInfo');
@@ -174,6 +178,9 @@ Route::group([
     Route::post('/admin/pages', [AdminController::class, 'editSitePage'])->name('editSitePage');
     Route::get('/admin/advanced-config', [AdminController::class, 'showFileEditor'])->name('showFileEditor');
     Route::post('/admin/advanced-config', [AdminController::class, 'editAC'])->name('editAC');
+    Route::post('/admin/ai-discovery', [App\Http\Controllers\AiDiscoveryController::class, 'saveSite'])->name('saveAiSite');
+    Route::post('/admin/featured-profile', [App\Http\Controllers\AiDiscoveryController::class, 'saveFeatured'])->name('saveFeaturedProfile');
+    Route::post('/admin/edit-user/{id}/ai-discovery', [App\Http\Controllers\AiDiscoveryController::class, 'saveProfile'])->name('saveAiProfile');
     Route::post('/admin/home-ui', [AdminController::class, 'editHomeUi'])->name('editHomeUi');
     Route::get('/admin/env', [AdminController::class, 'showFileEditor'])->name('showFileEditor');
     Route::post('/admin/env', [AdminController::class, 'editENV'])->name('editENV');

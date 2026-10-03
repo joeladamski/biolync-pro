@@ -72,3 +72,6 @@
 @endif
 
 @include('layouts.analytics')
+@if(\App\Support\AiDiscovery::publishedProfile($userinfo->id))
+<link rel="describedby" href="{{ route('aiProfileSummary', ['littlelink' => $userinfo->littlelink_name]) }}">
+@endif
