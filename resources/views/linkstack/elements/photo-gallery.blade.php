@@ -22,7 +22,7 @@
 .biolync-gallery {width:100%;max-width:600px;margin:32px auto;text-align:left;}
 .biolync-gallery h2 {text-align:center;font-size:1.6rem;}
 .biolync-gallery-columns {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;align-items:start;}
-.biolync-gallery-photo {min-width:0;width:100%;margin:0;}
+.biolync-gallery-photo {min-width:0;margin:0;}
 .biolync-gallery-photo a {display:block;}
 .biolync-gallery-photo img {display:block;width:100%;height:auto;border-radius:10px;}
 .biolync-gallery-photo figcaption {font-size:1.2rem;line-height:1.4;padding:6px 2px;overflow-wrap:anywhere;}
