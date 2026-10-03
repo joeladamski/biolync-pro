@@ -195,6 +195,7 @@
                   @endif
                 </div>                
                 @include('studio.profile-header')
+                @include('studio.photo-gallery')
                 <section class='text-gray-400'>
                 <h3 class="mb-4 card-header"><i class="bi bi-file-earmark-break"> {{__('messages.My Profile')}}</i></h3>
                 @if($errors->any())
