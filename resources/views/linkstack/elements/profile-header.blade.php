@@ -8,7 +8,8 @@
     $position = in_array($header['position'] ?? '', ['top', 'center', 'bottom']) ? $header['position'] : 'center';
 @endphp
 <style>
-body {padding-top:0;}
+body {padding-top:0!important;}
+html, body {background-color:var(--biolync-bg, var(--bgColor, #151826));}
 .biolync-profile {padding-top:0!important;margin-top:0!important;}
 .biolync-profile > .row > .biolync-profile-column { margin-top:0!important; padding-top:0!important; }
 .biolync-cover { position:relative; width:min(600px,calc(100vw - 24px)); height:220px; left:50%; transform:translateX(-50%); border-radius:0 0 20px 20px; overflow:hidden; background:var(--biolync-bg-art, #263342); }

@@ -818,3 +818,7 @@
   494px 1957px #fff, 1296px 431px #fff, 175px 1507px #fff, 831px 121px #fff,
   498px 1947px #fff, 617px 880px #fff, 240px 403px #fff;
 }
+
+/* Shared viewport canvas uses the theme base color. */
+html, body { background-color: var(--bgColor); }
+body { background-image: none; }

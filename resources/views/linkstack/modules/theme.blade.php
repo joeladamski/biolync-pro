@@ -60,7 +60,7 @@ $customBackgroundExists = file_exists($customBackgroundPath)
   @else
   <link rel="stylesheet" href="themes/{{$info->theme}}/brands.css">
   @endif
-  <link rel="stylesheet" href="themes/{{$info->theme}}/skeleton-auto.css">
+  <link rel="stylesheet" href="{{ asset('themes/'.$info->theme.'/skeleton-auto.css') }}?v={{ filemtime(base_path('themes/'.$info->theme.'/skeleton-auto.css')) }}">
 @if(file_exists(base_path('themes/' . $info->theme . '/animations.css')))
   <link rel="stylesheet" href="<?php echo asset('themes/' . $info->theme . '/animations.css') ?>">
 @else
