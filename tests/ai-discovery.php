@@ -22,6 +22,8 @@ function aiCheck($ok,$message){if(!$ok)throw new RuntimeException($message);echo
 function aiNotFound($callback){try{$callback();throw new RuntimeException('Expected 404');}catch(Symfony\Component\HttpKernel\Exception\NotFoundHttpException $e){}}
 $owner=User::create(['name'=>'Jay','email'=>'SECRET-ACCOUNT-EMAIL','password'=>'SECRET-PASSWORD','littlelink_name'=>'jay','littlelink_description'=>'<p>Public biography</p>']);
 $other=User::create(['name'=>'Other','email'=>'other@example.test','password'=>'unused','littlelink_name'=>'other','littlelink_description'=>'UNPUBLISHED-PROFILE']);
+$owner->littlelink_description='<p>Public biography</p>';$owner->save();
+$other->littlelink_description='UNPUBLISHED-PROFILE';$other->save();
 UserData::saveData($owner->id,'profile_header',['position'=>'top']);UserData::saveData($owner->id,'private_note','PRIVATE-NOTE');UserData::saveData($owner->id,'photo_gallery',['enabled'=>false,'photos'=>[]]);
 DB::table('links')->insert([['user_id'=>$owner->id,'title'=>'Project','link'=>'https://example.com/project','order'=>0],['user_id'=>$owner->id,'title'=>'Unsafe','link'=>'javascript:alert(1)','order'=>1]]);
 SitePages::update(fn($pages)=>[['id'=>'a','title'=>'About','slug'=>'about','body'=>'Public page body','published'=>true,'show_in_header'=>true,'order'=>0],['id'=>'b','title'=>'Draft','slug'=>'draft','body'=>'DRAFT-PAGE-CONTENT','published'=>false,'show_in_header'=>false,'order'=>1]]);
