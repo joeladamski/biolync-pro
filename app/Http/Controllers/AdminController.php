@@ -434,8 +434,10 @@ class AdminController extends Controller
     foreach ($buttons as $index => $button) {
       $clean[] = ['title' => $data['buttons'][$index]['title'], 'link' => $data['buttons'][$index]['link']];
     }
-    \Illuminate\Support\Facades\Storage::disk('local')->put('home-ui.json', json_encode(['buttons' => $clean], JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR));
-    return redirect(url('/admin/env') . '#ui-controls')->with('home_ui_saved', true);
+    if (!\Illuminate\Support\Facades\Storage::disk('local')->put('home-ui.json', json_encode(['buttons' => $clean], JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR))) {
+      throw new \RuntimeException('Unable to save homepage links. Check storage permissions.');
+    }
+    return redirect(url('/admin/config') . '#ui-controls')->with('home_ui_saved', true);
   }
 
   //Show home message for edit
