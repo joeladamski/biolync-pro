@@ -8,7 +8,7 @@
    @stack('linkstack-body-start')
    <div class="container biolync-profile">
       <div class="row">
-         <div class="column biolync-profile-column" style="margin-top: 5%">
+         <div class="column biolync-profile-column">
             @stack('linkstack-content')
          </div>
       </div>
