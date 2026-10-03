@@ -2,6 +2,7 @@
 require __DIR__ . '/../vendor/autoload.php';
 $app = require __DIR__ . '/../bootstrap/app.php';
 $app->make(Illuminate\Contracts\Console\Kernel::class)->bootstrap();
+set_exception_handler(function (Throwable $error) {fwrite(STDERR, (string) $error); exit(1);});
 config(['database.default'=>'sqlite','database.connections.sqlite.database'=>':memory:','cache.default'=>'array','session.driver'=>'array','app.key'=>'base64:'.base64_encode(str_repeat('x',32)),'linkstack.disable_random_user_ids'=>'true']);
 Illuminate\Support\Facades\DB::purge();
 Illuminate\Support\Facades\Schema::create('users', function ($t) { $t->id(); $t->text('image')->nullable(); $t->string('role')->default('user'); $t->string('name'); $t->string('email'); $t->string('password'); $t->timestamps(); });
@@ -13,8 +14,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 function verifyGallery($ok,$message) {if(!$ok) throw new RuntimeException($message);echo "PASS: $message\n";}
 function saveGallery($fields=[], $files=[]) {return (new App\Http\Controllers\ProfileGalleryController)->save(Request::create('/studio/photo-gallery','POST',array_merge(['enabled'=>1],$fields),[],$files));}
-$owner=User::create(['role'=>'vip','name'=>'Owner','email'=>'owner@example.test','password'=>'unused']);
-$other=User::create(['role'=>'vip','name'=>'Other','email'=>'other@example.test','password'=>'unused']);
+$owner=User::create(['name'=>'Owner','email'=>'owner@example.test','password'=>'unused']);
+$other=User::create(['name'=>'Other','email'=>'other@example.test','password'=>'unused']);
+$owner->role='vip';$owner->save();
+$other->role='vip';$other->save();
 try {
  Auth::login($owner);
  (new App\Http\Controllers\UserController)->profileHeader(Request::create('/studio/profile-header','POST',['header_position'=>'top'],[],['header_media'=>UploadedFile::fake()->image('header.jpg',1200,440)]));
