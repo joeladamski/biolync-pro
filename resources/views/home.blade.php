@@ -99,8 +99,10 @@
       .home-layout {width:100%;min-height:calc(100vh - 120px);min-height:calc(100svh - 120px);}
       .home-footer {position:relative!important;bottom:auto;}
       .wrapper, .login-content {width:100%;}
-      .home-copy .auth-card {padding:32px 24px;}
-      .home-preview {min-height:0;display:flex;align-items:center;justify-content:center;padding:32px 16px!important;}
+      .home-copy {padding:32px 24px!important;}
+      .home-copy .auth-card {padding:0;}
+      .home-copy .card-body, .home-preview .card-body {padding:0;}
+      .home-preview {min-height:0;display:flex;align-items:flex-start;justify-content:center;padding:32px 24px!important;}
       .home-preview > div {width:100%;}
       .home-preview-copy {max-width:420px;margin:24px auto 0;text-align:center;overflow-wrap:anywhere;}
       .home-preview-copy h2 {font-size:1.75rem;margin-bottom:12px;}
@@ -126,7 +128,7 @@
     </style>
     <div class="wrapper d-flex">
       <section class="login-content">
-        <div class="row m-0 align-items-center bg-white home-layout">
+        <div class="row m-0 align-items-stretch bg-white home-layout">
           <div class="col-md-6 p-0 order-2 home-copy">
             <div class="card card-transparent auth-card shadow-none d-flex mb-0">
               <div class="card-body justify-content-center text-center">
@@ -169,13 +171,14 @@
             </div>
           </div>
           <div class="col-md-6 bg-light p-0 order-1 home-preview">
-            <div class="d-flex align-items-center h-100">
+            <div class="d-flex">
               <div class="card-body justify-content-center text-center">
                 <div class="iframe-container"><iframe title="Homepage profile preview" src="{{url('/demo-page')}}"></iframe></div>
                 @include('components.home-preview-copy')
               </div>
             </div>
           </div>
+        </div>
       </section>
     </div>    
     
