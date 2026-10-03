@@ -2,11 +2,20 @@
 $header = \App\Models\UserData::getData(Auth::id(), 'profile_header');
 $header = is_array($header) ? $header : [];
 @endphp
-<div class="card mb-4"><div class="card-body">
+<div class="card mb-4 mt-4"><div class="card-body">
 <h4>Public profile header</h4>
-<p>Optional image or silent video cover. Displayed up to 600px wide with your avatar overlapping the lower edge.</p>
+<p>Choose the cover visitors see above your profile. Save your cover here; save your name and description in the profile section below.</p>
 @if(session('success'))<div class="alert alert-success">{{ session('success') }}</div>@endif
 @if($errors->any())<div class="alert alert-danger"><ul>@foreach($errors->all() as $error)<li>{{ $error }}</li>@endforeach</ul></div>@endif
+@if(!empty($header['media']) && preg_match('#^assets/profile-media/' . Auth::id() . '_[a-f0-9]{32}\.(jpg|jpeg|png|webp|mp4|webm)$#', $header['media']) && file_exists(base_path($header['media'])))
+<div class="mb-4" style="max-width:600px">
+@if(($header['type'] ?? '') === 'video')
+<video src="{{ asset($header['media']) }}" controls muted playsinline preload="metadata" style="width:100%;height:200px;object-fit:cover;border-radius:12px"></video>
+@else
+<img src="{{ asset($header['media']) }}" alt="Current profile cover" style="width:100%;height:200px;object-fit:cover;border-radius:12px">
+@endif
+</div>
+@endif
 <form action="{{ route('profileHeader') }}" method="post" enctype="multipart/form-data">
 @csrf
 <label for="header-media">Image or video</label>

@@ -2,9 +2,10 @@
 @extends('layouts.sidebar')
 
 @section('content')
-@include('studio.profile-header')
+<style>.biolync-page-editor .profile-img {margin-top:0!important;top:auto!important;transform:none!important;} .biolync-page-editor .form-group{margin-bottom:24px;} .biolync-page-editor .ck-toolbar{flex-wrap:wrap;} .biolync-page-editor input{min-width:0;} .biolync-page-editor .card-header{padding-left:0;}</style>
 
-<div class="conatiner-fluid content-inner mt-n5 py-0">
+
+<div class="container-fluid content-inner py-4 biolync-page-editor">
   <div class="row">   
       
    <div class="col-lg-12">
@@ -193,6 +194,7 @@
                   </div>
                   @endif
                 </div>                
+                @include('studio.profile-header')
                 <section class='text-gray-400'>
                 <h3 class="mb-4 card-header"><i class="bi bi-file-earmark-break"> {{__('messages.My Profile')}}</i></h3>
                 @if($errors->any())
@@ -304,7 +306,7 @@
                                   'specialCharacters', 'horizontalLine', '|',
                                   'textPartLanguage', '|',
                               ],
-                              shouldNotGroupWhenFull: true
+                              shouldNotGroupWhenFull: false
                           },
                           fontFamily: {
                               options: [

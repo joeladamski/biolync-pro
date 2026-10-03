@@ -1,6 +1,7 @@
 <?php
 
 return [
+    'update_channel' => 'repository',
     'allow_custom_buttons' => 'true',
     'allow_custom_background' => 'false',
     'open_links_in_same_tab' => 'false',

@@ -618,6 +618,11 @@ class AdminController extends Controller
   {
     if ($handle = opendir("themes")) {
       while (false !== ($entry = readdir($handle))) {
+        $configFile = base_path('themes/'.$entry.'/config.php');
+        $themeConfig = is_file($configFile) ? include $configFile : [];
+        if (($themeConfig['update_channel'] ?? '') === 'repository') {
+          continue;
+        }
         if (file_exists(base_path("themes") . "/" . $entry . "/readme.md")) {
           $text = file_get_contents(
             base_path("themes") . "/" . $entry . "/readme.md",
