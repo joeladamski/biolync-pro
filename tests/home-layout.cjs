@@ -16,6 +16,7 @@ const fs=require('fs');
   for(const [width,height] of [[320,844],[375,844],[390,844],[844,390],[390,844],[932,430],[430,844],[768,844],[1440,900],[1440,480]]) {
    await page.setViewportSize({width,height});
    await page.setContent(`<style>${styles}${css}${headerCss}</style><nav class="${navClass}" style="height:60px">Navigation</nav><div class="wrapper d-flex"><section class="login-content"><div class="row m-0 align-items-center home-layout"><div id="message" class="${copyClass}"><div class="card card-transparent auth-card shadow-none d-flex mb-0"><div class="card-body text-center"><div style="height:150px">Logo</div><h1>BioLync.Pro</h1><p class="lead">${'Your home base for everything you want to share. '.repeat(8)}</p><button id="login">Log in</button></div></div></div><div class="${previewClass}"><div class="d-flex align-items-center h-100"><div class="card-body"><div class="iframe-container"><iframe title="Preview" srcdoc="Demo"></iframe></div></div></div></div></div></section></div><footer class="${footerClass}" style="height:60px">Footer</footer>`);
+   await page.evaluate(()=>window.scrollTo(0,0));
    const result=await page.evaluate(()=>{
     const rect=s=>document.querySelector(s).getBoundingClientRect();
     const f=rect('iframe'),c=rect('.iframe-container'),n=rect('nav'),m=rect('#message'),p=rect('.home-preview'),footer=rect('footer'),login=rect('#login');
