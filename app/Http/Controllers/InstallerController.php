@@ -37,20 +37,11 @@ class InstallerController extends Controller
             abort(404);
         }
 
-        // A production bootstrap already has a configured database and .env.
-        // Skip the legacy language/database mutation screens and begin at the
-        // first-owner step. Query-string steps are retained for the shared
-        // installer view and the post-owner finalization screen.
-        if ($request->getQueryString() === null || $request->getQueryString() === '') {
-            return redirect(url('/setup-owner?4'));
-        }
-
-        $allowedSteps = ['4', '5'];
-        if (!in_array($request->getQueryString(), $allowedSteps, true)) {
+        if ($request->query()) {
             abort(404);
         }
 
-        return view('installer/installer');
+        return view('installer/owner-bootstrap');
     }
 
     protected function bootstrapAvailable(): bool
@@ -116,7 +107,7 @@ class InstallerController extends Controller
 
         Auth::login($user);
 
-        return redirect(url('/setup-owner?5'));
+        return redirect()->route('setupOwnerFinalize');
     }
 
     public function mysql(request $request)
