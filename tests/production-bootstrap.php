@@ -51,7 +51,8 @@ bootstrapCheck(str_contains($auth,"Route::get('/setup-owner'"),'zero-user state 
 bootstrapCheck(str_contains($auth,"redirect()->route('setupOwner')"),'ordinary registration redirects to first-owner setup while users=0');
 bootstrapCheck(!str_contains($auth,"Route::get('/bootstrap'"),'public first-owner route does not collide with Laravel bootstrap directory');
 bootstrapCheck(str_contains($auth,"Route::post('/create-admin'"),'bootstrap exposes first-owner creation without requiring INSTALLING');
-bootstrapCheck(str_contains($auth,"Route::get('/setup-owner/finalize'"),'bootstrap exposes an explicit finalization route after owner creation');
+bootstrapCheck(str_contains($auth,"Route::get('/setup-owner/finalize'"),'finalization route is statically registered');
+bootstrapCheck(str_contains($auth,"->name('setupOwnerFinalize')"),'createAdmin redirect target is a defined named route');
 
 $showRequest=Request::create('/setup-owner','GET');
 $showResponse=$controller->showInstaller($showRequest);
@@ -72,7 +73,9 @@ $request=Request::create('/create-admin','POST',[
     'email'=>'owner@example.test',
     'password'=>'password123',
 ]);
-$controller->createAdmin($request);
+$response=$controller->createAdmin($request);
+bootstrapCheck($response instanceof Illuminate\Http\RedirectResponse,'createAdmin returns a redirect response');
+bootstrapCheck(str_contains($response->getTargetUrl(),'/setup-owner/finalize'),'createAdmin redirects to the finalization route');
 $owner=User::first();
 bootstrapCheck($owner!==null && $owner->role==='admin','first bootstrap account receives admin role');
 bootstrapCheck(File::exists($installerLock),'first-owner creation enters native installer finalization state');
