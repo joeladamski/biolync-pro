@@ -7,7 +7,7 @@
 @if($_SERVER['QUERY_STRING'] === '')
 {{-- Landing page --}}
 
-@if(!DB::table('users')->get()->isEmpty())
+@if(\Illuminate\Support\Facades\Schema::hasTable('users') && !DB::table('users')->get()->isEmpty())
     @php
     if(file_exists(base_path("INSTALLING"))){unlink(base_path("INSTALLING"));}
     header("Refresh:0");
