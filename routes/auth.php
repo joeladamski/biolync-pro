@@ -32,46 +32,51 @@ if(config('advanced-config.forgot_password_url') != '') {
     $forgot_password = "/forgot-password";
 }
 
-$bootstrapAvailable = !File::exists(storage_path('app/ISINSTALLED'))
-    && Schema::hasTable('users')
-    && DB::table('users')->count() === 0;
+$bootstrapAvailable = static function (): bool {
+    return !File::exists(storage_path('app/ISINSTALLED'))
+        && Schema::hasTable('users')
+        && DB::table('users')->count() === 0;
+};
 
+Route::get('/setup-owner', [InstallerController::class, 'showInstaller'])
+    ->middleware('guest')
+    ->name('setupOwner');
 
-if ($bootstrapAvailable) {
-    Route::get('/setup-owner', [InstallerController::class, 'showInstaller'])
-        ->middleware('guest')
-        ->name('setupOwner');
+Route::post('/create-admin', [InstallerController::class, 'createAdmin'])
+    ->middleware('guest')
+    ->name('createAdmin');
 
-    Route::post('/create-admin', [InstallerController::class, 'createAdmin'])
-        ->middleware('guest')
-        ->name('createAdmin');
+Route::post('/validate-handle', [RegisteredUserController::class, 'validateHandle']);
 
-    // Never let ordinary registration win the first-account race.
-    Route::get($register, fn() => redirect()->route('setupOwner'))
-        ->middleware('guest')
-        ->name('register');
+$registrationEnabled = filter_var(env('ALLOW_REGISTRATION', false), FILTER_VALIDATE_BOOLEAN);
+$registrationAvailable = $registrationEnabled || $register !== '/register';
 
-    Route::post($register, fn() => abort(404))
-        ->middleware('guest');
-
-} else {
-    Route::post('/validate-handle', [RegisteredUserController::class, 'validateHandle']);
-    $registrationEnabled = filter_var(env('ALLOW_REGISTRATION', false), FILTER_VALIDATE_BOOLEAN);
-
-    if($registrationEnabled || $register !== '/register') {
-        Route::get($register, [RegisteredUserController::class, 'create'])
-            ->middleware('guest')
-            ->middleware('max.users')
-            ->name('register');
-
-        Route::post($register, [RegisteredUserController::class, 'store'])
-            ->middleware('guest')
-            ->middleware('max.users');
-    } else {
-        Route::get($register, fn() => abort(404))->name('register');
-        Route::post($register, fn() => abort(404));
+// Resolve bootstrap state only when a registration request arrives. Keeping the
+// database check out of route registration allows deployment/composer/artisan
+// bootstrap to load routes before production database credentials are present.
+Route::get($register, function () use ($bootstrapAvailable, $registrationAvailable) {
+    if ($bootstrapAvailable()) {
+        return redirect()->route('setupOwner');
     }
-}
+
+    if (!$registrationAvailable) {
+        abort(404);
+    }
+
+    return app(RegisteredUserController::class)->create();
+})
+    ->middleware(['guest', 'max.users'])
+    ->name('register');
+
+Route::post($register, function (\Illuminate\Http\Request $request) use ($bootstrapAvailable, $registrationAvailable) {
+    // Never let ordinary registration win the first-account race.
+    if ($bootstrapAvailable() || !$registrationAvailable) {
+        abort(404);
+    }
+
+    return app(RegisteredUserController::class)->store($request);
+})
+    ->middleware(['guest', 'max.users']);
 
 
 // Stable finalization routes: always registered so createAdmin() can safely
