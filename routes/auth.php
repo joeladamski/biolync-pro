@@ -29,7 +29,9 @@ if(config('advanced-config.forgot_password_url') != '') {
 }
 
 Route::post('/validate-handle', [RegisteredUserController::class, 'validateHandle']);
-    if(env('ALLOW_REGISTRATION') or $register !== '/register') {
+    $registrationEnabled = filter_var(env('ALLOW_REGISTRATION', false), FILTER_VALIDATE_BOOLEAN);
+
+    if($registrationEnabled || $register !== '/register') {
         Route::get($register, [RegisteredUserController::class, 'create'])
             ->middleware('guest')
             ->middleware('max.users')
