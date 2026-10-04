@@ -59,20 +59,6 @@ if ($bootstrapAvailable) {
     Route::post($register, fn() => abort(404))
         ->middleware('guest');
 
-} elseif ($finalizationAvailable) {
-    Route::get('/setup-owner/finalize', function () {
-        return view('installer/owner-finalize');
-    })->middleware('auth')->name('setupOwnerFinalize');
-
-    Route::post('/setup-owner/options', [InstallerController::class, 'options'])
-        ->middleware('auth')
-        ->name('options');
-
-    // Installation is not complete yet. Public registration remains closed until
-    // the owner finalizes ALLOW_REGISTRATION and REGISTER_AUTH.
-    Route::get($register, fn() => abort(404))->name('register');
-    Route::post($register, fn() => abort(404));
-
 } else {
     Route::post('/validate-handle', [RegisteredUserController::class, 'validateHandle']);
     $registrationEnabled = filter_var(env('ALLOW_REGISTRATION', false), FILTER_VALIDATE_BOOLEAN);
@@ -91,6 +77,28 @@ if ($bootstrapAvailable) {
         Route::post($register, fn() => abort(404));
     }
 }
+
+
+// Stable finalization routes: always registered so createAdmin() can safely
+// redirect by name during the same request in which the first owner is created.
+// Authorization/state checks happen inside each route/controller action.
+Route::get('/setup-owner/finalize', function () {
+    if (
+        File::exists(storage_path('app/ISINSTALLED')) ||
+        !File::exists(base_path('INSTALLERLOCK')) ||
+        !Schema::hasTable('users') ||
+        DB::table('users')->count() !== 1 ||
+        DB::table('users')->where('role', 'admin')->count() !== 1
+    ) {
+        abort(404);
+    }
+
+    return view('installer/owner-finalize');
+})->middleware('auth')->name('setupOwnerFinalize');
+
+Route::post('/setup-owner/options', [InstallerController::class, 'options'])
+    ->middleware('auth')
+    ->name('options');
 
 Route::get($login, [AuthenticatedSessionController::class, 'create'])
                 ->middleware('guest')
