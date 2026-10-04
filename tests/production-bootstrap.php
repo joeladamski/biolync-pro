@@ -82,7 +82,7 @@ bootstrapCheck(!str_contains($auth,"Route::post('/setup-owner/options', [Install
 $showRequest=Request::create('/setup-owner','GET');
 $showResponse=$controller->showInstaller($showRequest);
 bootstrapCheck($showResponse instanceof Illuminate\View\View,'GET /setup-owner directly renders a view');
-bootstrapCheck($showResponse->name()==='installer/owner-bootstrap','GET /setup-owner renders the dedicated owner creation view');
+bootstrapCheck(str_ends_with(str_replace('\\','/',$showResponse->getPath()),'/resources/views/installer/owner-bootstrap.blade.php'),'GET /setup-owner renders the dedicated owner creation view');
 
 $legacyRequest=Request::create('/setup-owner?4','GET');
 try {
