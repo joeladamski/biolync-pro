@@ -146,8 +146,8 @@ bootstrapCheck(str_contains($webRoutes,"if(file_exists(base_path('INSTALLING')))
 bootstrapCheck(!str_contains($webRoutes,"if(file_exists(base_path('INSTALLING')) or file_exists(base_path('INSTALLERLOCK')))"),'INSTALLERLOCK alone cannot activate the legacy installer catch-all');
 $installerController=File::get(base_path('app/Http/Controllers/InstallerController.php'));
 bootstrapCheck(str_contains($installerController,'$value = "verified"') && str_contains($installerController,'$value = "auth"'),'installer preserves auth/verified REGISTER_AUTH values');
-bootstrapCheck(str_contains($installerController,"EnvEditor::addKey('HOME_URL', $value)"),'installer creates HOME_URL when missing');
-bootstrapCheck(str_contains($installerController,"EnvEditor::addKey('APP_NAME', $appName)"),'installer creates APP_NAME when missing');
+bootstrapCheck(str_contains($installerController,'EnvEditor::addKey(\'HOME_URL\', $value)'),'installer creates HOME_URL when missing');
+bootstrapCheck(str_contains($installerController,'EnvEditor::addKey(\'APP_NAME\', $appName)'),'installer creates APP_NAME when missing');
 
 $analyticsView=File::get(base_path('resources/views/layouts/analytics.blade.php'));
 bootstrapCheck(str_contains($analyticsView,"(string) config('advanced-config.analytics', '')"),'fresh installs tolerate a missing analytics config value');
