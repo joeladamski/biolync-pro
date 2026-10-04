@@ -51,6 +51,20 @@ bootstrapCheck(str_contains($auth,"Route::get('/setup-owner'"),'zero-user state 
 bootstrapCheck(str_contains($auth,"redirect()->route('setupOwner')"),'ordinary registration redirects to first-owner setup while users=0');
 bootstrapCheck(!str_contains($auth,"Route::get('/bootstrap'"),'public first-owner route does not collide with Laravel bootstrap directory');
 bootstrapCheck(str_contains($auth,"Route::post('/create-admin'"),'bootstrap exposes first-owner creation without requiring INSTALLING');
+bootstrapCheck(str_contains($auth,"Route::get('/setup-owner/finalize'"),'bootstrap exposes an explicit finalization route after owner creation');
+
+$showRequest=Request::create('/setup-owner','GET');
+$showResponse=$controller->showInstaller($showRequest);
+bootstrapCheck($showResponse instanceof Illuminate\View\View,'GET /setup-owner directly renders a view');
+bootstrapCheck($showResponse->name()==='installer/owner-bootstrap','GET /setup-owner renders the dedicated owner creation view');
+
+$legacyRequest=Request::create('/setup-owner?4','GET');
+try {
+    $controller->showInstaller($legacyRequest);
+    bootstrapCheck(false,'legacy query-string bootstrap cannot bypass canonical entry');
+} catch (Symfony\Component\HttpKernel\Exception\HttpException $e) {
+    bootstrapCheck($e->getStatusCode()===404,'legacy query-string bootstrap cannot bypass canonical entry');
+}
 
 $request=Request::create('/create-admin','POST',[
     'name'=>'Owner',
@@ -64,6 +78,13 @@ bootstrapCheck($owner!==null && $owner->role==='admin','first bootstrap account 
 bootstrapCheck(File::exists($installerLock),'first-owner creation enters native installer finalization state');
 bootstrapCheck($method->invoke($controller)===false,'bootstrap is unavailable after first account exists');
 
+try {
+    $controller->showInstaller(Request::create('/setup-owner','GET'));
+    bootstrapCheck(false,'existing user blocks first-owner bootstrap');
+} catch (Symfony\Component\HttpKernel\Exception\HttpException $e) {
+    bootstrapCheck($e->getStatusCode()===404,'existing user blocks first-owner bootstrap');
+}
+
 $ordinary=User::create([
     'name'=>'Ordinary',
     'email'=>'ordinary@example.test',
@@ -74,6 +95,13 @@ bootstrapCheck($ordinary->fresh()->role==='user','ordinary user creation remains
 
 File::put($installed,'');
 bootstrapCheck($method->invoke($controller)===false,'installed marker prevents bootstrap');
+
+try {
+    $controller->showInstaller(Request::create('/setup-owner','GET'));
+    bootstrapCheck(false,'ISINSTALLED blocks first-owner bootstrap');
+} catch (Symfony\Component\HttpKernel\Exception\HttpException $e) {
+    bootstrapCheck($e->getStatusCode()===404,'ISINSTALLED blocks first-owner bootstrap');
+}
 @unlink($installed);
 @unlink($installerLock);
 
