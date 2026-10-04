@@ -43,6 +43,20 @@ if ($bootstrapAvailable) {
         ->middleware('guest')
         ->name('setupOwner');
 
+    Route::get('/setup-owner/finalize', function () {
+        if (File::exists(storage_path('app/ISINSTALLED')) || !Schema::hasTable('users')) {
+            abort(404);
+        }
+
+        $user = AppModelsUser::where('role', 'admin')->orderBy('created_at')->first();
+
+        if (!$user || AppModelsUser::count() !== 1) {
+            abort(404);
+        }
+
+        return view('installer/owner-finalize');
+    })->middleware('auth')->name('setupOwnerFinalize');
+
     Route::post('/create-admin', [InstallerController::class, 'createAdmin'])
         ->middleware('guest')
         ->name('createAdmin');
