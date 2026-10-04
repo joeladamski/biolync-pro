@@ -200,9 +200,10 @@ class InstallerController extends Controller
         if(EnvEditor::keyExists('REGISTER_AUTH')){EnvEditor::editKey('REGISTER_AUTH', $value);}else{EnvEditor::addKey('REGISTER_AUTH', $value);}
 
         if($request->page == 'No'){$value = "";}else{$value = '"' . $llName . '"';}
-        if(EnvEditor::keyExists('HOME_URL')){EnvEditor::editKey('HOME_URL', $value);}
+        if(EnvEditor::keyExists('HOME_URL')){EnvEditor::editKey('HOME_URL', $value);}else{EnvEditor::addKey('HOME_URL', $value);}
 
-        if(EnvEditor::keyExists('APP_NAME')){EnvEditor::editKey('APP_NAME', '"' . $request->app . '"');}
+        $appName = '"' . $request->app . '"';
+        if(EnvEditor::keyExists('APP_NAME')){EnvEditor::editKey('APP_NAME', $appName);}else{EnvEditor::addKey('APP_NAME', $appName);}
 
         File::put(storage_path('app/ISINSTALLED'), '');
 
