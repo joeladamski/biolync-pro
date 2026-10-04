@@ -47,6 +47,19 @@ if ($bootstrapAvailable) {
         ->middleware('guest')
         ->name('createAdmin');
 
+    // The first-owner path reuses only the safe final configuration step from
+    // the native installer. Database and locale mutation belong to the legacy
+    // installer and must not be exposed against an already prepared production
+    // .env. These named guards allow the shared Blade view to compile without
+    // making those mutation endpoints usable.
+    Route::post('/setup-owner/options', [InstallerController::class, 'options'])
+        ->name('options');
+
+    Route::post('/setup-owner/legacy-db', fn() => abort(404))->name('db');
+    Route::post('/setup-owner/legacy-mysql', fn() => abort(404))->name('mysql');
+    Route::get('/setup-owner/legacy-mysql-test', fn() => abort(404))->name('mysqlTest');
+    Route::post('/setup-owner/legacy-config', fn() => abort(404))->name('editConfigInstaller');
+
     // Never let ordinary registration win the first-account race.
     Route::get($register, fn() => redirect()->route('setupOwner'))
         ->middleware('guest')
