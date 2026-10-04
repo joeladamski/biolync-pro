@@ -51,6 +51,26 @@ class InstallerController extends Controller
             && DB::table('users')->count() === 0;
     }
 
+
+    public function showOwnerFinalize(Request $request)
+    {
+        if (
+            File::exists(storage_path('app/ISINSTALLED')) ||
+            !File::exists(base_path('INSTALLERLOCK')) ||
+            !Schema::hasTable('users') ||
+            User::count() !== 1 ||
+            User::where('role', 'admin')->count() !== 1
+        ) {
+            abort(404);
+        }
+
+        return response(
+            view('installer/owner-finalize')->render(),
+            200,
+            ['Content-Type' => 'text/html; charset=UTF-8']
+        );
+    }
+
     public function db(request $request)
     {
         if($request->database == 'MySQL'){
