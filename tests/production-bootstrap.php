@@ -48,7 +48,9 @@ bootstrapCheck($method->invoke($controller)===true,'zero-user bootstrap is avail
 
 $auth=File::get(base_path('routes/auth.php'));
 bootstrapCheck(str_contains($auth,"Route::get('/setup-owner'"),'zero-user state exposes a collision-safe first-owner route');
-bootstrapCheck(str_contains($auth,"redirect()->route('setupOwner')"),'ordinary registration redirects to first-owner setup while users=0');
+bootstrapCheck(str_contains($auth,"return redirect()->route('setupOwner');"),'ordinary registration redirects to first-owner setup while users=0');
+bootstrapCheck(str_contains($auth,"$bootstrapAvailable = static function (): bool"),'bootstrap database state is deferred until request time');
+bootstrapCheck(!str_contains($auth,"$bootstrapAvailable = !File::exists"),'route registration does not query bootstrap database state eagerly');
 bootstrapCheck(!str_contains($auth,"Route::get('/bootstrap'"),'public first-owner route does not collide with Laravel bootstrap directory');
 bootstrapCheck(str_contains($auth,"Route::post('/create-admin'"),'bootstrap exposes first-owner creation without requiring INSTALLING');
 bootstrapCheck(str_contains($auth,"Route::get('/setup-owner/finalize'"),'finalization route is statically registered');
@@ -121,7 +123,13 @@ $webRoutes=File::get(base_path('routes/web.php'));
 bootstrapCheck(str_contains($webRoutes,"'middleware' => env('REGISTER_AUTH')"),'REGISTER_AUTH remains middleware-valued');
 bootstrapCheck(str_contains($webRoutes,"if(file_exists(base_path('INSTALLING')))"),'legacy installer activates from INSTALLING');
 bootstrapCheck(!str_contains($webRoutes,"if(file_exists(base_path('INSTALLING')) or file_exists(base_path('INSTALLERLOCK')))"),'INSTALLERLOCK alone cannot activate the legacy installer catch-all');
-bootstrapCheck(str_contains(File::get(base_path('app/Http/Controllers/InstallerController.php')),'$value = "verified"') && str_contains(File::get(base_path('app/Http/Controllers/InstallerController.php')),'$value = "auth"'),'installer preserves auth/verified REGISTER_AUTH values');
+$installerController=File::get(base_path('app/Http/Controllers/InstallerController.php'));
+bootstrapCheck(str_contains($installerController,'$value = "verified"') && str_contains($installerController,'$value = "auth"'),'installer preserves auth/verified REGISTER_AUTH values');
+bootstrapCheck(str_contains($installerController,"EnvEditor::addKey('HOME_URL', $value)"),'installer creates HOME_URL when missing');
+bootstrapCheck(str_contains($installerController,"EnvEditor::addKey('APP_NAME', $appName)"),'installer creates APP_NAME when missing');
+
+$analyticsView=File::get(base_path('resources/views/layouts/analytics.blade.php'));
+bootstrapCheck(str_contains($analyticsView,"(string) config('advanced-config.analytics', '')"),'fresh installs tolerate a missing analytics config value');
 
 $ignore=File::get(base_path('.gitignore'));
 bootstrapCheck(str_contains($ignore,'/config/advanced-config.php'),'generated advanced config is ignored');
