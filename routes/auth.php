@@ -8,7 +8,11 @@ use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\VerifyEmailController;
+use App\Http\Controllers\InstallerController;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Schema;
 
 if(config('advanced-config.register_url') != '') {
     $register = config('advanced-config.register_url');
@@ -28,7 +32,32 @@ if(config('advanced-config.forgot_password_url') != '') {
     $forgot_password = "/forgot-password";
 }
 
-Route::post('/validate-handle', [RegisteredUserController::class, 'validateHandle']);
+$bootstrapAvailable = !File::exists(storage_path('app/ISINSTALLED'))
+    && Schema::hasTable('users')
+    && DB::table('users')->count() === 0;
+
+if ($bootstrapAvailable) {
+    // Fresh production estates enter the existing installer lifecycle here.
+    // createAdmin() re-checks the zero-user state and creates INSTALLERLOCK,
+    // so subsequent installer steps continue through the native installer routes.
+    Route::get('/bootstrap', [InstallerController::class, 'showInstaller'])
+        ->middleware('guest')
+        ->name('bootstrap');
+
+    Route::post('/create-admin', [InstallerController::class, 'createAdmin'])
+        ->middleware('guest')
+        ->name('createAdmin');
+
+    // Never let ordinary registration win the first-account race.
+    Route::get($register, fn() => redirect()->route('bootstrap'))
+        ->middleware('guest')
+        ->name('register');
+
+    Route::post($register, function () {
+        abort(404);
+    })->middleware('guest');
+} else {
+    Route::post('/validate-handle', [RegisteredUserController::class, 'validateHandle']);
     $registrationEnabled = filter_var(env('ALLOW_REGISTRATION', false), FILTER_VALIDATE_BOOLEAN);
 
     if($registrationEnabled || $register !== '/register') {
@@ -49,6 +78,7 @@ Route::post('/validate-handle', [RegisteredUserController::class, 'validateHandl
             abort(404);
         });
     }
+}
 
 Route::get($login, [AuthenticatedSessionController::class, 'create'])
                 ->middleware('guest')
@@ -104,4 +134,3 @@ Route::get('/blocked', function () {
                         return redirect(url('dashboard'));
                     }
                 })->name('blocked');
-                
