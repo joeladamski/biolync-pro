@@ -31,8 +31,12 @@ if(file_exists(base_path('storage/app/ISINSTALLED'))){
   if(!file_exists(base_path("config/advanced-config.php"))){copy(base_path('storage/templates/advanced-config.php'), base_path('config/advanced-config.php'));}
  }
 
- // Installer
-if(file_exists(base_path('INSTALLING')) or file_exists(base_path('INSTALLERLOCK'))){
+ // Legacy installer
+// INSTALLING is the authoritative marker for the legacy multi-step installer.
+// Production first-owner bootstrap uses INSTALLERLOCK during finalization without
+// INSTALLING, so INSTALLERLOCK alone must not activate these legacy routes or
+// their catch-all.
+if(file_exists(base_path('INSTALLING'))){
 
   Route::get('/', [InstallerController::class, 'showInstaller'])->name('showInstaller');
   Route::post('/create-admin', [InstallerController::class, 'createAdmin'])->name('createAdmin');

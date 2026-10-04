@@ -8,7 +8,11 @@ use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\VerifyEmailController;
+use App\Http\Controllers\InstallerController;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Schema;
 
 if(config('advanced-config.register_url') != '') {
     $register = config('advanced-config.register_url');
@@ -28,25 +32,63 @@ if(config('advanced-config.forgot_password_url') != '') {
     $forgot_password = "/forgot-password";
 }
 
+$bootstrapAvailable = static function (): bool {
+    return !File::exists(storage_path('app/ISINSTALLED'))
+        && Schema::hasTable('users')
+        && DB::table('users')->count() === 0;
+};
+
+Route::get('/setup-owner', [InstallerController::class, 'showInstaller'])
+    ->middleware('guest')
+    ->name('setupOwner');
+
+Route::post('/create-admin', [InstallerController::class, 'createAdmin'])
+    ->middleware('guest')
+    ->name('createAdmin');
+
 Route::post('/validate-handle', [RegisteredUserController::class, 'validateHandle']);
-    if(env('ALLOW_REGISTRATION') or $register !== '/register') {
-        Route::get($register, [RegisteredUserController::class, 'create'])
-            ->middleware('guest')
-            ->middleware('max.users')
-            ->name('register');
 
-        Route::post($register, [RegisteredUserController::class, 'store'])
-            ->middleware('guest')
-            ->middleware('max.users');
-    } else {
-        Route::get($register, function () {
-            abort(404);
-        })->name('register');
+$registrationEnabled = filter_var(env('ALLOW_REGISTRATION', false), FILTER_VALIDATE_BOOLEAN);
+$registrationAvailable = $registrationEnabled || $register !== '/register';
 
-        Route::post($register, function () {
-            abort(404);
-        });
+// Resolve bootstrap state only when a registration request arrives. Keeping the
+// database check out of route registration allows deployment/composer/artisan
+// bootstrap to load routes before production database credentials are present.
+Route::get($register, function () use ($bootstrapAvailable, $registrationAvailable) {
+    if ($bootstrapAvailable()) {
+        return redirect()->route('setupOwner');
     }
+
+    if (!$registrationAvailable) {
+        abort(404);
+    }
+
+    return app(RegisteredUserController::class)->create();
+})
+    ->middleware(['guest', 'max.users'])
+    ->name('register');
+
+Route::post($register, function (\Illuminate\Http\Request $request) use ($bootstrapAvailable, $registrationAvailable) {
+    // Never let ordinary registration win the first-account race.
+    if ($bootstrapAvailable() || !$registrationAvailable) {
+        abort(404);
+    }
+
+    return app(RegisteredUserController::class)->store($request);
+})
+    ->middleware(['guest', 'max.users']);
+
+
+// Stable finalization routes: always registered so createAdmin() can safely
+// redirect by name during the same request in which the first owner is created.
+// Authorization/state checks happen inside each route/controller action.
+Route::get('/setup-owner/finalize', [InstallerController::class, 'showOwnerFinalize'])
+    ->middleware('auth')
+    ->name('setupOwnerFinalize');
+
+Route::post('/setup-owner/options', [InstallerController::class, 'options'])
+    ->middleware('auth')
+    ->name('setupOwnerOptions');
 
 Route::get($login, [AuthenticatedSessionController::class, 'create'])
                 ->middleware('guest')
@@ -102,4 +144,3 @@ Route::get('/blocked', function () {
                         return redirect(url('dashboard'));
                     }
                 })->name('blocked');
-                

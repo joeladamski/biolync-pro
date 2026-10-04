@@ -1,5 +1,5 @@
 <?php
-$analyticsHTML = config('advanced-config.analytics');
+$analyticsHTML = (string) config('advanced-config.analytics', '');
 $analyticsHTML = preg_replace("~<!--(.*?)-->~s", "", $analyticsHTML);
 $analyticsHTML = trim($analyticsHTML);
 ?>

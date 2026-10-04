@@ -31,9 +31,44 @@ use App\Models\Page;
 class InstallerController extends Controller
 {
 
-    public function showInstaller()
+    public function showInstaller(Request $request)
     {
-        return view('installer/installer');
+        if (!$this->bootstrapAvailable()) {
+            abort(404);
+        }
+
+        if ($request->query()) {
+            abort(404);
+        }
+
+        return view('installer/owner-bootstrap');
+    }
+
+    protected function bootstrapAvailable(): bool
+    {
+        return !File::exists(storage_path('app/ISINSTALLED'))
+            && Schema::hasTable('users')
+            && DB::table('users')->count() === 0;
+    }
+
+
+    public function showOwnerFinalize(Request $request)
+    {
+        if (
+            File::exists(storage_path('app/ISINSTALLED')) ||
+            !File::exists(base_path('INSTALLERLOCK')) ||
+            !Schema::hasTable('users') ||
+            User::count() !== 1 ||
+            User::where('role', 'admin')->count() !== 1
+        ) {
+            abort(404);
+        }
+
+        return response(
+            view('installer/owner-finalize')->render(),
+            200,
+            ['Content-Type' => 'text/html; charset=UTF-8']
+        );
     }
 
     public function db(request $request)
@@ -47,40 +82,52 @@ class InstallerController extends Controller
 
     public function createAdmin(request $request)
     {
+        if (!$this->bootstrapAvailable()) {
+            abort(404);
+        }
 
-        $email = $request->email;
-        $password = $request->password;
-        $handle = $request->handle;
-        $name = $request->name;
+        $request->validate([
+            'name' => 'required|string|max:255|unique:users,name',
+            'handle' => 'required|string|max:50|unique:users,littlelink_name|regex:/^[\\p{L}0-9-_]+$/u',
+            'email' => 'required|string|email|max:255|unique:users,email',
+            'password' => 'required|string|min:8',
+        ]);
 
         $file = base_path('INSTALLERLOCK');
         if (!file_exists($file)) {
-            $handleFile = fopen($file, 'w') or die('Cannot create file:  '.$file);
-            fclose($handleFile);
+            File::put($file, '');
         }
 
-        try{EnvEditor::addKey('ADMIN_EMAIL', $email);}catch(Exception $e){}
+        $user = DB::transaction(function () use ($request) {
+            if (DB::table('users')->lockForUpdate()->count() !== 0) {
+                abort(404);
+            }
 
-        if(DB::table('users')->count() == '0'){
-        Schema::disableForeignKeyConstraints();
-        DB::table('users')->delete();
-        DB::table('users')->truncate();
-        Schema::enableForeignKeyConstraints();
+            $user = User::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'email_verified_at' => '0001-01-01 00:00:00',
+                'password' => Hash::make($request->password),
+                'littlelink_name' => $request->handle,
+                'littlelink_description' => 'admin page',
+                'block' => 'no',
+            ]);
 
-        $user = User::create([
-            'name' => $name,
-            'email' => $email,
-            'email_verified_at' => '0001-01-01 00:00:00',
-            'password' => Hash::make($password),
-            'littlelink_name' => $handle,
-            'littlelink_description' => 'admin page',
-            'block' => 'no',
-        ]);
+            $user->role = 'admin';
+            $user->save();
 
-        User::where('id', '1')->update(['role' => 'admin']);
-    }
+            return $user;
+        });
 
-        return redirect(url('?5'));
+        if (EnvEditor::keyExists('ADMIN_EMAIL')) {
+            EnvEditor::editKey('ADMIN_EMAIL', $user->email);
+        } else {
+            EnvEditor::addKey('ADMIN_EMAIL', $user->email);
+        }
+
+        Auth::login($user);
+
+        return redirect()->route('setupOwnerFinalize');
     }
 
     public function mysql(request $request)
@@ -127,11 +174,23 @@ class InstallerController extends Controller
 
     public function options(request $request)
     {
+        if (
+            File::exists(storage_path('app/ISINSTALLED')) ||
+            !File::exists(base_path('INSTALLERLOCK')) ||
+            !Schema::hasTable('users')
+        ) {
+            abort(404);
+        }
 
-        $user = User::find(1);
+        $user = User::where('role', 'admin')->orderBy('created_at')->first();
+
+        if (!$user || User::count() !== 1 || User::where('role', 'admin')->count() !== 1) {
+            abort(404);
+        }
+
         $llName = $user->littlelink_name;
 
-        if($request->register == 'Yes'){ 
+        if($request->register == 'Yes'){
             if(EnvEditor::keyExists('ALLOW_REGISTRATION')){EnvEditor::editKey('ALLOW_REGISTRATION', 'true');}else{EnvEditor::addKey('ALLOW_REGISTRATION', 'true');}
         } else {
             if(EnvEditor::keyExists('ALLOW_REGISTRATION')){EnvEditor::editKey('ALLOW_REGISTRATION', 'false');}else{EnvEditor::addKey('ALLOW_REGISTRATION', 'false');}
@@ -141,9 +200,10 @@ class InstallerController extends Controller
         if(EnvEditor::keyExists('REGISTER_AUTH')){EnvEditor::editKey('REGISTER_AUTH', $value);}else{EnvEditor::addKey('REGISTER_AUTH', $value);}
 
         if($request->page == 'No'){$value = "";}else{$value = '"' . $llName . '"';}
-        if(EnvEditor::keyExists('HOME_URL')){EnvEditor::editKey('HOME_URL', $value);}
+        if(EnvEditor::keyExists('HOME_URL')){EnvEditor::editKey('HOME_URL', $value);}else{EnvEditor::addKey('HOME_URL', $value);}
 
-        if(EnvEditor::keyExists('APP_NAME')){EnvEditor::editKey('APP_NAME', '"' . $request->app . '"');}
+        $appName = '"' . $request->app . '"';
+        if(EnvEditor::keyExists('APP_NAME')){EnvEditor::editKey('APP_NAME', $appName);}else{EnvEditor::addKey('APP_NAME', $appName);}
 
         File::put(storage_path('app/ISINSTALLED'), '');
 
@@ -165,7 +225,7 @@ class InstallerController extends Controller
         $entry = $request->entry;
         $value = $request->value;
         $value = '"' . $request->value . '"';
-        
+
         if(EnvEditor::keyExists($entry)){EnvEditor::editKey($entry, $value);}
 
         return Redirect(url('dashboard'));
