@@ -31,9 +31,22 @@ use App\Models\Page;
 class InstallerController extends Controller
 {
 
-    public function showInstaller()
+    public function showInstaller(Request $request)
     {
         if (!$this->bootstrapAvailable()) {
+            abort(404);
+        }
+
+        // A production bootstrap already has a configured database and .env.
+        // Skip the legacy language/database mutation screens and begin at the
+        // first-owner step. Query-string steps are retained for the shared
+        // installer view and the post-owner finalization screen.
+        if ($request->getQueryString() === null || $request->getQueryString() === '') {
+            return redirect(url('/setup-owner?4'));
+        }
+
+        $allowedSteps = ['4', '5'];
+        if (!in_array($request->getQueryString(), $allowedSteps, true)) {
             abort(404);
         }
 
@@ -103,7 +116,7 @@ class InstallerController extends Controller
 
         Auth::login($user);
 
-        return redirect(url('?5'));
+        return redirect(url('/setup-owner?5'));
     }
 
     public function mysql(request $request)
@@ -162,7 +175,7 @@ class InstallerController extends Controller
 
         $llName = $user->littlelink_name;
 
-        if($request->register == 'Yes'){ 
+        if($request->register == 'Yes'){
             if(EnvEditor::keyExists('ALLOW_REGISTRATION')){EnvEditor::editKey('ALLOW_REGISTRATION', 'true');}else{EnvEditor::addKey('ALLOW_REGISTRATION', 'true');}
         } else {
             if(EnvEditor::keyExists('ALLOW_REGISTRATION')){EnvEditor::editKey('ALLOW_REGISTRATION', 'false');}else{EnvEditor::addKey('ALLOW_REGISTRATION', 'false');}
@@ -196,7 +209,7 @@ class InstallerController extends Controller
         $entry = $request->entry;
         $value = $request->value;
         $value = '"' . $request->value . '"';
-        
+
         if(EnvEditor::keyExists($entry)){EnvEditor::editKey($entry, $value);}
 
         return Redirect(url('dashboard'));
