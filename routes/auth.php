@@ -37,19 +37,18 @@ $bootstrapAvailable = !File::exists(storage_path('app/ISINSTALLED'))
     && DB::table('users')->count() === 0;
 
 if ($bootstrapAvailable) {
-    // Fresh production estates enter the existing installer lifecycle here.
-    // createAdmin() re-checks the zero-user state and creates INSTALLERLOCK,
-    // so subsequent installer steps continue through the native installer routes.
-    Route::get('/bootstrap', [InstallerController::class, 'showInstaller'])
+    // Use a public URL that cannot collide with Laravel's physical bootstrap/
+    // directory on shared hosting. The controller remains the bootstrap authority.
+    Route::get('/setup-owner', [InstallerController::class, 'showInstaller'])
         ->middleware('guest')
-        ->name('bootstrap');
+        ->name('setupOwner');
 
     Route::post('/create-admin', [InstallerController::class, 'createAdmin'])
         ->middleware('guest')
         ->name('createAdmin');
 
     // Never let ordinary registration win the first-account race.
-    Route::get($register, fn() => redirect()->route('bootstrap'))
+    Route::get($register, fn() => redirect()->route('setupOwner'))
         ->middleware('guest')
         ->name('register');
 
