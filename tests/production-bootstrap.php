@@ -46,6 +46,11 @@ $method=new ReflectionMethod($controller,'bootstrapAvailable');
 $method->setAccessible(true);
 bootstrapCheck($method->invoke($controller)===true,'zero-user bootstrap is available before install finalization');
 
+$auth=File::get(base_path('routes/auth.php'));
+bootstrapCheck(str_contains($auth,"Route::get('/bootstrap'"),'zero-user state exposes a dedicated bootstrap entry route');
+bootstrapCheck(str_contains($auth,"redirect()->route('bootstrap')"),'ordinary registration redirects to bootstrap while users=0');
+bootstrapCheck(str_contains($auth,"Route::post('/create-admin'"),'bootstrap exposes first-owner creation without requiring INSTALLING');
+
 $request=Request::create('/create-admin','POST',[
     'name'=>'Owner',
     'handle'=>'owner',
@@ -55,6 +60,7 @@ $request=Request::create('/create-admin','POST',[
 $controller->createAdmin($request);
 $owner=User::first();
 bootstrapCheck($owner!==null && $owner->role==='admin','first bootstrap account receives admin role');
+bootstrapCheck(File::exists($installerLock),'first-owner creation enters native installer finalization state');
 bootstrapCheck($method->invoke($controller)===false,'bootstrap is unavailable after first account exists');
 
 $ordinary=User::create([
@@ -70,7 +76,6 @@ bootstrapCheck($method->invoke($controller)===false,'installed marker prevents b
 @unlink($installed);
 @unlink($installerLock);
 
-$auth=File::get(base_path('routes/auth.php'));
 bootstrapCheck(str_contains($auth,"FILTER_VALIDATE_BOOLEAN"),'ALLOW_REGISTRATION is parsed as an explicit boolean');
 bootstrapCheck(str_contains(File::get(base_path('routes/web.php')),"'middleware' => env('REGISTER_AUTH')"),'REGISTER_AUTH remains middleware-valued');
 bootstrapCheck(str_contains(File::get(base_path('app/Http/Controllers/InstallerController.php')),'$value = "verified"') && str_contains(File::get(base_path('app/Http/Controllers/InstallerController.php')),'$value = "auth"'),'installer preserves auth/verified REGISTER_AUTH values');
