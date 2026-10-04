@@ -36,11 +36,6 @@ $bootstrapAvailable = !File::exists(storage_path('app/ISINSTALLED'))
     && Schema::hasTable('users')
     && DB::table('users')->count() === 0;
 
-$finalizationAvailable = !File::exists(storage_path('app/ISINSTALLED'))
-    && File::exists(base_path('INSTALLERLOCK'))
-    && Schema::hasTable('users')
-    && DB::table('users')->count() === 1
-    && DB::table('users')->where('role', 'admin')->count() === 1;
 
 if ($bootstrapAvailable) {
     Route::get('/setup-owner', [InstallerController::class, 'showInstaller'])
@@ -82,23 +77,13 @@ if ($bootstrapAvailable) {
 // Stable finalization routes: always registered so createAdmin() can safely
 // redirect by name during the same request in which the first owner is created.
 // Authorization/state checks happen inside each route/controller action.
-Route::get('/setup-owner/finalize', function () {
-    if (
-        File::exists(storage_path('app/ISINSTALLED')) ||
-        !File::exists(base_path('INSTALLERLOCK')) ||
-        !Schema::hasTable('users') ||
-        DB::table('users')->count() !== 1 ||
-        DB::table('users')->where('role', 'admin')->count() !== 1
-    ) {
-        abort(404);
-    }
-
-    return view('installer/owner-finalize');
-})->middleware('auth')->name('setupOwnerFinalize');
+Route::get('/setup-owner/finalize', [InstallerController::class, 'showOwnerFinalize'])
+    ->middleware('auth')
+    ->name('setupOwnerFinalize');
 
 Route::post('/setup-owner/options', [InstallerController::class, 'options'])
     ->middleware('auth')
-    ->name('options');
+    ->name('setupOwnerOptions');
 
 Route::get($login, [AuthenticatedSessionController::class, 'create'])
                 ->middleware('guest')
