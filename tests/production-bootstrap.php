@@ -47,8 +47,9 @@ $method->setAccessible(true);
 bootstrapCheck($method->invoke($controller)===true,'zero-user bootstrap is available before install finalization');
 
 $auth=File::get(base_path('routes/auth.php'));
-bootstrapCheck(str_contains($auth,"Route::get('/bootstrap'"),'zero-user state exposes a dedicated bootstrap entry route');
-bootstrapCheck(str_contains($auth,"redirect()->route('bootstrap')"),'ordinary registration redirects to bootstrap while users=0');
+bootstrapCheck(str_contains($auth,"Route::get('/setup-owner'"),'zero-user state exposes a collision-safe first-owner route');
+bootstrapCheck(str_contains($auth,"redirect()->route('setupOwner')"),'ordinary registration redirects to first-owner setup while users=0');
+bootstrapCheck(!str_contains($auth,"Route::get('/bootstrap'"),'public first-owner route does not collide with Laravel bootstrap directory');
 bootstrapCheck(str_contains($auth,"Route::post('/create-admin'"),'bootstrap exposes first-owner creation without requiring INSTALLING');
 
 $request=Request::create('/create-admin','POST',[
