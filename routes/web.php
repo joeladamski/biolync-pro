@@ -44,8 +44,15 @@ if(file_exists(base_path('INSTALLING')) or file_exists(base_path('INSTALLERLOCK'
   Route::post('/editConfigInstaller', [InstallerController::class, 'editConfigInstaller'])->name('editConfigInstaller');
 
   Route::get('{any}', function() {
-    if(!DB::table('users')->get()->isEmpty()){
-    if(file_exists(base_path("INSTALLING")) and !file_exists(base_path('INSTALLERLOCK'))){unlink(base_path("INSTALLING"));header("Refresh:0");}
+    if (\Illuminate\Support\Facades\Schema::hasTable('users')) {
+      if (!DB::table('users')->get()->isEmpty()) {
+        if (file_exists(base_path("INSTALLING")) and !file_exists(base_path('INSTALLERLOCK'))) {
+          unlink(base_path("INSTALLING"));
+          header("Refresh:0");
+        }
+      } else {
+        return redirect(url(''));
+      }
     } else {
       return redirect(url(''));
     }
