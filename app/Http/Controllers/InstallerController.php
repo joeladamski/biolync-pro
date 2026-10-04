@@ -33,7 +33,18 @@ class InstallerController extends Controller
 
     public function showInstaller()
     {
+        if (!$this->bootstrapAvailable()) {
+            abort(404);
+        }
+
         return view('installer/installer');
+    }
+
+    protected function bootstrapAvailable(): bool
+    {
+        return !File::exists(storage_path('app/ISINSTALLED'))
+            && Schema::hasTable('users')
+            && DB::table('users')->count() === 0;
     }
 
     public function db(request $request)
@@ -47,38 +58,50 @@ class InstallerController extends Controller
 
     public function createAdmin(request $request)
     {
+        if (!$this->bootstrapAvailable()) {
+            abort(404);
+        }
 
-        $email = $request->email;
-        $password = $request->password;
-        $handle = $request->handle;
-        $name = $request->name;
+        $request->validate([
+            'name' => 'required|string|max:255|unique:users,name',
+            'handle' => 'required|string|max:50|unique:users,littlelink_name|regex:/^[\\p{L}0-9-_]+$/u',
+            'email' => 'required|string|email|max:255|unique:users,email',
+            'password' => 'required|string|min:8',
+        ]);
 
         $file = base_path('INSTALLERLOCK');
         if (!file_exists($file)) {
-            $handleFile = fopen($file, 'w') or die('Cannot create file:  '.$file);
-            fclose($handleFile);
+            File::put($file, '');
         }
 
-        try{EnvEditor::addKey('ADMIN_EMAIL', $email);}catch(Exception $e){}
+        $user = DB::transaction(function () use ($request) {
+            if (DB::table('users')->lockForUpdate()->count() !== 0) {
+                abort(404);
+            }
 
-        if(DB::table('users')->count() == '0'){
-        Schema::disableForeignKeyConstraints();
-        DB::table('users')->delete();
-        DB::table('users')->truncate();
-        Schema::enableForeignKeyConstraints();
+            $user = User::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'email_verified_at' => '0001-01-01 00:00:00',
+                'password' => Hash::make($request->password),
+                'littlelink_name' => $request->handle,
+                'littlelink_description' => 'admin page',
+                'block' => 'no',
+            ]);
 
-        $user = User::create([
-            'name' => $name,
-            'email' => $email,
-            'email_verified_at' => '0001-01-01 00:00:00',
-            'password' => Hash::make($password),
-            'littlelink_name' => $handle,
-            'littlelink_description' => 'admin page',
-            'block' => 'no',
-        ]);
+            $user->role = 'admin';
+            $user->save();
 
-        User::where('id', '1')->update(['role' => 'admin']);
-    }
+            return $user;
+        });
+
+        if (EnvEditor::keyExists('ADMIN_EMAIL')) {
+            EnvEditor::editKey('ADMIN_EMAIL', $user->email);
+        } else {
+            EnvEditor::addKey('ADMIN_EMAIL', $user->email);
+        }
+
+        Auth::login($user);
 
         return redirect(url('?5'));
     }
@@ -127,8 +150,16 @@ class InstallerController extends Controller
 
     public function options(request $request)
     {
+        if (File::exists(storage_path('app/ISINSTALLED')) || !Schema::hasTable('users')) {
+            abort(404);
+        }
 
-        $user = User::find(1);
+        $user = User::where('role', 'admin')->orderBy('created_at')->first();
+
+        if (!$user || User::count() !== 1) {
+            abort(404);
+        }
+
         $llName = $user->littlelink_name;
 
         if($request->register == 'Yes'){ 
