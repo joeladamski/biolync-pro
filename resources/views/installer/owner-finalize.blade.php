@@ -8,7 +8,7 @@
     <h1>{{ __('messages.Setup LinkStack') }}</h1>
     <p class="inst-txt">{{ __('messages.Configure your page') }}</p>
 
-    <form id="owner-finalize-form" action="{{ route('options') }}" enctype="multipart/form-data" method="post">
+    <form id="owner-finalize-form" action="{{ route('setupOwnerOptions') }}" enctype="multipart/form-data" method="post">
         <div class="form-group col-lg-8">
             <div class="input-group">
                 <label>{{ __('messages.Enable registration:') }}</label>
