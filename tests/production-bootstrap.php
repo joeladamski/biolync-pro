@@ -39,6 +39,27 @@ function bootstrapCheck($ok,$message){if(!$ok)throw new RuntimeException($messag
 $installed=storage_path('app/ISINSTALLED');
 $installing=base_path('INSTALLING');
 $installerLock=base_path('INSTALLERLOCK');
+$envPath=base_path('.env');
+
+$runtimeFiles=[$installed,$installing,$installerLock,$envPath];
+$runtimeSnapshot=[];
+foreach($runtimeFiles as $path){
+    $runtimeSnapshot[$path]=[
+        'exists'=>File::exists($path),
+        'content'=>File::exists($path) ? File::get($path) : null,
+    ];
+}
+
+register_shutdown_function(function() use ($runtimeSnapshot) {
+    foreach($runtimeSnapshot as $path=>$state){
+        if($state['exists']){
+            File::put($path,$state['content'] ?? '');
+        }elseif(File::exists($path)){
+            File::delete($path);
+        }
+    }
+});
+
 @unlink($installed);@unlink($installing);@unlink($installerLock);
 
 $controller=new App\Http\Controllers\InstallerController;
@@ -49,8 +70,8 @@ bootstrapCheck($method->invoke($controller)===true,'zero-user bootstrap is avail
 $auth=File::get(base_path('routes/auth.php'));
 bootstrapCheck(str_contains($auth,"Route::get('/setup-owner'"),'zero-user state exposes a collision-safe first-owner route');
 bootstrapCheck(str_contains($auth,"return redirect()->route('setupOwner');"),'ordinary registration redirects to first-owner setup while users=0');
-bootstrapCheck(str_contains($auth,"$bootstrapAvailable = static function (): bool"),'bootstrap database state is deferred until request time');
-bootstrapCheck(!str_contains($auth,"$bootstrapAvailable = !File::exists"),'route registration does not query bootstrap database state eagerly');
+bootstrapCheck(str_contains($auth,'$bootstrapAvailable = static function (): bool'),'bootstrap database state is deferred until request time');
+bootstrapCheck(!str_contains($auth,'$bootstrapAvailable = !File::exists'),'route registration does not query bootstrap database state eagerly');
 bootstrapCheck(!str_contains($auth,"Route::get('/bootstrap'"),'public first-owner route does not collide with Laravel bootstrap directory');
 bootstrapCheck(str_contains($auth,"Route::post('/create-admin'"),'bootstrap exposes first-owner creation without requiring INSTALLING');
 bootstrapCheck(str_contains($auth,"Route::get('/setup-owner/finalize'"),'finalization route is statically registered');
