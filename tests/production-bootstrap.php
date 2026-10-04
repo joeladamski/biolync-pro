@@ -53,6 +53,8 @@ bootstrapCheck(!str_contains($auth,"Route::get('/bootstrap'"),'public first-owne
 bootstrapCheck(str_contains($auth,"Route::post('/create-admin'"),'bootstrap exposes first-owner creation without requiring INSTALLING');
 bootstrapCheck(str_contains($auth,"Route::get('/setup-owner/finalize'"),'finalization route is statically registered');
 bootstrapCheck(str_contains($auth,"->name('setupOwnerFinalize')"),'createAdmin redirect target is a defined named route');
+bootstrapCheck(str_contains($auth,"->name('setupOwnerOptions')"),'owner finalization POST has a unique route name');
+bootstrapCheck(!str_contains($auth,"Route::post('/setup-owner/options', [InstallerController::class, 'options'])\n    ->middleware('auth')\n    ->name('options')"),'owner finalization does not reuse the legacy options route name');
 
 $showRequest=Request::create('/setup-owner','GET');
 $showResponse=$controller->showInstaller($showRequest);
@@ -80,6 +82,12 @@ $owner=User::first();
 bootstrapCheck($owner!==null && $owner->role==='admin','first bootstrap account receives admin role');
 bootstrapCheck(File::exists($installerLock),'first-owner creation enters native installer finalization state');
 bootstrapCheck($method->invoke($controller)===false,'bootstrap is unavailable after first account exists');
+
+$finalizeResponse=$controller->showOwnerFinalize(Request::create('/setup-owner/finalize','GET'));
+bootstrapCheck($finalizeResponse instanceof Illuminate\Http\Response,'owner finalization returns an HTTP response');
+bootstrapCheck($finalizeResponse->getStatusCode()===200,'owner finalization returns HTTP 200');
+bootstrapCheck(strlen((string) $finalizeResponse->getContent())>0,'owner finalization response body is not empty');
+bootstrapCheck(str_contains((string) $finalizeResponse->getContent(),'owner-finalize-form'),'owner finalization response contains the configuration form');
 
 try {
     $controller->showInstaller(Request::create('/setup-owner','GET'));
