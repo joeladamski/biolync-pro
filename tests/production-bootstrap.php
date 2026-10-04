@@ -1,0 +1,82 @@
+<?php
+require __DIR__.'/../vendor/autoload.php';
+$app=require __DIR__.'/../bootstrap/app.php';
+$app->make(Illuminate\Contracts\Console\Kernel::class)->bootstrap();
+set_exception_handler(function(Throwable $e){fwrite(STDERR,(string)$e);exit(1);});
+
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\File;
+use Illuminate\Http\Request;
+use App\Models\User;
+
+config([
+    'database.default'=>'sqlite',
+    'database.connections.sqlite.database'=>':memory:',
+    'cache.default'=>'array',
+    'session.driver'=>'array',
+    'app.key'=>'base64:'.base64_encode(str_repeat('x',32)),
+    'linkstack.disable_random_user_ids'=>'true',
+]);
+
+DB::purge();
+Schema::create('users',function($t){
+    $t->id();
+    $t->string('name')->unique();
+    $t->string('email')->unique();
+    $t->timestamp('email_verified_at')->nullable();
+    $t->string('password');
+    $t->string('littlelink_name')->unique()->nullable();
+    $t->text('littlelink_description')->nullable();
+    $t->string('role')->default('user');
+    $t->string('block')->default('no');
+    $t->rememberToken();
+    $t->timestamps();
+});
+
+function bootstrapCheck($ok,$message){if(!$ok)throw new RuntimeException($message);echo "PASS Bootstrap: $message\n";}
+
+$installed=storage_path('app/ISINSTALLED');
+$installing=base_path('INSTALLING');
+$installerLock=base_path('INSTALLERLOCK');
+@unlink($installed);@unlink($installing);@unlink($installerLock);
+
+$controller=new App\Http\Controllers\InstallerController;
+$method=new ReflectionMethod($controller,'bootstrapAvailable');
+$method->setAccessible(true);
+bootstrapCheck($method->invoke($controller)===true,'zero-user bootstrap is available before install finalization');
+
+$request=Request::create('/create-admin','POST',[
+    'name'=>'Owner',
+    'handle'=>'owner',
+    'email'=>'owner@example.test',
+    'password'=>'password123',
+]);
+$controller->createAdmin($request);
+$owner=User::first();
+bootstrapCheck($owner!==null && $owner->role==='admin','first bootstrap account receives admin role');
+bootstrapCheck($method->invoke($controller)===false,'bootstrap is unavailable after first account exists');
+
+$ordinary=User::create([
+    'name'=>'Ordinary',
+    'email'=>'ordinary@example.test',
+    'littlelink_name'=>'ordinary',
+    'password'=>Illuminate\Support\Facades\Hash::make('password123'),
+]);
+bootstrapCheck($ordinary->fresh()->role==='user','ordinary user creation remains non-admin');
+
+File::put($installed,'');
+bootstrapCheck($method->invoke($controller)===false,'installed marker prevents bootstrap');
+@unlink($installed);
+@unlink($installerLock);
+
+$auth=File::get(base_path('routes/auth.php'));
+bootstrapCheck(str_contains($auth,"FILTER_VALIDATE_BOOLEAN"),'ALLOW_REGISTRATION is parsed as an explicit boolean');
+bootstrapCheck(str_contains(File::get(base_path('routes/web.php')),"'middleware' => env('REGISTER_AUTH')"),'REGISTER_AUTH remains middleware-valued');
+bootstrapCheck(str_contains(File::get(base_path('app/Http/Controllers/InstallerController.php')),'$value = "verified"') && str_contains(File::get(base_path('app/Http/Controllers/InstallerController.php')),'$value = "auth"'),'installer preserves auth/verified REGISTER_AUTH values');
+
+$ignore=File::get(base_path('.gitignore'));
+bootstrapCheck(str_contains($ignore,'/config/advanced-config.php'),'generated advanced config is ignored');
+bootstrapCheck(File::exists(base_path('storage/templates/advanced-config.php')),'advanced config template remains version-controlled');
+
+echo "PASS Bootstrap: runtime-state regression checks complete\n";
