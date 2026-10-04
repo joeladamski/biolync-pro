@@ -117,7 +117,10 @@ try {
 @unlink($installerLock);
 
 bootstrapCheck(str_contains($auth,"FILTER_VALIDATE_BOOLEAN"),'ALLOW_REGISTRATION is parsed as an explicit boolean');
-bootstrapCheck(str_contains(File::get(base_path('routes/web.php')),"'middleware' => env('REGISTER_AUTH')"),'REGISTER_AUTH remains middleware-valued');
+$webRoutes=File::get(base_path('routes/web.php'));
+bootstrapCheck(str_contains($webRoutes,"'middleware' => env('REGISTER_AUTH')"),'REGISTER_AUTH remains middleware-valued');
+bootstrapCheck(str_contains($webRoutes,"if(file_exists(base_path('INSTALLING')))"),'legacy installer activates from INSTALLING');
+bootstrapCheck(!str_contains($webRoutes,"if(file_exists(base_path('INSTALLING')) or file_exists(base_path('INSTALLERLOCK')))"),'INSTALLERLOCK alone cannot activate the legacy installer catch-all');
 bootstrapCheck(str_contains(File::get(base_path('app/Http/Controllers/InstallerController.php')),'$value = "verified"') && str_contains(File::get(base_path('app/Http/Controllers/InstallerController.php')),'$value = "auth"'),'installer preserves auth/verified REGISTER_AUTH values');
 
 $ignore=File::get(base_path('.gitignore'));
