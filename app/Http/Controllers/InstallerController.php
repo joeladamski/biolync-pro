@@ -154,13 +154,17 @@ class InstallerController extends Controller
 
     public function options(request $request)
     {
-        if (File::exists(storage_path('app/ISINSTALLED')) || !Schema::hasTable('users')) {
+        if (
+            File::exists(storage_path('app/ISINSTALLED')) ||
+            !File::exists(base_path('INSTALLERLOCK')) ||
+            !Schema::hasTable('users')
+        ) {
             abort(404);
         }
 
         $user = User::where('role', 'admin')->orderBy('created_at')->first();
 
-        if (!$user || User::count() !== 1) {
+        if (!$user || User::count() !== 1 || User::where('role', 'admin')->count() !== 1) {
             abort(404);
         }
 
