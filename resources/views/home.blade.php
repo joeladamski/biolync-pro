@@ -7,6 +7,9 @@
     <meta charset="utf-8">
     @if(\App\Support\AiDiscovery::settings()['enabled'])<link rel="describedby" href="{{ url('/llms.txt') }}">@endif
     @php $GLOBALS['themeName'] = config('advanced-config.home_theme'); @endphp
+      @if(\App\Support\SeoDiscovery::settings()['enabled'])
+      @include('components.seo.site-head')
+      @else
       <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
       @if(env('CUSTOM_META_TAGS') == 'true' and config('advanced-config.title') != '')
       <title>{{ config('advanced-config.title') }}</title>
@@ -41,6 +44,7 @@
     @endif
 
 <!--#### END Meta Tags social media preview images  ####-->
+      @endif
 
       <!-- Favicon -->
       @if(file_exists(base_path("assets/linkstack/images/").findFile('favicon')))
