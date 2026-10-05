@@ -190,6 +190,8 @@ Route::group([
     Route::get('/admin/advanced-config', [AdminController::class, 'showFileEditor'])->name('showFileEditor');
     Route::post('/admin/advanced-config', [AdminController::class, 'editAC'])->name('editAC');
     Route::post('/admin/ai-discovery', [App\Http\Controllers\AiDiscoveryController::class, 'saveSite'])->name('saveAiSite');
+    Route::post('/admin/seo-discovery', [App\Http\Controllers\SeoDiscoveryController::class, 'saveSite'])->name('saveSeoSite');
+    Route::post('/admin/edit-user/{id}/seo-discovery', [App\Http\Controllers\SeoDiscoveryController::class, 'saveProfile'])->name('saveSeoProfile');
     Route::post('/admin/featured-profile', [App\Http\Controllers\AiDiscoveryController::class, 'saveFeatured'])->name('saveFeaturedProfile');
     Route::post('/admin/edit-user/{id}/ai-discovery', [App\Http\Controllers\AiDiscoveryController::class, 'saveProfile'])->name('saveAiProfile');
     Route::post('/admin/home-ui', [AdminController::class, 'editHomeUi'])->name('editHomeUi');
