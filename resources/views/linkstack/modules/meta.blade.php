@@ -12,6 +12,9 @@
   @endif
 @endforeach
 
+@if(\App\Support\SeoDiscovery::settings()['enabled'])
+  @include('components.seo.profile-head')
+@else
 @if(env('CUSTOM_META_TAGS') == 'true')
   @include('layouts.meta')
 @else
@@ -60,6 +63,8 @@
 <title>{{ $userinfo->name }}</title>
 @else
 <title>{{ $userinfo->name }} 🔗 {{ config('app.name') }} </title>
+@endif
+
 @endif
 
 @include('components.favicon')
