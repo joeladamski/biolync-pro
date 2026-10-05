@@ -15,5 +15,5 @@
 <meta name="twitter:description" content="{{ $seo['og_description'] }}">
 <meta name="twitter:image" content="{{ $seo['og_image'] }}">
 @if(\App\Support\SeoDiscovery::settings()['schema_enabled'])
-<script type="application/ld+json">{!! json_encode(\App\Support\SeoDiscovery::profileSchema($userinfo), JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE) !!}</script>
+<script type="application/ld+json">{!! json_encode(\App\Support\SeoDiscovery::profileSchema($userinfo), JSON_HEX_TAG|JSON_HEX_AMP|JSON_HEX_APOS|JSON_HEX_QUOT|JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE) !!}</script>
 @endif
