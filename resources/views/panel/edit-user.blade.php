@@ -130,6 +130,7 @@
                             <button type="submit" class="mt-3 ml-3 btn btn-primary">{{__('messages.Save')}}</button>
                           </form>
                           @include('components.config.profile-ai-discovery')
+                          @include('components.config.profile-seo-discovery')
                   
                             </div>
                   </section>
