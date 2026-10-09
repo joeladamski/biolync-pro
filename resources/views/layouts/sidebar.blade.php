@@ -10,6 +10,7 @@ $usrhandl = Auth::user()->littlelink_name;
     <meta charset="utf-8">
       <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
       <title>{{env('APP_NAME')}}</title>
+      <style id="pk-admin-first-paint">html,body{background:#202637;}#loading{display:none!important;}</style>
 
       <script src="{{asset('assets/js/detect-dark-mode.js')}}"></script>
       
