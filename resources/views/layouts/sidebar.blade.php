@@ -189,6 +189,18 @@ $usrhandl = Auth::user()->littlelink_name;
                                     <span class="item-name">{{__('messages.Site Customization')}}</span>
                                 </a>
                             </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url('/admin/config#site-styles') }}">
+                                  <i class="bi bi-brush-fill"></i>
+                                  <span class="item-name">Public Site Styles</span>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url('/admin/config#activity-monitoring') }}">
+                                  <i class="bi bi-broadcast-pin"></i>
+                                  <span class="item-name">Activity & Discord</span>
+                                </a>
+                            </li>
                         </ul>
                     </li>
                     @endif
