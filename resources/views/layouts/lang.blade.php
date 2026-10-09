@@ -3,6 +3,9 @@ $pkFirstPaint = '#33003B';
 try {
     if (request()->is('admin/*') || request()->is('studio/*') || request()->is('dashboard') || request()->is('panel/*')) {
         $pkFirstPaint = '#202637';
+    } elseif (request()->routeIs('littlelink') || request()->routeIs('theme') || request()->is('@*')) {
+        // Creator/profile themes own their canvas. Never let global Public Site Styles bleed through.
+        $pkFirstPaint = '#0F111C';
     } else {
         $pkFirstPaint = \App\Support\PublicSiteStyle::settings()['background'] ?? '#33003B';
     }
