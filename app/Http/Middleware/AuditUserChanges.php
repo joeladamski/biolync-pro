@@ -17,6 +17,9 @@ class AuditUserChanges
         }
 
         $route = $request->route()?->getName() ?: $request->path();
+        if ($route === 'testActivityMonitoring') {
+            return $response;
+        }
         $meta = [];
 
         $settings = \App\Support\ActivityMonitoring::settings();
