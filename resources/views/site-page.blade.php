@@ -11,8 +11,9 @@
 <link rel="stylesheet" href="{{ asset('assets/css/dark.min.css') }}">
 <link rel="stylesheet" href="{{ asset('assets/css/customizer.min.css') }}">
 <style>.site-page-content {max-width:900px;margin:0 auto;padding:32px 20px;min-height:70vh;overflow-wrap:anywhere;}.site-page-body {white-space:pre-line;line-height:1.7;}.site-page-content h1 {scroll-margin-top:100px;}.site-page-footer {padding:24px;text-align:center;}</style>
+  @include('components.public-site-styles')
 </head>
-<body>
+<body class="pk-public-surface">
 @include('components.public-header')
 <main class="site-page-content">
 <h1>{{ $sitePage['title'] }}</h1>
