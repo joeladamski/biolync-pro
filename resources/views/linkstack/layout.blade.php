@@ -3,9 +3,8 @@
 <head>
    @stack('linkstack-head')
    @stack('linkstack-head-end')
-   @include('components.public-site-styles')
 </head>
-<body class="pk-public-surface">
+<body>
    @stack('linkstack-body-start')
    <div class="container biolync-profile">
       <div class="row">

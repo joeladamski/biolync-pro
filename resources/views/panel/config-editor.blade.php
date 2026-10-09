@@ -224,10 +224,17 @@
                     window.location.hash = id;
                   });
                   
-                  // on load of the page: switch to the currently selected tab
-                  var hash = window.location.hash;
-                  
-                  $('#myTab a[href="' + hash + '"]').tab('show');
+                  // Keep hash navigation and sidebar shortcuts in sync with the visible tab.
+                  function pkShowConfigTabFromHash() {
+                    var hash = window.location.hash || '#1';
+                    var tab = $('#myTab a[href="' + hash + '"]');
+                    if (tab.length && !tab.hasClass('active')) {
+                      tab.tab('show');
+                    }
+                  }
+
+                  pkShowConfigTabFromHash();
+                  $(window).on('hashchange', pkShowConfigTabFromHash);
                   
                   var btn = $('#button-top');
                   
