@@ -40,3 +40,29 @@
   @csrf
   <button class="btn btn-outline-primary" type="submit">Send Discord test</button>
 </form>
+
+@if(\Illuminate\Support\Facades\Schema::hasTable('activity_logs'))
+  @php($recentActivity = \App\Models\ActivityLog::latest()->limit(25)->get())
+  <hr class="my-4">
+  <h3 class="h5">Recent platform activity</h3>
+  <div class="table-responsive">
+    <table class="table align-middle">
+      <thead><tr><th>Time</th><th>User</th><th>Action</th><th>Route</th></tr></thead>
+      <tbody>
+        @forelse($recentActivity as $event)
+          @php($eventUser = $event->actor_user_id ? \App\Models\User::find($event->actor_user_id) : null)
+          <tr>
+            <td>{{ $event->created_at?->format('M j, g:i A') }}</td>
+            <td>{{ $eventUser ? '@'.($eventUser->littlelink_name ?: $eventUser->name) : 'System' }}</td>
+            <td><code>{{ $event->action }}</code></td>
+            <td>{{ $event->route }}</td>
+          </tr>
+        @empty
+          <tr><td colspan="4" class="text-muted">No activity has been recorded yet.</td></tr>
+        @endforelse
+      </tbody>
+    </table>
+  </div>
+@else
+  <div class="alert alert-info mt-4 mb-0">Run the current database migrations to activate the persistent activity log.</div>
+@endif
