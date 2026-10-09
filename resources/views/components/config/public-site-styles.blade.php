@@ -1,8 +1,10 @@
 @php($styles = \App\Support\PublicSiteStyle::settings())
 <h2 class="mb-3 card-header">Public Site Styles</h2>
-<p>Global design tokens for the landing page and other PinkKiss.Love public surfaces. Profile themes can still add their own presentation layer.</p>
+<p>Global design tokens for the landing page and public PinkKiss.Love pages. Profile themes keep their own presentation layer.</p>
 @if(session('public_site_styles_saved'))<div class="alert alert-success">Public site styles saved.</div>@endif
-<form method="POST" action="{{ route('savePublicSiteStyles') }}">
+@if(session('public_site_styles_reset'))<div class="alert alert-success">Public site styles reset to PinkKiss defaults.</div>@endif
+
+<form method="POST" action="{{ route('savePublicSiteStyles') }}" id="pk-public-style-form">
     @csrf
     <div class="row">
         <div class="col-lg-8">
@@ -62,29 +64,76 @@
                     <input id="pk-content-width" class="form-control" type="number" min="720" max="1600" name="content_width" value="{{ old('content_width', $styles['content_width']) }}">
                 </div>
             </div>
-            <button class="btn btn-primary" type="submit">Save public styles</button>
+            <div class="d-flex flex-wrap gap-2">
+                <button class="btn btn-primary" type="submit">Save public styles</button>
+            </div>
         </div>
 
         <div class="col-lg-4 mt-4 mt-lg-0">
             <div id="pk-style-preview" class="p-4" style="min-height:260px;border-radius:18px;background:{{ $styles['background'] }};color:{{ $styles['text_light'] }}">
-                <div style="background:{{ $styles['surface'] }};color:{{ $styles['text_dark'] }};border-radius:{{ (int)$styles['card_radius'] }}px;padding:22px">
-                    <div style="font-size:1.5rem;font-weight:700">PinkKiss.Love</div>
+                <div id="pk-style-preview-card" style="background:{{ $styles['surface'] }};color:{{ $styles['text_dark'] }};border-radius:{{ (int)$styles['card_radius'] }}px;padding:22px">
+                    <div id="pk-style-preview-title" style="font-size:1.5rem;font-weight:700">PinkKiss.Love</div>
                     <p class="mb-3">Public style preview</p>
-                    <button type="button" class="btn" style="background:{{ $styles['accent'] }};color:#000;border-radius:{{ (int)$styles['button_radius'] }}px">Featured CTA</button>
+                    <button id="pk-style-preview-button" type="button" class="btn" style="background:{{ $styles['accent'] }};color:{{ $styles['text_dark'] }};border-radius:{{ (int)$styles['button_radius'] }}px">Featured CTA</button>
                 </div>
             </div>
         </div>
     </div>
 </form>
+
+<form method="POST" action="{{ route('resetPublicSiteStyles') }}" class="mt-3" onsubmit="return confirm('Reset all public site styles to the PinkKiss.Love defaults?');">
+    @csrf
+    <button class="btn btn-outline-danger" type="submit">Reset to PinkKiss defaults</button>
+</form>
+
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-    document.querySelectorAll('[id$="-picker"]').forEach(picker => {
+    const form = document.getElementById('pk-public-style-form');
+    if (!form) return;
+
+    const preview = document.getElementById('pk-style-preview');
+    const previewCard = document.getElementById('pk-style-preview-card');
+    const previewButton = document.getElementById('pk-style-preview-button');
+
+    const fontMap = {
+        system: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
+        serif: 'Georgia, "Times New Roman", serif',
+        modern: '"Trebuchet MS", Arial, sans-serif',
+        clean: 'Arial, Helvetica, sans-serif'
+    };
+
+    const syncPreview = () => {
+        const val = id => document.getElementById(id)?.value;
+        preview.style.background = val('pk-background');
+        preview.style.color = val('pk-text_light');
+        previewCard.style.background = val('pk-surface');
+        previewCard.style.color = val('pk-text_dark');
+        previewCard.style.borderRadius = (val('pk-card-radius') || 18) + 'px';
+        previewButton.style.background = val('pk-accent');
+        previewButton.style.color = val('pk-text_dark');
+        previewButton.style.borderRadius = (val('pk-button-radius') || 14) + 'px';
+        previewCard.style.fontFamily = fontMap[val('pk-body-font')] || fontMap.system;
+        document.getElementById('pk-style-preview-title').style.fontFamily = fontMap[val('pk-heading-font')] || fontMap.system;
+    };
+
+    form.querySelectorAll('[id$="-picker"]').forEach(picker => {
         const text = document.getElementById(picker.id.replace('-picker', ''));
         if (!text) return;
-        picker.addEventListener('input', () => { text.value = picker.value.toUpperCase(); });
+        picker.addEventListener('input', () => {
+            text.value = picker.value.toUpperCase();
+            syncPreview();
+        });
         text.addEventListener('input', () => {
             if (/^#[0-9A-Fa-f]{6}$/.test(text.value)) picker.value = text.value;
+            syncPreview();
         });
     });
+
+    form.querySelectorAll('select,input[type="number"]').forEach(el => {
+        el.addEventListener('input', syncPreview);
+        el.addEventListener('change', syncPreview);
+    });
+
+    syncPreview();
 });
 </script>
