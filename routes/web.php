@@ -200,6 +200,7 @@ Route::group([
     Route::post('/admin/edit-user/{id}/ai-discovery', [App\Http\Controllers\AiDiscoveryController::class, 'saveProfile'])->name('saveAiProfile');
     Route::post('/admin/home-ui', [AdminController::class, 'editHomeUi'])->name('editHomeUi');
     Route::post('/admin/public-site-styles', [PublicSiteStyleController::class, 'save'])->name('savePublicSiteStyles');
+    Route::post('/admin/public-site-styles/reset', [PublicSiteStyleController::class, 'reset'])->name('resetPublicSiteStyles');
     Route::post('/admin/activity-monitoring', [ActivityMonitoringController::class, 'save'])->name('saveActivityMonitoring');
     Route::post('/admin/activity-monitoring/test', [ActivityMonitoringController::class, 'test'])->name('testActivityMonitoring');
     Route::get('/admin/env', [AdminController::class, 'showFileEditor'])->name('showFileEditor');
