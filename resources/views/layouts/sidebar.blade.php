@@ -68,6 +68,7 @@ $usrhandl = Auth::user()->littlelink_name;
 
   </head>
   <body class="  ">
+    @include('components.save-wipe')
     <!-- loader Start -->
     <div id="loading">
       <div class="loader simple-loader">
@@ -221,6 +222,21 @@ $usrhandl = Auth::user()->littlelink_name;
                             <i class="bi bi-images"></i><span class="item-name">Photo Gallery</span>
                         </a>
                     </li>
+                    @endif
+                    <li class="nav-item static-item">
+                        <a class="nav-link static-item disabled" href="#" tabindex="-1">
+                            <span class="default-icon">Resources</span>
+                            <span class="mini-icon">-</span>
+                        </a>
+                    </li>
+                    @if(env('DISPLAY_FOOTER_TERMS') === true)
+                    <li class="nav-item"><a class="nav-link" href="{{ route('pagesTerms') }}" target="_blank" rel="noopener"><i class="bi bi-file-text"></i><span class="item-name">{{ footer('Terms') }}</span></a></li>
+                    @endif
+                    @if(env('DISPLAY_FOOTER_PRIVACY') === true)
+                    <li class="nav-item"><a class="nav-link" href="{{ route('pagesPrivacy') }}" target="_blank" rel="noopener"><i class="bi bi-shield-check"></i><span class="item-name">{{ footer('Privacy') }}</span></a></li>
+                    @endif
+                    @if(env('DISPLAY_FOOTER_CONTACT') === true)
+                    <li class="nav-item"><a class="nav-link" href="{{ route('pagesContact') }}" target="_blank" rel="noopener"><i class="bi bi-envelope"></i><span class="item-name">{{ footer('Contact') }}</span></a></li>
                     @endif
                     <li class="nav-item">
                         <a class="nav-link {{ Request::segment(2) == 'theme' ? 'active' : ''}}" href="{{ url('/studio/theme') }}">
