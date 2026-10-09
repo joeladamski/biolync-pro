@@ -789,19 +789,44 @@ class AdminController extends Controller
 
   private function persistConfigToggle(string $key, string $value): bool
   {
-    if (!EnvEditor::keyExists($key)) {
+    $toggleKeys = [
+      "ALLOW_REGISTRATION",
+      "REGISTER_AUTH",
+      "MANUAL_USER_VERIFICATION",
+      "FORCE_HTTPS",
+      "HIDE_VERIFICATION_CHECKMARK",
+      "ENABLE_REPORT_ICON",
+      "NOTIFY_EVENTS",
+      "NOTIFY_UPDATES",
+      "ENABLE_BUTTON_EDITOR",
+      "USE_THEME_PREVIEW_IFRAME",
+      "ALLOW_CUSTOM_BACKGROUNDS",
+      "ENABLE_ADMIN_BAR_USERS",
+      "ALLOW_USER_HTML",
+      "ALLOW_CUSTOM_CODE_IN_THEMES",
+      "ENABLE_THEME_UPDATER",
+      "ALLOW_USER_EXPORT",
+      "ALLOW_USER_IMPORT",
+      "JOIN_BETA",
+      "SKIP_UPDATE_BACKUP",
+      "CUSTOM_META_TAGS",
+      "ENABLE_SOCIAL_LOGIN",
+      "FORCE_ROUTE_HTTPS",
+      "DISPLAY_FOOTER",
+      "DISPLAY_CREDIT",
+      "DISPLAY_CREDIT_FOOTER",
+      "DISPLAY_FOOTER_HOME",
+      "DISPLAY_FOOTER_TERMS",
+      "DISPLAY_FOOTER_PRIVACY",
+      "DISPLAY_FOOTER_CONTACT",
+    ];
+
+    if (!in_array($key, $toggleKeys, true)) {
       return false;
     }
 
-    EnvEditor::editKey($key, $value);
-
-    $normalize = static fn ($current) => trim((string) $current, " \t\n\r\0\x0B\"'");
-    if ($normalize(EnvEditor::getKey($key)) === $normalize($value)) {
-      return true;
-    }
-
     $envPath = base_path(".env");
-    if (!is_file($envPath) || !is_writable($envPath)) {
+    if (!is_file($envPath) || !is_readable($envPath) || !is_writable($envPath)) {
       return false;
     }
 
@@ -811,7 +836,7 @@ class AdminController extends Controller
     }
 
     $line = $key . "=" . $value;
-    $pattern = "/^" . preg_quote($key, "/") . "=.*$/m";
+    $pattern = "/^" . preg_quote($key, "/") . "\\s*=.*$/m";
     $updated = preg_replace($pattern, $line, $contents, -1, $count);
 
     if ($updated === null) {
@@ -822,13 +847,27 @@ class AdminController extends Controller
       $updated = rtrim($contents) . PHP_EOL . $line . PHP_EOL;
     }
 
-    if (file_put_contents($envPath, $updated, LOCK_EX) === false) {
+    $tempPath = $envPath . ".pinkkiss.tmp";
+    if (file_put_contents($tempPath, $updated, LOCK_EX) === false) {
       return false;
+    }
+
+    @chmod($tempPath, fileperms($envPath) & 0777);
+    if (!@rename($tempPath, $envPath)) {
+      @unlink($tempPath);
+      if (file_put_contents($envPath, $updated, LOCK_EX) === false) {
+        return false;
+      }
     }
 
     clearstatcache(true, $envPath);
 
-    return $normalize(EnvEditor::getKey($key)) === $normalize($value);
+    $verify = file_get_contents($envPath);
+    if ($verify === false || !preg_match("/^" . preg_quote($key, "/") . "\\s*=\\s*" . preg_quote($value, "/") . "\\s*$/m", $verify)) {
+      return false;
+    }
+
+    return true;
   }
 
   //Shows config file editor page
@@ -948,7 +987,7 @@ class AdminController extends Controller
       }
     }
 
-    \Illuminate\Support\Facades\Artisan::call("config:clear");
+    \Illuminate\Support\Facades\Artisan::call("optimize:clear");
 
     return Redirect("/admin/config")->with("config_saved", $entry);
   }
