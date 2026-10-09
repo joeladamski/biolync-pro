@@ -43,7 +43,7 @@
 <style>.container-text{position:relative;width:95%;max-width:900px;margin:0 auto;box-sizing:border-box}</style>
   @include('components.public-site-styles')
 </head>
-<body class="pk-public-surface">
+<body class="pk-public-surface pk-public-page">
 
   <!-- Primary Page Layout
   –––––––––––––––––––––––––––––––––––––––––––––––––– -->

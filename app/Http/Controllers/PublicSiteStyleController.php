@@ -30,4 +30,11 @@ class PublicSiteStyleController extends Controller
 
         return redirect(url('/admin/config') . '#site-styles')->with('public_site_styles_saved', true);
     }
+
+    public function reset()
+    {
+        PublicSiteStyle::reset();
+
+        return redirect(url('/admin/config') . '#site-styles')->with('public_site_styles_reset', true);
+    }
 }

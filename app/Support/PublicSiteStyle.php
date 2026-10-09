@@ -44,6 +44,11 @@ class PublicSiteStyle
         );
     }
 
+    public static function reset(): void
+    {
+        Storage::disk('local')->delete('public-site-styles.json');
+    }
+
     public static function fontStack(string $font): string
     {
         return match ($font) {

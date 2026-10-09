@@ -1,4 +1,10 @@
 <?php use App\Models\Page; ?>
+@if(session('config_saved'))
+<div class="alert alert-success mb-3">Setting saved: <strong>{{ session('config_saved') }}</strong></div>
+@endif
+@if(session('config_save_error'))
+<div class="alert alert-danger mb-3">Could not persist <strong>{{ session('config_save_error') }}</strong>. Check .env write permissions.</div>
+@endif
 <style>
 @supports (-webkit-appearance: none) or (-moz-appearance: none) {
   input[type=checkbox],
@@ -165,7 +171,7 @@ function toggle($key){
 	<h5 style="margin-top:50px">'; echo __('messages.'.$key.'.title'); echo '</h5>
     <p class="text-muted">'; echo __('messages.'.$key.'.description'); echo '</p>
 	<div class="input-group">
-	<div class="mb-3 form-check form-switch toggle-btn"><input name="toggle" class="switch toggle-btn" type="checkbox" id="'.$key.'"'; if(EnvEditor::getKey($key) == 'false'){echo '/>';}else{echo 'checked>';} echo '<label for="'.$key.'" class="form-check-label">'.__('messages.Enable').'</label></div>
+	<div class="mb-3 form-check form-switch toggle-btn"><input type="hidden" name="toggle" value="0"><input name="toggle" value="1" class="switch toggle-btn" type="checkbox" id="'.$key.'"'; if(EnvEditor::getKey($key) == 'false'){echo '/>';}else{echo 'checked>';} echo '<label for="'.$key.'" class="form-check-label">'.__('messages.Enable').'</label></div>
 	</div></div>
     <input type="hidden" name="_token" value="'.csrf_token().'">
     <script type="text/javascript">
@@ -189,7 +195,7 @@ function toggle2($key){
 	<h5 style="margin-top:50px">'; echo __('messages.'.$key.'.title'); echo '</h5>
     <p class="text-muted">'; echo __('messages.'.$key.'.description'); echo '</p>
 	<div class="input-group">
-	<div class="mb-3 form-check form-switch toggle-btn"><input name="toggle" class="switch toggle-btn" type="checkbox" id="'.$key.'"'; if(EnvEditor::getKey($key) == 'auth'){echo '/>';}else{echo 'checked>';} echo '<label for="'.$key.'" class="form-check-label">'.__('messages.Enable').'</label></div>
+	<div class="mb-3 form-check form-switch toggle-btn"><input type="hidden" name="toggle" value="0"><input name="toggle" value="1" class="switch toggle-btn" type="checkbox" id="'.$key.'"'; if(EnvEditor::getKey($key) == 'auth'){echo '/>';}else{echo 'checked>';} echo '<label for="'.$key.'" class="form-check-label">'.__('messages.Enable').'</label></div>
 	</div></div>
     <input type="hidden" name="_token" value="'.csrf_token().'">
     <script type="text/javascript">
