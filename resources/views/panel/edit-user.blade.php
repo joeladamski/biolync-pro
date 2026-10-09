@@ -126,6 +126,49 @@
                                 <option <?= ($user->role === strtolower('admin')) ? 'selected' : '' ?>>admin</option>
                               </select>
                             </div>
+                            @php
+                              $adminVip = \App\Models\UserData::getData($user->id, 'vip_profile');
+                              $adminVip = is_array($adminVip) ? $adminVip : [];
+                            @endphp
+                            <fieldset class="border rounded p-3 mb-4 col-lg-8">
+                              <legend class="float-none w-auto px-2 fs-5">Platform-controlled profile status</legend>
+
+                              <div class="form-check form-switch mb-3">
+                                <input type="hidden" name="show_checkmark" value="0">
+                                <input class="form-check-input" type="checkbox" id="show-checkmark" name="show_checkmark" value="1" @checked(\App\Models\UserData::getData($user->id, 'checkmark') == true)>
+                                <label class="form-check-label" for="show-checkmark">Show checkmark</label>
+                              </div>
+
+                              <div class="form-check form-switch mb-3">
+                                <input type="hidden" name="links_new_tab" value="0">
+                                <input class="form-check-input" type="checkbox" id="links-new-tab" name="links_new_tab" value="1" @checked(\App\Models\UserData::getData($user->id, 'links-new-tab') == true)>
+                                <label class="form-check-label" for="links-new-tab">Open profile links in a new tab</label>
+                              </div>
+
+                              <div class="form-check form-switch mb-3">
+                                <input type="hidden" name="vip_badge_enabled" value="0">
+                                <input class="form-check-input" type="checkbox" id="vip-badge-enabled" name="vip_badge_enabled" value="1" @checked($adminVip['enabled'] ?? ($user->role === 'vip'))>
+                                <label class="form-check-label" for="vip-badge-enabled">Enable PinkKiss VIP icon and recognition panel</label>
+                              </div>
+                              <p class="form-text">Only administrators control this status. VIP is a PinkKiss.Love platform designation, not identity verification.</p>
+
+                              <label class="form-label" for="vip-headline">Personal VIP headline</label>
+                              <input class="form-control mb-3" id="vip-headline" name="vip_headline" maxlength="220" value="{{ old('vip_headline', $adminVip['headline'] ?? '') }}" placeholder="{{ $user->name }} has earned a place in the PinkKiss.Love VIP community.">
+
+                              <label class="form-label" for="vip-message">Personal VIP message</label>
+                              <textarea class="form-control mb-3" id="vip-message" name="vip_message" maxlength="800" rows="4">{{ old('vip_message', $adminVip['message'] ?? '') }}</textarea>
+
+                              <label class="form-label" for="vip-cta-label">VIP panel CTA label</label>
+                              <input class="form-control mb-3" id="vip-cta-label" name="vip_cta_label" maxlength="80" value="{{ old('vip_cta_label', $adminVip['cta_label'] ?? '') }}">
+
+                              <label class="form-label" for="vip-cta-url">VIP panel CTA URL</label>
+                              <input class="form-control mb-3" id="vip-cta-url" type="url" name="vip_cta_url" value="{{ old('vip_cta_url', $adminVip['cta_url'] ?? '') }}" placeholder="https://">
+
+                              @if(!empty($adminVip['granted_at']))
+                                @php($days = \Illuminate\Support\Carbon::parse($adminVip['granted_at'])->startOfDay()->diffInDays(now()->startOfDay()))
+                                <div class="alert alert-secondary mb-0">VIP for {{ number_format($days) }} {{ \Illuminate\Support\Str::plural('day', $days) }} and counting. 💋</div>
+                              @endif
+                            </fieldset>
                             @endforeach
                             <button type="submit" class="mt-3 ml-3 btn btn-primary">{{__('messages.Save')}}</button>
                           </form>
