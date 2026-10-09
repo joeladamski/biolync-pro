@@ -1,5 +1,6 @@
 @php($pkStyles = \App\Support\PublicSiteStyle::settings())
-<style id="pk-public-site-styles">\n#loading { display:none!important; }
+<style id="pk-public-site-styles">
+#loading { display:none!important; }
 :root {
     --pk-primary: {{ $pkStyles['primary'] }};
     --pk-accent: {{ $pkStyles['accent'] }};
