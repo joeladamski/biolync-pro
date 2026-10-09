@@ -41,8 +41,9 @@
       <link rel="stylesheet" href="{{asset('assets/css/rtl.min.css')}}" />
 
 <style>.container-text{position:relative;width:95%;max-width:900px;margin:0 auto;box-sizing:border-box}</style>
+  @include('components.public-site-styles')
 </head>
-<body>
+<body class="pk-public-surface">
 
   <!-- Primary Page Layout
   –––––––––––––––––––––––––––––––––––––––––––––––––– -->
