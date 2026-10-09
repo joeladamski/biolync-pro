@@ -801,20 +801,12 @@ class AdminController extends Controller
     $value = $request->value;
 
     if ($type === "toggle") {
-      if ($request->toggle != "") {
-        $value = "true";
-      } else {
-        $value = "false";
-      }
+      $value = $request->boolean("toggle") ? "true" : "false";
       if (EnvEditor::keyExists($entry)) {
         EnvEditor::editKey($entry, $value);
       }
     } elseif ($type === "toggle2") {
-      if ($request->toggle != "") {
-        $value = "verified";
-      } else {
-        $value = "auth";
-      }
+      $value = $request->boolean("toggle") ? "verified" : "auth";
       if (EnvEditor::keyExists($entry)) {
         EnvEditor::editKey($entry, $value);
       }
@@ -912,7 +904,9 @@ class AdminController extends Controller
       }
     }
 
-    return Redirect("/admin/config");
+    \Illuminate\Support\Facades\Artisan::call("config:clear");
+
+    return Redirect("/admin/config")->with("config_saved", $entry);
   }
 
   //Shows theme editor page
