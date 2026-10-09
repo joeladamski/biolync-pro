@@ -787,6 +787,50 @@ class AdminController extends Controller
     return Redirect("/studio/theme");
   }
 
+  private function persistConfigToggle(string $key, string $value): bool
+  {
+    if (!EnvEditor::keyExists($key)) {
+      return false;
+    }
+
+    EnvEditor::editKey($key, $value);
+
+    $normalize = static fn ($current) => trim((string) $current, " \t\n\r\0\x0B\"'");
+    if ($normalize(EnvEditor::getKey($key)) === $normalize($value)) {
+      return true;
+    }
+
+    $envPath = base_path(".env");
+    if (!is_file($envPath) || !is_writable($envPath)) {
+      return false;
+    }
+
+    $contents = file_get_contents($envPath);
+    if ($contents === false) {
+      return false;
+    }
+
+    $line = $key . "=" . $value;
+    $pattern = "/^" . preg_quote($key, "/") . "=.*$/m";
+    $updated = preg_replace($pattern, $line, $contents, -1, $count);
+
+    if ($updated === null) {
+      return false;
+    }
+
+    if ($count === 0) {
+      $updated = rtrim($contents) . PHP_EOL . $line . PHP_EOL;
+    }
+
+    if (file_put_contents($envPath, $updated, LOCK_EX) === false) {
+      return false;
+    }
+
+    clearstatcache(true, $envPath);
+
+    return $normalize(EnvEditor::getKey($key)) === $normalize($value);
+  }
+
   //Shows config file editor page
   public function showConfig(request $request)
   {
@@ -802,13 +846,13 @@ class AdminController extends Controller
 
     if ($type === "toggle") {
       $value = $request->boolean("toggle") ? "true" : "false";
-      if (EnvEditor::keyExists($entry)) {
-        EnvEditor::editKey($entry, $value);
+      if (!$this->persistConfigToggle($entry, $value)) {
+        return Redirect("/admin/config")->with("config_save_error", $entry);
       }
     } elseif ($type === "toggle2") {
       $value = $request->boolean("toggle") ? "verified" : "auth";
-      if (EnvEditor::keyExists($entry)) {
-        EnvEditor::editKey($entry, $value);
+      if (!$this->persistConfigToggle($entry, $value)) {
+        return Redirect("/admin/config")->with("config_save_error", $entry);
       }
     } elseif ($type === "text") {
       if (EnvEditor::keyExists($entry)) {
