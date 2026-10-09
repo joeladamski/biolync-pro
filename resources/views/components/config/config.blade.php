@@ -1,4 +1,10 @@
 <?php use App\Models\Page; ?>
+@if(session('config_saved'))
+<div class="alert alert-success mb-3">Setting saved: <strong>{{ session('config_saved') }}</strong></div>
+@endif
+@if(session('config_save_error'))
+<div class="alert alert-danger mb-3">Could not persist <strong>{{ session('config_save_error') }}</strong>. Check .env write permissions.</div>
+@endif
 <style>
 @supports (-webkit-appearance: none) or (-moz-appearance: none) {
   input[type=checkbox],
