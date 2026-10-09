@@ -319,75 +319,93 @@ class AdminController extends Controller
   }
 
   //Save user edit
-  public function editUser(request $request)
+  public function editUser(Request $request)
   {
-    $request->validate([
-      "name" => "",
-      "email" => "",
-      "password" => "",
-      "littlelink_name" => "",
+    $id = $request->id;
+    $user = User::findOrFail($id);
+    $oldRole = $user->role;
+
+    $data = $request->validate([
+      "name" => "required|string|max:255",
+      "email" => "required|email|max:255|unique:users,email," . $id,
+      "password" => "nullable|min:8",
+      "littlelink_name" => "required|string|max:255|regex:/^[A-Za-z0-9._-]+$/|unique:users,littlelink_name," . $id,
+      "littlelink_description" => "nullable|string|max:10000",
+      "role" => "required|in:user,vip,admin",
+      "theme" => "nullable|string|max:255",
+      "image" => "nullable|image|mimes:jpeg,jpg,png,webp|max:2048",
+      "background" => "nullable|image|mimes:jpeg,jpg,png,webp,gif|max:4096",
+      "show_checkmark" => "nullable|boolean",
+      "links_new_tab" => "nullable|boolean",
+      "vip_badge_enabled" => "nullable|boolean",
+      "vip_headline" => "nullable|string|max:220",
+      "vip_message" => "nullable|string|max:800",
+      "vip_cta_label" => "nullable|string|max:80",
+      "vip_cta_url" => "nullable|url|max:2048",
     ]);
 
-    $id = $request->id;
-    $name = $request->name;
-    $email = $request->email;
-    $password = Hash::make($request->password);
-    $profilePhoto = $request->file("image");
-    $littlelink_name = $request->littlelink_name;
-    $littlelink_description = $request->littlelink_description;
-    $role = $request->role;
-    $customBackground = $request->file("background");
-    $theme = $request->theme;
+    $updates = [
+      "name" => $data["name"],
+      "email" => $data["email"],
+      "littlelink_name" => $data["littlelink_name"],
+      "littlelink_description" => $data["littlelink_description"] ?? null,
+      "role" => $data["role"],
+      "theme" => $data["theme"] ?? "default",
+    ];
+    if (!empty($data["password"])) {
+      $updates["password"] = Hash::make($data["password"]);
+    }
+    $user->update($updates);
 
-    if (User::where("id", $id)->get("role")->first()->role = !$role) {
-      if ($role == "vip") {
-        UserData::saveData($id, "checkmark", true);
-      }
-    }
+    UserData::saveData($id, "checkmark", $request->boolean("show_checkmark"));
+    UserData::saveData($id, "links-new-tab", $request->boolean("links_new_tab"));
 
-    if ($request->password == "") {
-      User::where("id", $id)->update([
-        "name" => $name,
-        "email" => $email,
-        "littlelink_name" => $littlelink_name,
-        "littlelink_description" => $littlelink_description,
-        "role" => $role,
-        "theme" => $theme,
-      ]);
-    } else {
-      User::where("id", $id)->update([
-        "name" => $name,
-        "email" => $email,
-        "password" => $password,
-        "littlelink_name" => $littlelink_name,
-        "littlelink_description" => $littlelink_description,
-        "role" => $role,
-        "theme" => $theme,
-      ]);
+    $vip = UserData::getData($id, "vip_profile");
+    $vip = is_array($vip) ? $vip : [];
+    $vipEnabled = $request->boolean("vip_badge_enabled") && $data["role"] === "vip";
+    if ($vipEnabled && empty($vip["granted_at"])) {
+      $vip["granted_at"] = now()->toIso8601String();
     }
-    if (!empty($profilePhoto)) {
-      $profilePhoto->move(base_path("assets/img"), $id . "_" . time() . ".png");
+    $vip["enabled"] = $vipEnabled;
+    $vip["headline"] = trim((string)($data["vip_headline"] ?? ""));
+    $vip["message"] = trim((string)($data["vip_message"] ?? ""));
+    $vip["cta_label"] = trim((string)($data["vip_cta_label"] ?? ""));
+    $vip["cta_url"] = $data["vip_cta_url"] ?? "";
+    if ($oldRole !== "vip" && $data["role"] === "vip" && empty($vip["granted_at"])) {
+      $vip["granted_at"] = now()->toIso8601String();
     }
-    if (!empty($customBackground)) {
-      $directory = base_path("assets/img/background-img/");
-      $files = scandir($directory);
-      $pathinfo = "error.error";
-      foreach ($files as $file) {
-        if (strpos($file, $id . ".") !== false) {
-          $pathinfo = $id . "." . pathinfo($file, PATHINFO_EXTENSION);
+    UserData::saveData($id, "vip_profile", $vip);
+
+    if ($request->hasFile("image")) {
+      while (findAvatar($id) !== "error.error") {
+        $avatar = findAvatar($id);
+        if (is_file(base_path($avatar))) {
+          File::delete(base_path($avatar));
+        } else {
+          break;
         }
       }
-      if (file_exists(base_path("assets/img/background-img/") . $pathinfo)) {
-        File::delete(base_path("assets/img/background-img/") . $pathinfo);
-      }
+      $image = $request->file("image");
+      $image->move(base_path("assets/img"), $id . "_" . time() . "." . $image->extension());
+    }
 
-      $customBackground->move(
+    if ($request->hasFile("background")) {
+      while (findBackground($id) !== "error.error") {
+        $path = base_path("assets/img/background-img/" . findBackground($id));
+        if (is_file($path)) {
+          File::delete($path);
+        } else {
+          break;
+        }
+      }
+      $background = $request->file("background");
+      $background->move(
         base_path("assets/img/background-img/"),
-        $id . "_" . time() . "." . $request->file("background")->extension(),
+        $id . "_" . time() . "." . $background->extension()
       );
     }
 
-    return redirect("admin/users/all");
+    return redirect("admin/users/all")->with("success", "User updated.");
   }
 
   //Show site pages to edit
