@@ -110,7 +110,7 @@ Route::get('/block-asset/{type}', [LinkTypeViewController::class, 'blockAsset'])
 
 }
 
-Route::middleware(['auth', 'blocked', 'impersonate'])->group(function () {
+Route::middleware(['auth', 'blocked', 'impersonate', 'audit.changes'])->group(function () {
 //User route
 Route::group([
     'middleware' => env('REGISTER_AUTH'),
@@ -169,7 +169,7 @@ Route::get('/studio/linkparamform_part/{typeid}/{linkid}', [LinkTypeViewControll
 Route::get('/social-auth/{provider}/callback', [SocialLoginController::class, 'providerCallback']);
 Route::get('/social-auth/{provider}', [SocialLoginController::class, 'redirectToProvider'])->name('social.redirect');
 
-Route::middleware(['auth', 'blocked', 'impersonate'])->group(function () {
+Route::middleware(['auth', 'blocked', 'impersonate', 'audit.changes'])->group(function () {
 //Admin route
 Route::group([
     'middleware' => 'admin',
