@@ -45,16 +45,24 @@
     background: var(--pk-bg)!important;
     color: var(--pk-text-light)!important;
 }
+.pk-public-home .home-copy .auth-card,
+.pk-public-home .home-copy .card-body {
+    background: var(--pk-surface)!important;
+    color: var(--pk-text-dark)!important;
+    border-radius: var(--pk-card-radius)!important;
+}
+.pk-public-home .home-copy .auth-card {
+    overflow: hidden;
+}
 .pk-public-home .home-preview {
     background: var(--pk-primary)!important;
     color: var(--pk-text-light)!important;
 }
-.pk-public-home .home-copy h1,
-.pk-public-home .home-copy h2,
-.pk-public-home .home-copy h3,
-.pk-public-home .home-copy h4,
-.pk-public-home .home-copy p,
-.pk-public-home .home-copy .lead,
+.pk-public-home .home-copy > h1,
+.pk-public-home .home-copy > h2,
+.pk-public-home .home-copy > h3,
+.pk-public-home .home-copy > h4,
+.pk-public-home .home-copy > p,
 .pk-public-home .home-preview-copy,
 .pk-public-home .home-preview-copy h1,
 .pk-public-home .home-preview-copy h2,
@@ -62,6 +70,22 @@
 .pk-public-home .home-preview-copy p {
     color: var(--pk-text-light)!important;
 }
+
+.pk-public-home .home-copy .auth-card h1,
+.pk-public-home .home-copy .auth-card h2,
+.pk-public-home .home-copy .auth-card h3,
+.pk-public-home .home-copy .auth-card h4,
+.pk-public-home .home-copy .auth-card p,
+.pk-public-home .home-copy .auth-card .lead,
+.pk-public-home .home-copy .card-body h1,
+.pk-public-home .home-copy .card-body h2,
+.pk-public-home .home-copy .card-body h3,
+.pk-public-home .home-copy .card-body h4,
+.pk-public-home .home-copy .card-body p,
+.pk-public-home .home-copy .card-body .lead {
+    color: var(--pk-text-dark)!important;
+}
+
 .pk-public-home .home-nav {
     background: var(--pk-primary)!important;
     color: var(--pk-text-light)!important;
