@@ -591,82 +591,63 @@ class UserController extends Controller
     //Save littlelink page (name, description, logo)
     public function editPage(Request $request)
     {
-        $userId = Auth::user()->id;
-        $littlelink_name = Auth::user()->littlelink_name;
-    
+        $userId = Auth::id();
+
         $validator = Validator::make($request->all(), [
-            'littlelink_name' => [
-                'sometimes',
-                'max:255',
-                'string',
-                'isunique:users,id,'.$userId,
-            ],
-            'name' => 'sometimes|max:255|string',
-            'image' => 'sometimes|image|mimes:jpeg,jpg,png,webp|max:2048', // Max file size: 2MB
+            'name' => 'sometimes|required|max:255|string',
+            'pageDescription' => 'nullable|string|max:10000',
+            'image' => 'sometimes|image|mimes:jpeg,jpg,png,webp|max:2048',
+            'sharebtn' => 'nullable|in:on,off',
         ], [
-            'littlelink_name.unique' => __('messages.That handle has already been taken'),
             'image.image' => __('messages.The selected file must be an image'),
             'image.mimes' => __('messages.The image must be') . ' JPEG, JPG, PNG, webP.',
             'image.max' => __('messages.The image size should not exceed 2MB'),
         ]);
-    
+
         if ($validator->fails()) {
             return redirect('/studio/page')->withErrors($validator)->withInput();
         }
-    
-        $profilePhoto = $request->file('image');
-        $pageName = $request->littlelink_name;
-        $pageDescription = strip_tags($request->pageDescription, '<a><p><strong><i><ul><ol><li><blockquote><h2><h3><h4>');
-        $pageDescription = preg_replace('/\bon\w+\s*=\s*(["\']).*?\1/i', '', $pageDescription);
-        $pageDescription = preg_replace('/\bon\w+\s*=\s*[^\s>]*/i', '', $pageDescription);
-        $pageDescription = preg_replace("/<a([^>]*)>/i", "<a $1 rel=\"noopener noreferrer nofollow\">", $pageDescription);
-        $pageDescription = strip_tags_except_allowed_protocols($pageDescription);
-        $name = $request->name;
-        $checkmark = $request->checkmark;
-        $sharebtn = $request->sharebtn;
-        $tablinks = $request->tablinks;
 
-        if(env('HOME_URL') !== '' && $pageName != $littlelink_name && $littlelink_name == env('HOME_URL')){
-            EnvEditor::editKey('HOME_URL', $pageName);
+        $updates = [];
+        if ($request->filled('name')) {
+            $updates['name'] = $request->name;
         }
-    
-        User::where('id', $userId)->update([
-            'littlelink_name' => $pageName,
-            'littlelink_description' => $pageDescription,
-            'name' => $name
-        ]);
-    
-        if ($request->hasFile('image')) {
 
-            // Delete the user's current avatar if it exists
+        if ($request->has('pageDescription')) {
+            $pageDescription = strip_tags((string)$request->pageDescription, '<a><p><strong><i><ul><ol><li><blockquote><h2><h3><h4>');
+            $pageDescription = preg_replace('/\\bon\\w+\\s*=\\s*(["\\']).*?\\1/i', '', $pageDescription);
+            $pageDescription = preg_replace('/\\bon\\w+\\s*=\\s*[^\\s>]*/i', '', $pageDescription);
+            $pageDescription = preg_replace("/<a([^>]*)>/i", "<a $1 rel=\\"noopener noreferrer nofollow\\">", $pageDescription);
+            $pageDescription = strip_tags_except_allowed_protocols($pageDescription);
+            $updates['littlelink_description'] = $pageDescription;
+        }
+
+        if ($updates) {
+            User::where('id', $userId)->update($updates);
+        }
+
+        if ($request->hasFile('image')) {
             while (findAvatar($userId) !== "error.error") {
                 $avatarName = findAvatar($userId);
-                unlink(base_path($avatarName));
+                if (is_file(base_path($avatarName))) {
+                    unlink(base_path($avatarName));
+                } else {
+                    break;
+                }
             }
-            
+
+            $profilePhoto = $request->file('image');
             $fileName = $userId . '_' . time() . "." . $profilePhoto->extension();
             $profilePhoto->move(base_path('assets/img'), $fileName);
         }
-    
-        if ($checkmark == "on") {
-            UserData::saveData($userId, 'checkmark', true);
-        } else {
-            UserData::saveData($userId, 'checkmark', false);
-        }
-    
-        if ($sharebtn == "on") {
-            UserData::saveData($userId, 'disable-sharebtn', false);
-        } else {
-            UserData::saveData($userId, 'disable-sharebtn', true);
+
+        if ($request->has('sharebtn')) {
+            UserData::saveData($userId, 'disable-sharebtn', $request->input('sharebtn') !== 'on');
         }
 
-        if ($tablinks == "on") {
-            UserData::saveData($userId, 'links-new-tab', true);
-        } else {
-            UserData::saveData($userId, 'links-new-tab', false);
-        }
-    
-        return Redirect('/studio/page');
+        // Handle, verification/checkmark and link-target policy are intentionally
+        // administrator-controlled and are never accepted from this subscriber form.
+        return redirect('/studio/page')->with('success', 'Profile saved.');
     }
 
     // Profile cover metadata is stored separately from the avatar and theme.
