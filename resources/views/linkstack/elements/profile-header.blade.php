@@ -19,7 +19,6 @@ html, body {background-color:var(--biolync-bg, var(--bgColor, #151826));}
 .biolync-cover-toggle { position:absolute;right:12px;top:12px;z-index:1;width:auto!important;min-height:0!important;padding:6px 12px!important;background:#17212eee!important;color:white!important;border:1px solid white!important;border-radius:8px;cursor:pointer; }
 @media(max-width:600px) { .biolync-cover {height:190px;} }
 </style>
-@if($hasHeader)
 <div class="biolync-cover" style="--cover-position:{{ $position }}">
     @if(($header['type'] ?? '') === 'video')
         <video id="biolync-header-video" muted loop playsinline preload="none" @if($validPath($header['poster'] ?? null)) poster="{{ asset($header['poster']) }}" @endif aria-label="Profile header video">
@@ -36,8 +35,9 @@ html, body {background-color:var(--biolync-bg, var(--bgColor, #151826));}
             if (!matchMedia('(prefers-reduced-motion: reduce)').matches) video.play().catch(() => {});
         })();
         </script>
-    @else
+    @elseif($hasHeader)
         <img src="{{ asset($header['media']) }}" alt="Profile cover" fetchpriority="high">
+    @else
+        <img src="{{ asset('assets/images/dashboard/top-header-overlay.png') }}" alt="" fetchpriority="high">
     @endif
 </div>
-@endif
