@@ -41,8 +41,9 @@
       <link rel="stylesheet" href="{{asset('assets/css/rtl.min.css')}}" />
 
 <style>.container-text{position:relative;width:95%;max-width:900px;margin:0 auto;box-sizing:border-box}</style>
+  @include('components.public-site-styles')
 </head>
-<body>
+<body class="pk-public-surface">
 
   <!-- Primary Page Layout
   –––––––––––––––––––––––––––––––––––––––––––––––––– -->
@@ -71,14 +72,7 @@
       <!-- Footer Section Start -->
       <footer class="footer mt-5">
         <div class="footer-body">
-            <ul class="left-panel list-inline mb-0 p-0">
-              @if(env('DISPLAY_FOOTER') === true)
-                @if(env('DISPLAY_FOOTER_HOME') === true)<li class="list-inline-item"><a class="footer-hover spacing" href="@if(str_replace('"', "", EnvEditor::getKey('HOME_FOOTER_LINK')) === "" ){{ url('') }}@else{{ str_replace('"', "", EnvEditor::getKey('HOME_FOOTER_LINK')) }}@endif">{{footer('Home')}}</a></li>@endif
-                @if(env('DISPLAY_FOOTER_TERMS') === true)<li class="list-inline-item"><a class="footer-hover spacing" href="{{ url('') }}/pages/{{ strtolower(footer('Terms')) }}">{{footer('Terms')}}</a></li>@endif
-                @if(env('DISPLAY_FOOTER_PRIVACY') === true)<li class="list-inline-item"><a class="footer-hover spacing" href="{{ url('') }}/pages/{{ strtolower(footer('Privacy')) }}">{{footer('Privacy')}}</a></li>@endif
-                @if(env('DISPLAY_FOOTER_CONTACT') === true)<li class="list-inline-item"><a class="footer-hover spacing" href="{{ url('') }}/pages/{{ strtolower(footer('Contact')) }}">{{footer('Contact')}}</a></li>@endif
-              @endif                     
-            </ul>
+            <div class="left-panel"></div>
             <div class="right-panel">
               {{__('messages.Copyright')}} &copy; @php echo date('Y'); @endphp {{ config('app.name') }}
               @if(env('DISPLAY_CREDIT_FOOTER') === true)

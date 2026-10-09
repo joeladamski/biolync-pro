@@ -19,6 +19,8 @@
                         <li class="nav-item"><a class="nav-link" href="#seo-discovery" data-toggle="tab" id="seo-discovery-tab">SEO Discovery</a></li>
                         <li class="nav-item"><a class="nav-link" href="#site-pages" data-toggle="tab" id="site-pages-tab">Site Pages</a></li>
                         <li class="nav-item"><a class="nav-link" href="#ui-controls" data-toggle="tab" id="ui-controls-tab">UI Controls</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#site-styles" data-toggle="tab" id="site-styles-tab">Site Styles</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#activity-monitoring" data-toggle="tab" id="activity-monitoring-tab">Activity & Discord</a></li>
                         <li class="nav-item"><a class="nav-link active" href="#1" data-toggle="tab" id="home-tab">{{__('messages.Config')}}</a></li>
                         <li class="nav-item"><a class="nav-link" href="#2" data-toggle="tab" id="advanced-tab">{{__('messages.Advanced Config')}}</a></li>
                         <li class="nav-item"><a class="nav-link" href="#3" data-toggle="tab" id="backup-tab">{{__('messages.Take Backup')}}</a></li>
@@ -38,6 +40,12 @@
                     </div>
                     <div class="tab-pane" role="tabpanel" aria-labelledby="ui-controls-tab" id="ui-controls">
                       @include('components.config.home-ui')
+                    </div>
+                    <div class="tab-pane" role="tabpanel" aria-labelledby="site-styles-tab" id="site-styles">
+                      @include('components.config.public-site-styles')
+                    </div>
+                    <div class="tab-pane" role="tabpanel" aria-labelledby="activity-monitoring-tab" id="activity-monitoring">
+                      @include('components.config.activity-monitoring')
                     </div>
                   
                   

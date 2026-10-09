@@ -83,14 +83,15 @@
       <link rel="stylesheet" href="{{asset('assets/css/rtl.min.css')}}" />
       
       
-  </head>
+    @include('components.public-site-styles')
+</head>
 
   @php
   $pages = DB::table('pages')->get();
   foreach($pages as $page){}
   @endphp
 
-  <body class=" " data-bs-spy="scroll" data-bs-target="#elements-section" data-bs-offset="0" tabindex="0">
+  <body class="pk-public-surface" data-bs-spy="scroll" data-bs-target="#elements-section" data-bs-offset="0" tabindex="0">
         @include('components.public-header')
 
     <!-- loader Start -->

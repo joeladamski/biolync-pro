@@ -8,6 +8,9 @@ use App\Http\Controllers\Auth\SocialLoginController;
 use App\Http\Controllers\LinkTypeViewController;
 use App\Http\Controllers\PagesController;
 use App\Http\Controllers\InstallerController;
+use App\Http\Controllers\PublicSiteStyleController;
+use App\Http\Controllers\CreatorExperienceController;
+use App\Http\Controllers\ActivityMonitoringController;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 
@@ -107,7 +110,7 @@ Route::get('/block-asset/{type}', [LinkTypeViewController::class, 'blockAsset'])
 
 }
 
-Route::middleware(['auth', 'blocked', 'impersonate'])->group(function () {
+Route::middleware(['auth', 'blocked', 'impersonate', 'audit.changes'])->group(function () {
 //User route
 Route::group([
     'middleware' => env('REGISTER_AUTH'),
@@ -134,6 +137,7 @@ Route::post('/studio/page', [UserController::class, 'editPage'])->name('editPage
 Route::get('/studio/photo-gallery', [App\Http\Controllers\ProfileGalleryController::class, 'show'])->name('showPhotoGallery');
 Route::post('/studio/photo-gallery', [App\Http\Controllers\ProfileGalleryController::class, 'save'])->name('savePhotoGallery')->middleware('throttle:10,1');
 Route::post('/studio/profile-header', [UserController::class, 'profileHeader'])->name('profileHeader');
+Route::post('/studio/creator-experience', [CreatorExperienceController::class, 'save'])->name('saveCreatorExperience');
 Route::post('/studio/background', [UserController::class, 'themeBackground'])->name('themeBackground');
 Route::get('/studio/rem-background', [UserController::class, 'removeBackground'])->name('removeBackground');
 Route::get('/studio/profile', [UserController::class, 'showProfile'])->name('showProfile');
@@ -165,7 +169,7 @@ Route::get('/studio/linkparamform_part/{typeid}/{linkid}', [LinkTypeViewControll
 Route::get('/social-auth/{provider}/callback', [SocialLoginController::class, 'providerCallback']);
 Route::get('/social-auth/{provider}', [SocialLoginController::class, 'redirectToProvider'])->name('social.redirect');
 
-Route::middleware(['auth', 'blocked', 'impersonate'])->group(function () {
+Route::middleware(['auth', 'blocked', 'impersonate', 'audit.changes'])->group(function () {
 //Admin route
 Route::group([
     'middleware' => 'admin',
@@ -195,6 +199,9 @@ Route::group([
     Route::post('/admin/featured-profile', [App\Http\Controllers\AiDiscoveryController::class, 'saveFeatured'])->name('saveFeaturedProfile');
     Route::post('/admin/edit-user/{id}/ai-discovery', [App\Http\Controllers\AiDiscoveryController::class, 'saveProfile'])->name('saveAiProfile');
     Route::post('/admin/home-ui', [AdminController::class, 'editHomeUi'])->name('editHomeUi');
+    Route::post('/admin/public-site-styles', [PublicSiteStyleController::class, 'save'])->name('savePublicSiteStyles');
+    Route::post('/admin/activity-monitoring', [ActivityMonitoringController::class, 'save'])->name('saveActivityMonitoring');
+    Route::post('/admin/activity-monitoring/test', [ActivityMonitoringController::class, 'test'])->name('testActivityMonitoring');
     Route::get('/admin/env', [AdminController::class, 'showFileEditor'])->name('showFileEditor');
     Route::post('/admin/env', [AdminController::class, 'editENV'])->name('editENV');
     Route::get('/admin/site', [AdminController::class, 'showSite'])->name('showSite');
