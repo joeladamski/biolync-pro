@@ -13,7 +13,7 @@ class ActivityMonitoringController extends Controller
         $data = $request->validate([
             'enabled' => 'nullable|boolean',
             'discord_enabled' => 'nullable|boolean',
-            'discord_webhook' => 'nullable|url|max:2048',
+            'discord_webhook' => ['nullable', 'url', 'max:2048', 'regex:#^https://(discord\\.com|discordapp\\.com)/api/webhooks/#i'],
             'include_ip' => 'nullable|boolean',
             'include_user_agent' => 'nullable|boolean',
         ]);
