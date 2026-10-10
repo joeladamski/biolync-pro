@@ -67,6 +67,7 @@ checkRichText(App\Models\Page::first()->home_message === $clean && session('site
 
 // Real Blade forms are used by the browser flow; no hand-written replacement editor.
 app('session')->start();
+view()->share('errors', new Illuminate\Support\ViewErrorBag());
 @mkdir(base_path('test-output'));
 $forms = '<h1>Admin content editor QA</h1><h2>Home message</h2><form action="/save-home" method="post"><textarea id="home-message" name="message" data-rich-text data-rich-text-label="Home message">'.e($clean).'</textarea><button>Save home</button></form>';
 $forms .= '<h2>Site Pages</h2><details open><summary>Create a page</summary>'.view('components.config.site-page-form', ['editPage'=>[]])->render().'</details>';
