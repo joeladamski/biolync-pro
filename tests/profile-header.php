@@ -48,5 +48,5 @@ try {
  submit($controller,['remove_header'=>1]);
  check(UserData::getData($user->id,'profile_header')===[] && !file_exists(base_path($video['media'])) && !file_exists(base_path($video['poster'])),'removal clears metadata and file');
  $html=view('linkstack.elements.profile-header',['userinfo'=>$user])->render();
- check(!str_contains($html,'class="biolync-cover"'),'no-media profile omits cover');
+ check(str_contains($html, 'assets/images/dashboard/top-header-overlay.png') && !str_contains($html, '<video'), 'no-media profile renders default cover without video');
 } finally { foreach (glob(base_path('assets/profile-media/'.$user->id.'_*')) as $file) unlink($file); }

@@ -59,5 +59,6 @@ try {
     checkUserSave(isset($e->errors()['role']) && $user->fresh()->getAttributes() === $before,
         'invalid role fails validation without changing account');
 }
+$user = $user->fresh();
 $user->fill(['role'=>'admin']);
 checkUserSave($user->role === 'user', 'role remains guarded outside the explicit admin save');
