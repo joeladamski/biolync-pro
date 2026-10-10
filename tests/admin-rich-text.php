@@ -18,6 +18,7 @@ function checkRichText($ok, $message) {
 }
 $body = '<h2>Be found 💋</h2><p><strong>Bold</strong> and <em>italic</em></p><ul><li>First</li></ul><p style="text-align:right;color:#ff5dd3;font-size:80px">Aligned</p><a href="https://example.test" target="_blank">Link</a><table><tbody><tr><td>Cell</td></tr></tbody></table>';
 $clean = RichText::render($body);
+checkRichText(RichText::render('<p><var><big>Legacy emphasis</big></var></p>') === '<p><em>Legacy emphasis</em></p>', 'legacy CKEditor emphasis survives with consistent public sizing');
 foreach (['<h2>Be found 💋</h2>', '<strong>Bold</strong>', '<li>First</li>', 'text-align:right', '<td>Cell</td>', 'noopener noreferrer'] as $expected) checkRichText(str_contains($clean, $expected), "preserves $expected");
 checkRichText(!str_contains($clean, 'font-size'), 'public fonts and sizes remain controlled by site styles');
 foreach ([

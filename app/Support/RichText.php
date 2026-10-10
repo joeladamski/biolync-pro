@@ -35,6 +35,7 @@ class RichText
         if (!$node instanceof \DOMElement) return;
         $tag = strtolower($node->tagName);
         if ($tag === 'h1') $tag = 'h2';
+        if ($tag === 'var') $tag = 'em'; // Preserve emphasis in legacy CKEditor copy.
         if (in_array($tag, ['script','style','iframe','object','embed','svg','math','template','form','input','button','textarea','select','link','meta','base'], true)) return;
         $allowed = ['p','div','span','br','h2','h3','h4','h5','h6','strong','b','em','i','u','s','strike','sub','sup','ul','ol','li','blockquote','pre','code','hr','a','img','table','thead','tbody','tfoot','tr','th','td','caption'];
         $target = $parent;
