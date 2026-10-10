@@ -37,7 +37,7 @@ if (PublicSiteStyle::settings()['heading_font'] !== 'playfair-display') throw ne
 @mkdir(base_path('test-output'));
 $fontForm = view('components.config.public-site-styles', ['errors'=>new \Illuminate\Support\ViewErrorBag])->render();
 $adminCss = file_get_contents(base_path('assets/css/hope-ui.min.css'));
-file_put_contents(base_path('test-output/ui-fonts.html'), '<!doctype html><html><head><meta name="viewport" content="width=device-width"><title>Google Fonts controls QA</title><style>'.$adminCss.'</style></head><body><main class="container-fluid p-4">'.$fontForm.'</main></body></html>');
+file_put_contents(base_path('test-output/ui-fonts.html'), '<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>Google Fonts controls QA</title><style>'.$adminCss.'</style></head><body><main class="container-fluid p-4">'.$fontForm.'</main></body></html>');
 $controller->reset();
 if (PublicSiteStyle::googleFontsUrl([PublicSiteStyle::settings()['heading_font'], PublicSiteStyle::settings()['body_font']]) !== null) {
     throw new RuntimeException('Reset did not restore local default fonts');

@@ -88,7 +88,7 @@ foreach (['BioLyncOcean', 'BioLyncPaper', 'BioLyncMidnight', 'BioLyncRose', 'def
         ? file_get_contents(base_path('assets/linkstack/css/skeleton-dark.css')).file_get_contents(base_path('assets/linkstack/css/brands.css'))
         : file_get_contents(base_path('themes/'.$theme.'/skeleton-auto.css'));
     $profile = '<div class="container biolync-profile"><div class="row"><div class="column biolync-profile-column">'.$header.'<div class="biolync-avatar">'.$avatar.$vip.'</div><h1>Creator profile</h1><div class="description-parent"><p>Creator biography and public links.</p></div><div class="row social-icon-div"><a class="social-link" href="#social"><i class="social-icon">◎</i></a></div><a class="button" href="#links">Profile link</a></div></div></div>';
-    file_put_contents(base_path('test-output/ui-'.$theme.'.html'), '<!doctype html><html><head><meta name="viewport" content="width=device-width"><title>Profile UI QA</title><style>body{margin:0}'.$css.'</style></head><body>'.$profile.'</body></html>');
+    file_put_contents(base_path('test-output/ui-'.$theme.'.html'), '<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>Profile UI QA</title><style>body{margin:0}'.$css.'</style></head><body>'.$profile.'</body></html>');
 }
 $user->block = 'no';
 $preview = view('components.admin-user-preview', ['user'=>$user])->render();
@@ -96,4 +96,4 @@ $adminCss = file_get_contents(base_path('assets/css/hope-ui.min.css'));
 $editorSource = file_get_contents(base_path('resources/views/panel/edit-user.blade.php'));
 preg_match_all('/<button[^>]+name="save_action"[^>]*>.*?<\/button>/', $editorSource, $saveControls);
 $saveControls = \Illuminate\Support\Facades\Blade::render(implode('', $saveControls[0]));
-file_put_contents(base_path('test-output/ui-admin.html'), '<!doctype html><html><head><meta name="viewport" content="width=device-width"><title>Admin preview QA</title><style>'.$adminCss.'</style></head><body><div class="container-fluid p-4"><h1>Edit User</h1><div class="row g-4"><div class="col-xl-8 order-2 order-xl-1"><form><label>Name <input name="name" value="Creator"></label>'.$saveControls.'</form></div><aside class="col-xl-4 order-1 order-xl-2">'.$preview.'</aside></div></div></body></html>');
+file_put_contents(base_path('test-output/ui-admin.html'), '<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>Admin preview QA</title><style>'.$adminCss.'</style></head><body><div class="container-fluid p-4"><h1>Edit User</h1><div class="row g-4"><div class="col-xl-8 order-2 order-xl-1"><form><label>Name <input name="name" value="Creator"></label>'.$saveControls.'</form></div><aside class="col-xl-4 order-1 order-xl-2">'.$preview.'</aside></div></div></body></html>');
