@@ -11,6 +11,7 @@
           toolbarAdaptive: false, toolbarSticky: false,
           buttons: ['undo', 'redo', '|', 'paragraph', 'bold', 'italic', 'underline', 'strikethrough', '|', 'ul', 'ol', 'outdent', 'indent', 'align', '|', 'link', 'image', 'table', 'hr', 'brush', '|', 'eraser', 'source', 'fullsize'],
           controls: { paragraph: { list: { p: 'Paragraph', h2: 'Heading 2', h3: 'Heading 3', h4: 'Heading 4', blockquote: 'Quote', pre: 'Code' } } },
+          beautifyHTML: false,
           sourceEditor: 'area', // No remote Ace editor dependency.
           uploader: { insertImageAsBase64URI: false },
           disablePlugins: ['file', 'video', 'powered-by-jodit'],
@@ -23,9 +24,15 @@
         field.required = false; // Hidden textarea must not block native form validation.
         editor.editor.setAttribute('aria-label', field.dataset.richTextLabel || 'Content editor');
         field.form.addEventListener('submit', function (event) {
-          editor.synchronizeValues();
-          field.value = editor.value;
-          var text = editor.text.trim();
+          var source = editor.container.querySelector('.jodit-source__mirror');
+          if (editor.getRealMode() === Jodit.MODE_SOURCE && source) {
+            // Capture immediately, even before the source plugin's debounced sync.
+            field.value = source.value;
+          } else {
+            editor.synchronizeValues();
+            field.value = editor.value;
+          }
+          var text = new DOMParser().parseFromString(field.value, 'text/html').body.textContent.trim();
           if (wasRequired && !text && !/<(img|hr|table)\b/i.test(field.value)) {
             event.preventDefault();
             editor.focus();

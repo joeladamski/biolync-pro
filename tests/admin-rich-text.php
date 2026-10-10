@@ -2,6 +2,7 @@
 require __DIR__.'/../vendor/autoload.php';
 $app = require __DIR__.'/../bootstrap/app.php';
 $app->make(Illuminate\Contracts\Console\Kernel::class)->bootstrap();
+config(['session.driver'=>'array']);
 set_exception_handler(function (Throwable $e) { fwrite(STDERR, (string) $e); exit(1); });
 
 use App\Support\RichText;
