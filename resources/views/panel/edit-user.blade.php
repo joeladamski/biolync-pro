@@ -77,7 +77,6 @@
                               <div class="form-group col-lg-8">
                                   <select id="theme-select" style="margin-bottom: 40px;" class="form-control" name="theme" data-base-url="{{ url('') }}/@<?= Auth::user()->littlelink_name ?>">
                                       <?php
-                                          $selectedTheme = old('theme', $user->theme);
                                           if ($handle = opendir('themes')) {
                                               while (false !== ($entry = readdir($handle))) {
                                                   if ($entry != "." && $entry != "..") {
@@ -89,25 +88,25 @@
                                                               $themeName = substr($matches[0][0],12);
                                                           }
                                                       }
-                                                      if($selectedTheme != $entry and isset($themeName)){
+                                                      if($user->theme != $entry and isset($themeName)){
                                                           echo '<option value="'.$entry.'" data-image="'.url('themes/'.$entry.'/screenshot.png').'">'.$themeName.'</option>';
                                                       }
                                                   }
                                               }
                                           }
                               
-                                          if($selectedTheme != "default" and $selectedTheme != ""){
-                                              if(file_exists(base_path('themes') . '/' . $selectedTheme . '/readme.md')){
-                                                  $text = file_get_contents(base_path('themes') . '/' . $selectedTheme . '/readme.md');
+                                          if($user->theme != "default" and $user->theme != ""){
+                                              if(file_exists(base_path('themes') . '/' . $user->theme . '/readme.md')){
+                                                  $text = file_get_contents(base_path('themes') . '/' . $user->theme . '/readme.md');
                                                   $pattern = '/Theme Name:.*/';
                                                   preg_match($pattern, $text, $matches, PREG_OFFSET_CAPTURE);
                                                   $themeName = substr($matches[0][0],12);
                                               }
-                                              echo '<option value="'.$selectedTheme.'" data-image="'.url('themes/'.$selectedTheme.'/screenshot.png').'" selected>'.$themeName.'</option>';
+                                              echo '<option value="'.$user->theme.'" data-image="'.url('themes/'.$user->theme.'/screenshot.png').'" selected>'.$themeName.'</option>';
                                           }
                               
                                           echo '<option value="default" data-image="'.url('themes/default/screenshot.png').'"';
-                                          if($selectedTheme == "default" or $selectedTheme == ""){
+                                          if($user->theme == "default" or $user->theme == ""){
                                               echo ' selected';
                                           }
                                           echo '>Default</option>';
