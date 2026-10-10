@@ -1,4 +1,10 @@
 @php($pkStyles = \App\Support\PublicSiteStyle::settings())
+@php($pkFontUrl = \App\Support\PublicSiteStyle::googleFontsUrl([$pkStyles['heading_font'], $pkStyles['body_font']]))
+@if($pkFontUrl)
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="{{ $pkFontUrl }}">
+@endif
 <style id="pk-public-site-styles">
 #loading { display:none!important; }
 :root {

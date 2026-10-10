@@ -6,5 +6,4 @@
       <span title="{{ __('messages.Verified user') }}">@include('components.verify-svg')</span>
     @endif
   </h1>
-  @include('linkstack.elements.vip-status')
 </div>

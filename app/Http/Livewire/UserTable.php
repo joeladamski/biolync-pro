@@ -30,6 +30,10 @@ class UserTable extends DataTableComponent
             Column::make(__('messages.ID'), "id")
                 ->sortable()
                 ->searchable(),
+            Column::make(__('messages.Action'), "id")
+                ->format(function ($value, $row, Column $column) {
+                    return view('components.table-components.action', ['user' => $row]);
+                }),
             Column::make(__('messages.Name'), "name")
                 ->sortable()
                 ->searchable(),
@@ -127,10 +131,6 @@ class UserTable extends DataTableComponent
                     } else {
                         return $diff->y . ' years ago';
                     }
-                }),
-                Column::make(__('messages.Action'), "id")
-                ->format(function ($value, $row, Column $column) {
-                    return view('components.table-components.action', ['user' => $row]);
                 }),
         ];
     }

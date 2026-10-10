@@ -17,7 +17,12 @@ const fs=require('fs');
   for(const [width,height] of [[320,844],[375,844],[390,844],[844,390],[390,844],[932,430],[430,844],[768,844],[1440,900],[1440,480]]) {
    for(const copyRepeats of [1,8]) {
    await page.setViewportSize({width,height});
-   await page.setContent(`<style>${styles}${css}${headerCss}</style><nav class="${navClass}" style="height:60px">Navigation</nav><div class="wrapper d-flex"><section class="login-content"><div class="${rowClass}"><div id="message" class="${copyClass}"><div class="card card-transparent auth-card shadow-none d-flex mb-0"><div class="card-body text-center"><div style="height:150px" id="message-logo">Logo</div><h1>BioLync.Pro</h1><p class="lead">${'Your home base for everything you want to share. '.repeat(copyRepeats)}</p><button id="login">Log in</button></div></div></div><div class="${previewClass}"><div class="d-flex"><div class="card-body"><div class="iframe-container"><iframe title="Preview" srcdoc="Demo"></iframe></div><div class="home-preview-copy"><h2>Welcome to BioLync.Pro</h2><p class="home-preview-tagline">Connect. Connect. Connect.</p><p class="home-preview-description">The future digital agency</p></div></div></div></div></div></section></div><footer class="${footerClass}" style="height:60px">Footer</footer>`);
+   await page.setContent(`<style>${styles}${css}${headerCss}</style><nav class="${navClass}" style="height:60px">Navigation</nav><div class="wrapper d-flex"><section class="login-content"><div class="${rowClass}"><div id="message" class="${copyClass}"><div class="card card-transparent auth-card shadow-none d-flex mb-0"><div class="card-body text-center"><div style="height:150px" id="message-logo">Logo</div><h1>BioLync.Pro</h1><div class="lead"><h2><strong>Discover your world</strong></h2><p style="font-size:22px">${'Your home base for everything you want to share. '.repeat(copyRepeats)}</p></div><button id="login">Log in</button></div></div></div><div class="${previewClass}"><div class="d-flex"><div class="card-body"><div class="iframe-container"><iframe title="Preview" srcdoc="Demo"></iframe></div><div class="home-preview-copy"><h2>Welcome to BioLync.Pro</h2><p class="home-preview-tagline">Connect. Connect. Connect.</p><p class="home-preview-description">The future digital agency</p></div></div></div></div></div></section></div><footer class="${footerClass}" style="height:60px">Footer</footer>`);
+   const typography = await page.evaluate(() => {
+    const size = selector => getComputedStyle(document.querySelector(selector)).fontSize;
+    return {body:size('.home-copy .lead p'),featuredBody:size('.home-preview-description'),title:size('.home-copy h1'),featuredTitle:size('.home-preview-copy h2'),nestedTitle:size('.home-copy .lead h2 strong')};
+   });
+   if(typography.body!==typography.featuredBody || typography.title!==typography.featuredTitle || typography.nestedTitle!==typography.featuredTitle) throw Error(JSON.stringify({typography}));
    await page.evaluate(()=>window.scrollTo(0,0));
    const result=await page.evaluate(()=>{
     const rect=s=>document.querySelector(s).getBoundingClientRect();
@@ -37,6 +42,7 @@ const fs=require('fs');
    if(!sticky)throw Error('Header does not stay visible after scrolling');
    const reachable=await page.locator('footer').evaluate(f=>f.getBoundingClientRect().bottom<=innerHeight+1);
    if(!reachable)throw Error('Footer cannot be reached by scrolling');
+   if(copyRepeats===1 && ((width===1440&&height===900)||(width===390&&height===844))) {await page.evaluate(()=>window.scrollTo(0,0));await page.screenshot({path:`test-output/home-${width}.png`,fullPage:true});}
    console.log('PASS homepage aligned columns and sticky geometry',width,height,copyRepeats);
    }
   }

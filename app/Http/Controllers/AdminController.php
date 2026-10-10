@@ -280,7 +280,7 @@ class AdminController extends Controller
   {
     $id = $request->id;
 
-    $data["user"] = User::where("id", $id)->get();
+    $data["user"] = collect([User::findOrFail($id)]);
 
     return view("panel/edit-user", $data);
   }
@@ -332,6 +332,7 @@ class AdminController extends Controller
       "littlelink_name" => "required|string|max:255|regex:/^[A-Za-z0-9._-]+$/|unique:users,littlelink_name," . $id,
       "littlelink_description" => "nullable|string|max:10000",
       "role" => "required|in:user,vip,admin",
+      "save_action" => "nullable|in:stay,exit",
       "theme" => "nullable|string|max:255",
       "image" => "nullable|image|mimes:jpeg,jpg,png,webp|max:2048",
       "background" => "nullable|image|mimes:jpeg,jpg,png,webp,gif|max:4096",
@@ -407,7 +408,10 @@ class AdminController extends Controller
       );
     }
 
-    return redirect("admin/users/all")->with("success", "User updated.");
+    $destination = ($data["save_action"] ?? "stay") === "exit"
+      ? route('showUsers')
+      : route('showUser', ['id' => $user->id]);
+    return redirect($destination)->with("success", "User updated.");
   }
 
   //Show site pages to edit

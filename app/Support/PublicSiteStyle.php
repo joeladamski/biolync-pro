@@ -49,8 +49,52 @@ class PublicSiteStyle
         Storage::disk('local')->delete('public-site-styles.json');
     }
 
+    public static function googleFonts(): array
+    {
+        return [
+            'inter' => 'Inter',
+            'montserrat' => 'Montserrat',
+            'poppins' => 'Poppins',
+            'roboto' => 'Roboto',
+            'lato' => 'Lato',
+            'oswald' => 'Oswald',
+            'dm-sans' => 'DM Sans',
+            'playfair-display' => 'Playfair Display',
+            'merriweather' => 'Merriweather',
+            'libre-baskerville' => 'Libre Baskerville',
+        ];
+    }
+
+    public static function fontOptions(): array
+    {
+        $options = ['system' => 'System', 'serif' => 'Editorial Serif', 'modern' => 'Modern', 'clean' => 'Clean Sans'];
+        foreach (self::googleFonts() as $key => $family) {
+            $options[$key] = $family . ' (Google Fonts)';
+        }
+        return $options;
+    }
+
+    public static function googleFontsUrl(array $fonts): ?string
+    {
+        $families = [];
+        foreach ($fonts as $font) {
+            $family = self::googleFonts()[$font] ?? null;
+            if ($family) $families[$family] = $family;
+        }
+        if (!$families) return null;
+        sort($families, SORT_STRING);
+        return 'https://fonts.googleapis.com/css2?' . implode('&', array_map(
+            fn ($family) => 'family=' . urlencode($family) . ':wght@400;700', $families
+        )) . '&display=swap';
+    }
+
     public static function fontStack(string $font): string
     {
+        $family = self::googleFonts()[$font] ?? null;
+        if ($family) {
+            $fallback = in_array($font, ['playfair-display', 'merriweather', 'libre-baskerville'], true) ? 'serif' : 'sans-serif';
+            return '"' . $family . '", ' . $fallback;
+        }
         return match ($font) {
             'serif' => 'Georgia, "Times New Roman", serif',
             'modern' => '"Trebuchet MS", Arial, sans-serif',

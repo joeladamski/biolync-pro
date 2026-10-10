@@ -7,7 +7,7 @@ $vipDays = $grantedAt ? max(0, $grantedAt->startOfDay()->diffInDays(now()->start
 $displayName = $userinfo->name ?: $userinfo->littlelink_name;
 @endphp
 @if($vipEnabled)
-<button type="button" class="pk-vip-badge" data-pk-vip-open>VIP 💋</button>
+<button type="button" class="pk-vip-badge" data-pk-vip-open aria-label="View VIP recognition" aria-haspopup="dialog">VIP 💋</button>
 <div class="pk-vip-backdrop" data-pk-vip-modal hidden>
   <section class="pk-vip-sheet" role="dialog" aria-modal="true">
     <button type="button" class="pk-vip-close" data-pk-vip-close aria-label="Close">×</button>
@@ -21,9 +21,9 @@ $displayName = $userinfo->name ?: $userinfo->littlelink_name;
   </section>
 </div>
 <style>
-.pk-vip-badge{display:inline-flex;vertical-align:middle;margin-left:8px;padding:5px 10px;border:1px solid #FF5DD3;border-radius:999px;background:linear-gradient(135deg,#33003B,#FF5DD3);color:#fff;font-size:.68rem;font-weight:900;letter-spacing:.08em;cursor:pointer}
+.biolync-avatar .pk-vip-badge{position:absolute;top:0;right:-12px;display:inline-flex!important;align-items:center;justify-content:center;width:auto!important;min-width:0!important;min-height:0!important;height:26px!important;box-sizing:border-box;margin:0!important;padding:3px 8px!important;border:1px solid #FF5DD3;border-radius:999px;background:linear-gradient(135deg,#33003B,#FF5DD3);color:#fff;font-size:11px!important;line-height:18px!important;font-weight:800;letter-spacing:.04em;cursor:pointer;z-index:2}
 .pk-vip-backdrop{position:fixed;inset:0;z-index:100001;background:rgba(11,4,14,.76);display:flex;align-items:center;justify-content:center;padding:18px}.pk-vip-backdrop[hidden]{display:none}
-.pk-vip-sheet{position:relative;width:min(520px,100%);padding:34px 30px;background:linear-gradient(160deg,#33003B,#19001e);color:#fff;border:1px solid rgba(255,93,211,.4);border-radius:26px;text-align:center}.pk-vip-close{position:absolute;right:14px;top:9px;border:0;background:none;color:#fff;font-size:2rem}.pk-vip-seal{width:92px;height:92px;margin:0 auto 16px;border-radius:50%;display:grid;place-items:center;background:#fff;border:4px solid #FF5DD3;font-size:3rem}.pk-vip-eyebrow{font-size:.78rem;letter-spacing:.18em;color:#ff9ee2;font-weight:800}.pk-vip-sheet h2{color:#fff}.pk-vip-headline{font-weight:700}.pk-vip-tenure{margin:22px 0;padding:12px;border-top:1px solid rgba(255,255,255,.15);border-bottom:1px solid rgba(255,255,255,.15);font-size:.83rem;font-weight:900}.pk-vip-cta{display:block;margin-top:18px;padding:12px 18px;background:#FF5DD3;color:#160019!important;border-radius:999px;text-decoration:none;font-weight:800}
+.pk-vip-sheet{position:relative;width:min(520px,100%);padding:34px 30px;background:linear-gradient(160deg,#33003B,#19001e);color:#fff;border:1px solid rgba(255,93,211,.4);border-radius:26px;text-align:center}.pk-vip-close{width:32px!important;min-height:0!important;height:32px!important;padding:0!important;margin:0!important;line-height:1!important;position:absolute;right:14px;top:9px;border:0;background:none;color:#fff;font-size:2rem}.pk-vip-seal{width:92px;height:92px;margin:0 auto 16px;border-radius:50%;display:grid;place-items:center;background:#fff;border:4px solid #FF5DD3;font-size:3rem}.pk-vip-eyebrow{font-size:.78rem;letter-spacing:.18em;color:#ff9ee2;font-weight:800}.pk-vip-sheet h2{color:#fff}.pk-vip-headline{font-weight:700}.pk-vip-tenure{margin:22px 0;padding:12px;border-top:1px solid rgba(255,255,255,.15);border-bottom:1px solid rgba(255,255,255,.15);font-size:.83rem;font-weight:900}.pk-vip-cta{display:block;margin-top:18px;padding:12px 18px;background:#FF5DD3;color:#160019!important;border-radius:999px;text-decoration:none;font-weight:800}
 @media(max-width:600px){.pk-vip-backdrop{align-items:flex-end;padding:0}.pk-vip-sheet{border-radius:26px 26px 0 0}}
 </style>
 <script>
