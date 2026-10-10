@@ -1,0 +1,8 @@
+.pk-editorial {line-height:1.6;overflow-wrap:anywhere;}
+.pk-editorial p {margin:0 0 1rem;}
+.pk-editorial :is(ul,ol) {padding-left:1.5rem;text-align:left;}
+.pk-editorial blockquote {border-left:3px solid currentColor;padding-left:1rem;margin:1rem 0;}
+.pk-editorial img {max-width:100%;height:auto;}
+.pk-editorial table {display:block;max-width:100%;overflow-x:auto;border-collapse:collapse;margin:1rem 0;}
+.pk-editorial :is(td,th) {border:1px solid currentColor;padding:.5rem;}
+.pk-editorial pre {white-space:pre-wrap;}

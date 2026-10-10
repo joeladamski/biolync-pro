@@ -24,7 +24,7 @@
     <meta property="og:url" content="{{ url('') }}">
     <meta property="og:type" content="website">
     <meta property="og:title" content="{{env('APP_NAME')}}">
-    <meta property="og:description" content='@if($message->home_message == "default"){!!strip_tags(__('messages.HOME.MESSAGE'))!!}@else{!!$message->home_message!!}@endif'>
+    <meta property="og:description" content='{{ strip_tags($message->home_message === 'default' ? __('messages.HOME.MESSAGE') : $message->home_message) }}'>
     @if(file_exists(base_path("assets/linkstack/images/").findFile('avatar')))
     <meta property="og:image" content="{{ asset('assets/linkstack/images/'.findFile('avatar')) }}">
     @else
@@ -36,7 +36,7 @@
     <meta property="twitter:domain" content="{{ url('') }}">
     <meta property="twitter:url" content="{{ url('') }}">
     <meta name="twitter:title" content="{{env('APP_NAME')}}">
-    <meta name="twitter:description" content='@if($message->home_message == "default"){!!strip_tags(__('messages.HOME.MESSAGE'))!!}@else{!!$message->home_message!!}@endif'>
+    <meta name="twitter:description" content='{{ strip_tags($message->home_message === 'default' ? __('messages.HOME.MESSAGE') : $message->home_message) }}'>
     @if(file_exists(base_path("assets/linkstack/images/").findFile('avatar')))
     <meta name="twitter:image" content="{{ asset('assets/linkstack/images/'.findFile('avatar')) }}">
     @else
@@ -83,6 +83,7 @@
       <link rel="stylesheet" href="{{asset('assets/css/rtl.min.css')}}" />
       
       
+    <link rel="stylesheet" href="{{ asset('assets/css/editorial-content.css') }}">
     @include('components.public-site-styles')
 </head>
 
@@ -111,13 +112,13 @@
       .home-preview {min-height:0;display:flex;align-items:flex-start;justify-content:center;padding:32px 24px!important;}
       .home-preview > div {width:100%;}
       .home-preview-copy {max-width:420px;margin:24px auto 0;text-align:center;overflow-wrap:anywhere;}
-      .home-preview-copy h2 {font-size:1.75rem;margin-bottom:12px;}
+      .home-preview-copy :is(h2,h3,h4) {font-size:1.75rem;margin-bottom:12px;}
       .home-preview-tagline {font-size:1.125rem;font-weight:600;}
-      .home-preview-description {white-space:pre-line;line-height:1.6;}
-      .home-copy .lead, .home-copy .lead *, .home-preview-description {font-size:1rem!important;line-height:1.6;}
-      .home-copy .lead * {font-family:inherit;}
-      .home-copy .lead :is(h2,h3,h4) * {font-size:inherit!important;line-height:inherit;}
-      .home-copy h1, .home-copy .lead h2, .home-copy .lead h3, .home-copy .lead h4, .home-preview-copy h2 {font-size:1.75rem!important;line-height:1.25;}
+      .home-preview-description {line-height:1.6;}
+      .home-copy .lead, .home-copy .lead *, .home-preview-description, .home-preview-description * {font-size:1rem!important;line-height:1.6;}
+      .home-copy .lead *, .home-preview-description * {font-family:inherit;}
+      .home-copy .lead :is(h2,h3,h4) *, .home-preview-description :is(h2,h3,h4) * {font-size:inherit!important;line-height:inherit;}
+      .home-copy h1, .home-copy .lead h2, .home-copy .lead h3, .home-copy .lead h4, .home-preview-copy :is(h2,h3,h4) {font-size:1.75rem!important;line-height:1.25;}
       .home-copy .lead, .home-preview-copy {font-family:var(--pk-body-font, inherit);}
       .home-copy .lead h2, .home-copy .lead h3, .home-copy .lead h4 {font-family:var(--pk-heading-font, inherit);}
       .iframe-container {position:relative;width:370px;max-width:100%;height:650px;margin:0 auto;}
@@ -155,11 +156,11 @@
     
                 <h1 class="h1 fw-bold mb-4 pt-4">{{ config('app.name') }}</h1>
 
-                <div class="lead">
+                <div class="lead pk-editorial">
                   @if($message->home_message == "default")
                     {!!__('messages.HOME.MESSAGE')!!}
                   @else
-                    {!!$message->home_message!!}
+                    {!! \App\Support\RichText::render($message->home_message) !!}
                   @endif
                 </div>
     

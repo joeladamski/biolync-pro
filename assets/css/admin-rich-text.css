@@ -1,0 +1,10 @@
+.jodit_theme_dark {--jd-dark-background-color:#232838;--jd-dark-toolbar-color:#1c2130;--jd-dark-text-color:#fff;--jd-dark-icon-color:#fff;--jd-dark-text-color-opacity80:#abb6ca;}
+.jodit_theme_dark .jodit-wysiwyg a {color:#a7d7ff;text-decoration:underline;}
+.jodit-container {max-width:100%;min-width:0;}
+.jodit-container .jodit-workplace {background:#232838;color:#fff;}
+.jodit-wysiwyg {font-family:inherit;font-size:1rem;line-height:1.6;overflow-wrap:anywhere;}
+.jodit-wysiwyg img {max-width:100%;height:auto;}
+.jodit-wysiwyg :is(h1,h2,h3,h4,h5,h6) {color:inherit;}
+.jodit-wysiwyg :is(h2,h3,h4) {font-size:1.75rem;line-height:1.25;}
+.jodit-toolbar__box {flex-wrap:wrap;}
+.jodit-container:not(.jodit_fullsize) {margin-bottom:1rem;}

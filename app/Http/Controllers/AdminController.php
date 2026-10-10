@@ -453,7 +453,8 @@ class AdminController extends Controller
       'preview_copy' => 'nullable|array',
       'preview_copy.title' => 'nullable|string|max:120',
       'preview_copy.tagline' => 'nullable|string|max:200',
-      'preview_copy.description' => 'nullable|string|max:2000',
+      'preview_copy.description' => 'nullable|string|max:10000',
+      'preview_copy.description_format' => 'nullable|in:text,html',
     ];
     foreach ($buttons as $index => $button) {
       $rules["buttons.$index.title"] = 'required|string|max:100';
@@ -469,6 +470,10 @@ class AdminController extends Controller
       if (array_key_exists($key, $data['preview_copy'] ?? [])) {
         $copy[$key] = $data['preview_copy'][$key] ?? '';
       }
+    }
+    if (array_key_exists('description', $data['preview_copy'] ?? [])) {
+      $copy['description_format'] = $data['preview_copy']['description_format'] ?? 'text';
+      if ($copy['description_format'] === 'html') $copy['description'] = \App\Support\RichText::render($copy['description']);
     }
     if (!\Illuminate\Support\Facades\Storage::disk('local')->put('home-ui.json', json_encode(['buttons' => $clean, 'preview_copy' => $copy], JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR))) {
       throw new \RuntimeException('Unable to save homepage links. Check storage permissions.');
@@ -486,7 +491,8 @@ class AdminController extends Controller
   //Save home message, logo and favicon
   public function editSite(request $request)
   {
-    $message = $request->message;
+    $data = $request->validate(['message' => 'nullable|string|max:20000']);
+    $message = \App\Support\RichText::render($data['message'] ?? '');
     $logo = $request->file("image");
     $icon = $request->file("icon");
 
@@ -523,7 +529,7 @@ class AdminController extends Controller
         "favicon" . "_" . time() . "." . $request->file("icon")->extension(),
       );
     }
-    return back();
+    return back()->with('site_saved', true);
   }
 
   //Delete avatar
