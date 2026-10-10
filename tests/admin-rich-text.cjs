@@ -28,6 +28,7 @@ const server = http.createServer((req, res) => {
       await page.waitForFunction(()=>document.querySelector('#home-message').dataset.editorReady);
       assert.equal(await page.locator('.jodit-container').count(),2, 'only visible forms initialize');
       assert(await page.locator('.jodit-wysiwyg').first().innerHTML().then(s=>s.includes('Be found 💋')));
+      assert.equal(await page.locator('.jodit-wysiwyg').first().evaluate(el=>getComputedStyle(el).backgroundColor), 'rgb(35, 40, 56)', 'editor matches dark admin background');
       await page.screenshot({path:`test-output/rich-text-${width}.png`,fullPage:false});
       assert(await page.evaluate(()=>document.documentElement.scrollWidth <= innerWidth + 1), 'editor fits viewport');
       await page.locator('summary').filter({hasText:'Edit existing page'}).click();
