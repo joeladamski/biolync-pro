@@ -24,6 +24,7 @@ class SitePageController extends Controller
             'nav_label' => 'nullable|string|max:50',
             'slug' => 'required|string|max:60|regex:/^[a-z0-9]+(?:-[a-z0-9]+)*$/',
             'body' => 'required|string|max:20000',
+            'body_format' => 'nullable|in:text,html',
             'published' => 'required|boolean',
             'show_in_header' => 'required|boolean',
             'order' => 'required|integer|min:0|max:99',
@@ -41,7 +42,8 @@ class SitePageController extends Controller
             $page = [
                 'id' => $data['id'] ?? bin2hex(random_bytes(8)),
                 'title' => $data['title'], 'nav_label' => $data['nav_label'] ?? '',
-                'slug' => $data['slug'], 'body' => $data['body'],
+                'slug' => $data['slug'], 'body' => ($data['body_format'] ?? 'text') === 'html' ? \App\Support\RichText::render($data['body']) : $data['body'],
+                'body_format' => $data['body_format'] ?? 'text',
                 'published' => (bool) $data['published'], 'show_in_header' => (bool) $data['show_in_header'],
                 'order' => (int) $data['order'],
             ];

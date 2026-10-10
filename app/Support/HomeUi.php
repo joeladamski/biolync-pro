@@ -9,7 +9,7 @@ class HomeUi
     public static function previewCopy(): array
     {
         $saved = json_decode(Storage::disk('local')->get('home-ui.json') ?? '{}', true) ?: [];
-        return array_merge(['title' => '', 'tagline' => '', 'description' => ''], $saved['preview_copy'] ?? []);
+        return array_merge(['title' => '', 'tagline' => '', 'description' => '', 'description_format' => 'text'], $saved['preview_copy'] ?? []);
     }
 
     public static function buttons(): array

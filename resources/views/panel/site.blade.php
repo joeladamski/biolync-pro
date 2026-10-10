@@ -2,7 +2,7 @@
 
 @section('content')
 
-<script src="{{ asset('resources/ckeditor/ckeditor.js') }}"></script>
+@include('components.admin-rich-text')
 
 <div class="conatiner-fluid content-inner mt-n5 py-0">
   <div class="row">   
@@ -18,6 +18,8 @@
                         <h2 class="mb-4 card-header"><i class="bi bi-person"> {{__('messages.Site Customization')}}</i></h2>
                                 <div class="card-body p-0 p-md-3">
                           
+                          @if(session('site_saved'))<div class="alert alert-success">Site customization saved.</div>@endif
+                          @if($errors->any())<div class="alert alert-danger"><ul>@foreach($errors->all() as $error)<li>{{ $error }}</li>@endforeach</ul></div>@endif
                           <form action="{{ route('editSite') }}" enctype="multipart/form-data" method="post">
                           @csrf
                             <div class="form-group col-lg-8">
@@ -37,7 +39,9 @@
                               @php
                               if($home_message == "default") $home_message = __('messages.HOME.MESSAGE');
                               @endphp
-                              <textarea class="form-control ckeditor" name="message" rows="3">{{ $home_message }}</textarea>
+                              <label for="home-message" class="visually-hidden">Home message</label>
+                              <textarea id="home-message" class="form-control" data-rich-text data-rich-text-label="Home message" name="message" rows="8">{{ \App\Support\RichText::render(old('message', $home_message)) }}</textarea>
+                              <p class="small">Format your content here. Public Site Styles controls heading and body fonts and sizes.</p>
                             </div>
                             <button type="submit" class="mt-3 ml-3 btn btn-primary">{{__('messages.Save')}}</button>
                           </form>

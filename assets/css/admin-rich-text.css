@@ -1,0 +1,7 @@
+.jodit-container {max-width:100%;min-width:0;}
+.jodit-container .jodit-workplace {background:#232838;color:#fff;}
+.jodit-wysiwyg {font-family:inherit;font-size:1rem;line-height:1.6;overflow-wrap:anywhere;}
+.jodit-wysiwyg img {max-width:100%;height:auto;}
+.jodit-wysiwyg :is(h2,h3,h4) {font-size:1.75rem;line-height:1.25;}
+.jodit-toolbar__box {flex-wrap:wrap;}
+.jodit-container:not(.jodit_fullsize) {margin-bottom:1rem;}
