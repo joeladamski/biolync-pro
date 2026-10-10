@@ -42,6 +42,7 @@ const fs=require('fs');
    if(!sticky)throw Error('Header does not stay visible after scrolling');
    const reachable=await page.locator('footer').evaluate(f=>f.getBoundingClientRect().bottom<=innerHeight+1);
    if(!reachable)throw Error('Footer cannot be reached by scrolling');
+   if(copyRepeats===1 && ((width===1440&&height===900)||(width===390&&height===844))) {await page.evaluate(()=>window.scrollTo(0,0));await page.screenshot({path:`test-output/home-${width}.png`,fullPage:true});}
    console.log('PASS homepage aligned columns and sticky geometry',width,height,copyRepeats);
    }
   }

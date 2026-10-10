@@ -59,6 +59,27 @@ const http = require('http');
    console.log('PASS admin preview refresh', width);
    await page.close();
   }
+  for (const width of [390,1440]) {
+   const page = await browser.newPage({viewport:{width,height:900}});
+   page.on('pageerror', e => errors.push(e.message));
+   await page.route('https://fonts.googleapis.com/**', route => route.fulfill({contentType:'text/css',body:'/* Google Fonts request verified; offline glyph fallback */'}));
+   await page.goto(`${base}/test-output/ui-fonts.html`);
+   await page.locator('#pk-heading-font').selectOption('oswald');
+   await page.locator('#pk-body-font').selectOption('lato');
+   const fontState = await page.evaluate(() => ({
+    heading:getComputedStyle(document.getElementById('pk-style-preview-title')).fontFamily,
+    body:getComputedStyle(document.getElementById('pk-style-preview-card')).fontFamily,
+    url:document.getElementById('pk-preview-fonts').href,
+    overflow:document.documentElement.scrollWidth>innerWidth
+   }));
+   if (!fontState.heading.includes('Oswald') || !fontState.body.includes('Lato') || !fontState.url.includes('family=Oswald') || !fontState.url.includes('family=Lato') || fontState.overflow) throw Error(JSON.stringify(fontState));
+   await page.screenshot({path:`test-output/fonts-${width}.png`,fullPage:true});
+   await page.locator('#pk-heading-font').selectOption('system');
+   await page.locator('#pk-body-font').selectOption('system');
+   if (await page.locator('#pk-preview-fonts').count()) throw Error('Local font selection retained Google Fonts request');
+   console.log('PASS Google Fonts live preview and local fallback', width);
+   await page.close();
+  }
   if (errors.length) throw Error(errors.join('\n'));
  } finally {await browser.close(); await new Promise(resolve => server.close(resolve));}
 })().catch(e => {console.error(e);process.exit(1)});

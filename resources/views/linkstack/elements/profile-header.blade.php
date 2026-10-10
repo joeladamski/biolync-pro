@@ -15,9 +15,9 @@ html, body {background-color:var(--biolync-bg, var(--bgColor, #151826));}
 .biolync-cover { position:relative; width:min(600px,calc(100vw - 24px)); height:220px; left:50%; transform:translateX(-50%); border-radius:0 0 20px 20px; overflow:hidden; background:var(--biolync-bg-art, #263342); }
 .biolync-cover img,.biolync-cover video { width:100%;height:100%;object-fit:cover;object-position:var(--cover-position);display:block; }
 .biolync-avatar { position:relative;width:147.2px;margin:0 auto; }
-.biolync-avatar #avatar { width:147.2px!important;height:147.2px!important;min-width:147.2px!important;object-fit:cover; }
+.biolync-avatar #avatar { box-sizing:border-box;width:147.2px!important;height:147.2px!important;min-width:147.2px!important;object-fit:cover; }
 .biolync-cover + .biolync-avatar { width:128.8px;margin-top:-56px; }
-.biolync-cover + .biolync-avatar #avatar { width:128.8px!important;height:128.8px!important;min-width:128.8px!important;border-radius:50%;border:4px solid var(--biolync-bg, #263342); }
+.biolync-cover + .biolync-avatar #avatar { box-sizing:border-box;width:128.8px!important;height:128.8px!important;min-width:128.8px!important;border-radius:50%;border:4px solid var(--biolync-bg, #263342); }
 .biolync-cover-toggle { position:absolute;right:12px;top:12px;z-index:1;width:auto!important;min-height:0!important;padding:6px 12px!important;background:#17212eee!important;color:white!important;border:1px solid white!important;border-radius:8px;cursor:pointer; }
 @media(max-width:600px) { .biolync-cover {height:190px;} }
 .biolync-profile .social-icon-div { padding:0!important;margin:0!important; }
