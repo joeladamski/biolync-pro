@@ -355,7 +355,9 @@ class AdminController extends Controller
     if (!empty($data["password"])) {
       $updates["password"] = Hash::make($data["password"]);
     }
-    $user->update($updates);
+    // This admin-only route supplies an explicit, validated field list.
+    // Keep role guarded on User for registration and other public writes.
+    $user->forceFill($updates)->save();
 
     UserData::saveData($id, "checkmark", $request->boolean("show_checkmark"));
     UserData::saveData($id, "links-new-tab", $request->boolean("links_new_tab"));
