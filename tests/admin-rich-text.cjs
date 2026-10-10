@@ -5,6 +5,7 @@ const http = require('http');
 const assert = require('assert');
 const root = path.resolve(__dirname, '..');
 const server = http.createServer((req, res) => {
+  if (req.url === '/favicon.ico') { res.writeHead(204);res.end();return; }
   if (req.method === 'POST') { res.writeHead(200, {'Content-Type':'text/html'}); res.end('<title>Saved</title><h1>Saved</h1>'); return; }
   const file = path.join(root, req.url === '/' ? 'test-output/ui-rich-text.html' : req.url);
   if (!file.startsWith(root) || !fs.existsSync(file)) { res.writeHead(404);res.end();return; }

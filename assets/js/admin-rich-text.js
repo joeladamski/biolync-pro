@@ -2,7 +2,7 @@
   'use strict';
   function initialize() {
     document.querySelectorAll('textarea[data-rich-text]').forEach(function (field) {
-      if (field.dataset.editorReady || !field.getClientRects().length) return;
+      if (field.dataset.editorReady || field.closest('details:not([open])') || !field.getClientRects().length) return;
       if (!window.Jodit) return; // The original textarea remains usable if an asset fails.
       var wasRequired = field.required;
       try {
