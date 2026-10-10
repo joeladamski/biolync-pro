@@ -20,6 +20,7 @@ html, body {background-color:var(--biolync-bg, var(--bgColor, #151826));}
 .biolync-cover + .biolync-avatar #avatar { box-sizing:border-box;width:128.8px!important;height:128.8px!important;min-width:128.8px!important;border-radius:50%;border:4px solid var(--biolync-bg, #263342); }
 .biolync-cover-toggle { position:absolute;right:12px;top:12px;z-index:1;width:auto!important;min-height:0!important;padding:6px 12px!important;background:#17212eee!important;color:white!important;border:1px solid white!important;border-radius:8px;cursor:pointer; }
 @media(max-width:600px) { .biolync-cover {height:190px;} }
+.biolync-profile .button { box-sizing:border-box;max-width:100%; }
 .biolync-profile .social-icon-div { padding:0!important;margin:0!important; }
 .biolync-profile .social-icon { padding:5px 10px!important; }
 </style>
