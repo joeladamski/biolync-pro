@@ -3,6 +3,9 @@
 @extends('layouts.sidebar')
 
 @section('content')
+@if(session('success'))
+<div class="alert alert-success mx-4" role="status">{{ session('success') }}</div>
+@endif
 
 <style>
   [x-cloak] { display: none !important; }

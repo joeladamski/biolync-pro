@@ -114,6 +114,12 @@
       .home-preview-copy h2 {font-size:1.75rem;margin-bottom:12px;}
       .home-preview-tagline {font-size:1.125rem;font-weight:600;}
       .home-preview-description {white-space:pre-line;line-height:1.6;}
+      .home-copy .lead, .home-copy .lead *, .home-preview-description {font-size:1rem!important;line-height:1.6;}
+      .home-copy .lead * {font-family:inherit;}
+      .home-copy .lead :is(h2,h3,h4) * {font-size:inherit!important;line-height:inherit;}
+      .home-copy h1, .home-copy .lead h2, .home-copy .lead h3, .home-copy .lead h4, .home-preview-copy h2 {font-size:1.75rem!important;line-height:1.25;}
+      .home-copy .lead, .home-preview-copy {font-family:var(--pk-body-font, inherit);}
+      .home-copy .lead h2, .home-copy .lead h3, .home-copy .lead h4 {font-family:var(--pk-heading-font, inherit);}
       .iframe-container {position:relative;width:370px;max-width:100%;height:650px;margin:0 auto;}
       .iframe-container iframe {position:absolute;top:0;left:0;width:100%;height:100%;border-radius:30px;border:16px solid black;box-sizing:border-box;transform-origin:top left;}
       @media(max-width:767px){

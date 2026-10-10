@@ -1,5 +1,13 @@
-@php($styles = \App\Support\PublicSiteStyle::settings())
+@php
+$styles = \App\Support\PublicSiteStyle::settings();
+$fontMap = [];
+foreach (array_keys(\App\Support\PublicSiteStyle::fontOptions()) as $fontKey) {
+    $fontMap[$fontKey] = \App\Support\PublicSiteStyle::fontStack($fontKey);
+}
+@endphp
 <h2 class="mb-3 card-header">Public Site Styles</h2>
+<p>Choose heading and body fonts, including Google Fonts. Selected Google Fonts load from Google with a local fallback.</p>
+@if($errors->any())<div class="alert alert-danger" role="alert"><ul class="mb-0">@foreach($errors->all() as $error)<li>{{ $error }}</li>@endforeach</ul></div>@endif
 <p>Global design tokens for the landing page and public PinkKiss.Love pages. Profile themes keep their own presentation layer.</p>
 @if(session('public_site_styles_saved'))<div class="alert alert-success">Public site styles saved.</div>@endif
 @if(session('public_site_styles_reset'))<div class="alert alert-success">Public site styles reset to PinkKiss defaults.</div>@endif
@@ -38,7 +46,7 @@
                 <div class="col-md-6 mb-3">
                     <label class="form-label" for="pk-heading-font">Heading font</label>
                     <select id="pk-heading-font" class="form-control" name="heading_font">
-                        @foreach(['system'=>'System','serif'=>'Editorial Serif','modern'=>'Modern','clean'=>'Clean Sans'] as $value=>$label)
+                        @foreach(\App\Support\PublicSiteStyle::fontOptions() as $value=>$label)
                         <option value="{{ $value }}" @selected(old('heading_font', $styles['heading_font']) === $value)>{{ $label }}</option>
                         @endforeach
                     </select>
@@ -46,7 +54,7 @@
                 <div class="col-md-6 mb-3">
                     <label class="form-label" for="pk-body-font">Body font</label>
                     <select id="pk-body-font" class="form-control" name="body_font">
-                        @foreach(['system'=>'System','serif'=>'Editorial Serif','modern'=>'Modern','clean'=>'Clean Sans'] as $value=>$label)
+                        @foreach(\App\Support\PublicSiteStyle::fontOptions() as $value=>$label)
                         <option value="{{ $value }}" @selected(old('body_font', $styles['body_font']) === $value)>{{ $label }}</option>
                         @endforeach
                     </select>
@@ -95,15 +103,28 @@ document.addEventListener('DOMContentLoaded', () => {
     const previewCard = document.getElementById('pk-style-preview-card');
     const previewButton = document.getElementById('pk-style-preview-button');
 
-    const fontMap = {
-        system: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
-        serif: 'Georgia, "Times New Roman", serif',
-        modern: '"Trebuchet MS", Arial, sans-serif',
-        clean: 'Arial, Helvetica, sans-serif'
+    const fontMap = @json($fontMap);
+    const googleFonts = @json(\App\Support\PublicSiteStyle::googleFonts());
+    let activeFontUrl = '';
+    const loadPreviewFonts = (fonts) => {
+        const families = [...new Set(fonts.map(key => googleFonts[key]).filter(Boolean))].sort();
+        const fontUrl = families.length ? 'https://fonts.googleapis.com/css2?' + families.map(family => 'family=' + encodeURIComponent(family) + ':wght@400;700').join('&') + '&display=swap' : '';
+        if (fontUrl === activeFontUrl) return;
+        activeFontUrl = fontUrl;
+        let link = document.getElementById('pk-preview-fonts');
+        if (!fontUrl) { link?.remove(); return; }
+        if (!link) {
+            link = document.createElement('link');
+            link.id = 'pk-preview-fonts';
+            link.rel = 'stylesheet';
+            document.head.appendChild(link);
+        }
+        link.href = fontUrl;
     };
 
     const syncPreview = () => {
         const val = id => document.getElementById(id)?.value;
+        loadPreviewFonts([val('pk-heading-font'), val('pk-body-font')]);
         preview.style.background = val('pk-background');
         preview.style.color = val('pk-text_light');
         previewCard.style.background = val('pk-surface');

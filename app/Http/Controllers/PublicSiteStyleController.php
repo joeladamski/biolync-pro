@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Support\PublicSiteStyle;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class PublicSiteStyleController extends Controller
 {
@@ -19,8 +20,8 @@ class PublicSiteStyleController extends Controller
             'surface' => $hex,
             'text_light' => $hex,
             'text_dark' => $hex,
-            'heading_font' => 'required|in:system,serif,modern,clean',
-            'body_font' => 'required|in:system,serif,modern,clean',
+            'heading_font' => ['required', Rule::in(array_keys(PublicSiteStyle::fontOptions()))],
+            'body_font' => ['required', Rule::in(array_keys(PublicSiteStyle::fontOptions()))],
             'button_radius' => 'required|integer|min:0|max:40',
             'card_radius' => 'required|integer|min:0|max:40',
             'content_width' => 'required|integer|min:720|max:1600',
