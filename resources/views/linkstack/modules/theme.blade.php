@@ -3,7 +3,7 @@
 if (!function_exists('theme')) {
   function theme($key){
 $key = trim($key);
-$file = base_path('themes/' . $GLOBALS['themeName'] . '/config.php');
+$file = \App\Support\RuntimeMedia::path('themes/' . $GLOBALS['themeName'] . '/config.php');
   if (file_exists($file)) {
     $config = include $file;
   if (isset($config[$key])) {
@@ -27,7 +27,7 @@ $customBackgroundExists = false;
 @if(theme('allow_custom_background') != "false")
 @php
 $customBackgroundFile = findBackground($userinfo->id);
-$customBackgroundPath = base_path('assets/img/background-img/'.$customBackgroundFile);
+$customBackgroundPath = \App\Support\RuntimeMedia::path('assets/img/background-img/'.$customBackgroundFile);
 $customBackgroundURL = url('assets/img/background-img/'.$customBackgroundFile);
 $customBackgroundExists = file_exists($customBackgroundPath)
 @endphp
@@ -60,8 +60,8 @@ $customBackgroundExists = file_exists($customBackgroundPath)
   @else
   <link rel="stylesheet" href="themes/{{$info->theme}}/brands.css">
   @endif
-  <link rel="stylesheet" href="{{ asset('themes/'.$info->theme.'/skeleton-auto.css') }}?v={{ filemtime(base_path('themes/'.$info->theme.'/skeleton-auto.css')) }}">
-@if(file_exists(base_path('themes/' . $info->theme . '/animations.css')))
+  <link rel="stylesheet" href="{{ asset('themes/'.$info->theme.'/skeleton-auto.css') }}?v={{ filemtime(\App\Support\RuntimeMedia::path('themes/'.$info->theme.'/skeleton-auto.css')) }}">
+@if(file_exists(\App\Support\RuntimeMedia::path('themes/' . $info->theme . '/animations.css')))
   <link rel="stylesheet" href="<?php echo asset('themes/' . $info->theme . '/animations.css') ?>">
 @else
   <link rel="stylesheet" href="{{ asset('assets/linkstack/css/animations.css') }}">

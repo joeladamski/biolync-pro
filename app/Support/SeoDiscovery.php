@@ -68,7 +68,7 @@ class SeoDiscovery
     private static function imageUrl(string $configured=''): string
     {
         if($configured!=='' && filter_var($configured,FILTER_VALIDATE_URL))return $configured;
-        if(function_exists('findFile') && file_exists(base_path('assets/linkstack/images/'.findFile('avatar'))))return asset('assets/linkstack/images/'.findFile('avatar'));
+        if(function_exists('findFile') && file_exists(\App\Support\RuntimeMedia::path('assets/linkstack/images/'.findFile('avatar'))))return asset('assets/linkstack/images/'.findFile('avatar'));
         return asset('assets/linkstack/images/logo.svg');
     }
 
@@ -94,7 +94,7 @@ class SeoDiscovery
         $description=self::text($s['description']) ?: preg_replace('/\s+/u',' ',self::text($user->littlelink_description));
         $title=self::text($s['title']) ?: trim($user->name.' | '.config('app.name'));
         $robots=!$s['indexable'] ? 'noindex,nofollow' : (self::text($s['robots']) ?: ($global['robots'] ?: 'index,follow'));
-        $avatar=file_exists(base_path(findAvatar($user->id))) ? url(findAvatar($user->id)) : self::imageUrl((string)$global['og_image']);
+        $avatar=file_exists(\App\Support\RuntimeMedia::path(findAvatar($user->id))) ? url(findAvatar($user->id)) : self::imageUrl((string)$global['og_image']);
         return [
             'title'=>$title,
             'description'=>$description,

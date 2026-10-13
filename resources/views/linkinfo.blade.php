@@ -41,7 +41,7 @@
       <link rel="stylesheet" href="{{asset('assets/css/dark.min.css')}}" />
       
       <!-- Customizer Css -->
-            @if(file_exists(base_path("assets/dashboard-themes/dashboard.css")))
+            @if(file_exists(\App\Support\RuntimeMedia::path("assets/dashboard-themes/dashboard.css")))
       <link rel="stylesheet" href="{{asset('assets/dashboard-themes/dashboard.css')}}" />
       @else
       <link rel="stylesheet" href="{{asset('assets/css/customizer.min.css')}}" />
@@ -95,7 +95,7 @@
                     <div class="card mb-4">
                         <div class="card-body">
                             <div class="p-2 mb-3">
-                                @if(file_exists(base_path(findAvatar($id))))
+                                @if(file_exists(\App\Support\RuntimeMedia::path(findAvatar($id))))
                                     <img alt="avatar" class="rounded-avatar fadein" src="{{ url(findAvatar($id)) }}" height="128px" width="128px" style="object-fit: cover;">
                                 @elseif(\App\Support\SiteBranding::exists('avatar'))
                                     <img alt="avatar" class="fadein" src="{{ \App\Support\SiteBranding::url('avatar') }}" height="128px" width="128px" style="object-fit: cover;">

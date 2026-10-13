@@ -2,7 +2,7 @@
     $header = \App\Models\UserData::getData($userinfo->id, 'profile_header');
     $header = is_array($header) ? $header : [];
     $validPath = function ($path) use ($userinfo) {
-        return is_string($path) && preg_match('#^assets/profile-media/' . $userinfo->id . '_[a-f0-9]{32}\.(jpg|jpeg|png|webp|mp4|webm)$#', $path) && file_exists(base_path($path));
+        return is_string($path) && preg_match('#^assets/profile-media/' . $userinfo->id . '_[a-f0-9]{32}\.(jpg|jpeg|png|webp|mp4|webm)$#', $path) && file_exists(\App\Support\RuntimeMedia::path($path));
     };
     $hasHeader = $validPath($header['media'] ?? null);
     $position = in_array($header['position'] ?? '', ['top', 'center', 'bottom']) ? $header['position'] : 'center';

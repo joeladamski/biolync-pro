@@ -25,6 +25,8 @@ use App\Models\User;
 |
 */
 
+Route::get('/assets/{path}', [App\Http\Controllers\RuntimeMediaController::class, 'show'])->where('path', '(?:img/|profile-media/|profile-gallery/).+')->name('runtimeMedia');
+
 // Public branding remains available during maintenance and owner setup.
 Route::get('/site-branding/{kind}', [App\Http\Controllers\SiteBrandingController::class, 'show'])->where('kind', 'avatar|favicon')->name('siteBranding');
 

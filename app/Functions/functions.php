@@ -81,8 +81,7 @@ function findFile($name)
 
 function findAvatar($name)
 {
-    $directory = base_path("assets/img");
-    $files = preloadDirectoryFiles($directory, 'assets_img_files');
+    $files = \App\Support\RuntimeMedia::files('assets/img');
 
     $pattern = '/^' . preg_quote($name, '/') . '(_\w+)?\.\w+$/i';
     foreach ($files as $file) {
@@ -95,8 +94,7 @@ function findAvatar($name)
 
 function findBackground($name)
 {
-    $directory = base_path("assets/img/background-img/");
-    $files = preloadDirectoryFiles($directory, 'assets_img_background_files');
+    $files = \App\Support\RuntimeMedia::files('assets/img/background-img');
 
     $pattern = '/^' . preg_quote($name, '/') . '(_\w+)?\.\w+$/i';
     foreach ($files as $file) {
@@ -109,7 +107,7 @@ function findBackground($name)
 
 function analyzeImageBrightness($file) {
     try {
-    $file = base_path('assets/img/background-img/'.$file);
+    $file = \App\Support\RuntimeMedia::path('assets/img/background-img/'.$file);
   
     // Get image information using getimagesize
     $imageInfo = getimagesize($file);

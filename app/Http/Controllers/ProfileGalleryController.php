@@ -62,9 +62,9 @@ class ProfileGalleryController extends Controller
                     $id = bin2hex(random_bytes(16));
                     $path = 'assets/profile-gallery/' . $userId . '_' . $id . '.' . $file->extension();
                     [$width, $height] = getimagesize($file->getRealPath());
-                    File::ensureDirectoryExists(base_path('assets/profile-gallery'));
+                    File::ensureDirectoryExists(\App\Support\RuntimeMedia::path('assets/profile-gallery'));
                     $created[] = $path;
-                    $file->move(base_path('assets/profile-gallery'), basename($path));
+                    $file->move(\App\Support\RuntimeMedia::path('assets/profile-gallery'), basename($path));
                     $photos[] = ['id' => $id, 'path' => $path, 'caption' => '', 'width' => $width, 'height' => $height];
                 }
                 foreach ($photos as &$photo) unset($photo['position']);
@@ -73,11 +73,11 @@ class ProfileGalleryController extends Controller
                 $user->save();
             });
         } catch (\Throwable $error) {
-            foreach ($created as $path) File::delete(base_path($path));
+            foreach ($created as $path) File::delete(\App\Support\RuntimeMedia::path($path));
             throw $error;
         }
         Cache::forget('user_data_' . $userId);
-        foreach ($deleted as $path) File::delete(base_path($path));
+        foreach ($deleted as $path) File::delete(\App\Support\RuntimeMedia::path($path));
         return redirect('/studio/photo-gallery')->with('gallery_success', 'Photo gallery saved.');
     }
 }

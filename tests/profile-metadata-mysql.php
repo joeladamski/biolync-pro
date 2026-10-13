@@ -37,7 +37,7 @@ UserData::saveData($owner->id,'links-new-tab',true);
 $raw=DB::table('users')->where('id',$owner->id)->value('image');
 $decoded=json_decode($raw,true,512,JSON_THROW_ON_ERROR);
 verifyMysql(strlen($raw)>255 && count($decoded['photo_gallery']['photos'])===12 && strlen($decoded['photo_gallery']['photos'][0]['caption'])===200,'full gallery and captions survive real MySQL writes');
-verifyMysql($decoded['profile_header']['media']===$header['media'] && is_file(base_path($header['media'])),'header metadata and file survive gallery and settings saves');
+verifyMysql($decoded['profile_header']['media']===$header['media'] && is_file(\App\Support\RuntimeMedia::path($header['media'])),'header metadata and file survive gallery and settings saves');
 verifyMysql(str_contains(view('linkstack.elements.photo-gallery',['userinfo'=>$owner])->render(),'biolync-gallery-columns') && str_contains(view('linkstack.elements.profile-header',['userinfo'=>$owner])->render(),$header['media']),'both media sections render after database round trip');
 $migration->down();
 verifyMysql(DB::table('users')->where('id',$owner->id)->value('image')===$raw,'rollback retains wide storage and saved media');
