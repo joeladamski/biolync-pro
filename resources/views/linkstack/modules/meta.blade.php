@@ -33,8 +33,8 @@
     <meta property="og:description" content="{{ strip_tags($userinfo->littlelink_description) }}">
     @if(file_exists(base_path(findAvatar($userinfo->id))))
     <meta property="og:image" content="{{ url(findAvatar($userinfo->id)) }}">
-    @elseif(file_exists(base_path("assets/linkstack/images/").findFile('avatar')))
-    <meta property="og:image" content="{{ url("assets/linkstack/images/")."/".findFile('avatar') }}">
+    @elseif(\App\Support\SiteBranding::exists('avatar'))
+    <meta property="og:image" content="{{ \App\Support\SiteBranding::url('avatar') }}">
     @else
     <meta property="og:image" content="{{ asset('assets/linkstack/images/logo.svg') }}">
     @endif
@@ -47,8 +47,8 @@
     <meta name="twitter:description" content="{{ strip_tags($userinfo->littlelink_description) }}">
     @if(file_exists(base_path(findAvatar($userinfo->id))))
     <meta name="twitter:image" content="{{ url(findAvatar($userinfo->id)) }}">
-    @elseif(file_exists(base_path("assets/linkstack/images/").findFile('avatar')))
-    <meta name="twitter:image" content="{{ url("assets/linkstack/images/")."/".findFile('avatar') }}">
+    @elseif(\App\Support\SiteBranding::exists('avatar'))
+    <meta name="twitter:image" content="{{ \App\Support\SiteBranding::url('avatar') }}">
     @else
     <meta name="twitter:image" content="{{ asset('assets/linkstack/images/logo.svg') }}">
     @endif
@@ -70,8 +70,8 @@
 @include('components.favicon')
 @include('components.favicon-extension')
 
-@if(file_exists(base_path("assets/linkstack/images/").findFile('favicon')))
-<link rel="icon" type="image/png" href="{{ asset('assets/linkstack/images/'.findFile('favicon')) }}">
+@if(\App\Support\SiteBranding::exists('favicon'))
+<link rel="icon" type="image/png" href="{{ \App\Support\SiteBranding::url('favicon') }}">
 @else
 <link rel="icon" type="image/svg+xml" href="{{ asset('assets/linkstack/images/logo.svg') }}">
 @endif
