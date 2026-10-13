@@ -34,7 +34,7 @@ const fs=require('fs');
    if(width>=768) {
     if(result.previewLeft>=result.messageLeft) throw Error('Desktop preview must be left of message');
     if(Math.abs(result.previewTop-result.messageTop)>1 || Math.abs(result.previewHeight-result.messageHeight)>1) throw Error('Desktop columns must share top and height');
-    if(Math.abs(result.previewTop-result.navBottom)>1 || Math.abs(result.top-result.logoTop)>1) throw Error('Unexpected space above panels or mismatched inner padding');
+    if(Math.abs(result.previewTop-result.navBottom)>1 || Math.abs(result.logoTop-result.top-10)>1) throw Error('Unexpected space above panels or mismatched inner padding');
    }
    if(Math.abs(result.containerHeight-result.height)>1) throw Error('Scaled preview leaves mismatched space');
    await page.evaluate(()=>window.scrollTo(0,document.documentElement.scrollHeight));

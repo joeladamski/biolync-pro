@@ -102,13 +102,17 @@
       </div>    </div>
     <!-- loader END -->
     
+    @php
+      $metalEstate = in_array(strtolower(parse_url(config('app.url'), PHP_URL_HOST) ?? ''), ['orderofthemetal.one', 'metalqueen.one', 'metalking.one', 'metalgod.one', 'metalwarrior.one'], true);
+    @endphp
     <style>
       .home-layout {width:100%;min-height:calc(100vh - 120px);min-height:calc(100svh - 120px);}
       .home-footer {position:relative!important;bottom:auto;}
       .wrapper, .login-content {width:100%;}
       .home-copy {padding:32px 24px!important;}
       .home-copy .auth-card {padding:0;}
-      .home-copy .card-body, .home-preview .card-body {padding:0;}
+      .home-copy .card-body {padding:10px!important;}
+      .home-preview .card-body {padding:0;}
       .home-preview {min-height:0;display:flex;align-items:flex-start;justify-content:center;padding:32px 24px!important;}
       .home-preview > div {width:100%;}
       .home-preview-copy {max-width:420px;margin:24px auto 0;text-align:center;overflow-wrap:anywhere;}
@@ -122,7 +126,12 @@
       .home-copy .lead, .home-preview-copy {font-family:var(--pk-body-font, inherit);}
       .home-copy .lead h2, .home-copy .lead h3, .home-copy .lead h4 {font-family:var(--pk-heading-font, inherit);}
       .iframe-container {position:relative;width:370px;max-width:100%;height:650px;margin:0 auto;}
-      .iframe-container iframe {position:absolute;top:0;left:0;width:100%;height:100%;border-radius:30px;border:16px solid black;box-sizing:border-box;transform-origin:top left;}
+      .iframe-container iframe {position:absolute;top:0;left:0;width:100%;height:100%;border-radius:30px;border:8px solid black;box-sizing:border-box;transform-origin:top left;}
+      .metal-reflect-card {position:relative;isolation:isolate;overflow:hidden;}
+      .metal-reflect-card .card-body {position:relative;z-index:1;}
+      .metal-reflection {position:absolute;inset:0;padding:1px;border-radius:inherit;pointer-events:none;overflow:hidden;z-index:2;mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);mask-composite:exclude;-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);-webkit-mask-composite:xor;}
+      .metal-reflection-beam {position:absolute;inset:-100%;background:conic-gradient(from 0deg,transparent 0deg,#8e641c 8deg,#f8df8d 15deg,#fff6ca 18deg,#bb8c30 23deg,transparent 32deg);opacity:.8;}
+      .metal-reflection-beam:nth-child(2) {transform:rotate(180deg);}
       @media(max-width:767px){
         .home-layout {min-height:0;}
         .home-preview {min-height:0;padding:20px 16px!important;}
@@ -139,11 +148,15 @@
         .iframe-container iframe {transform:scale(.7);}
       }
     </style>
+    @if($metalEstate)<script src="{{ asset('assets/js/metal-home-reflections.js') }}" defer></script>@endif
     <div class="wrapper d-flex">
       <section class="login-content">
         <div class="row m-0 align-items-stretch bg-white home-layout">
           <div class="col-md-6 p-0 order-2 home-copy">
-            <div class="card card-transparent auth-card shadow-none d-flex mb-0">
+            <div class="card card-transparent auth-card shadow-none d-flex mb-0 {{ $metalEstate ? 'metal-reflect-card' : '' }}">
+              @if($metalEstate)
+              <div class="metal-reflection" aria-hidden="true"><span class="metal-reflection-beam"></span><span class="metal-reflection-beam"></span></div>
+              @endif
               <div class="card-body justify-content-center text-center">
     
                 @if(file_exists(base_path("assets/linkstack/images/").findFile('avatar')))
