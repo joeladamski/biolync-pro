@@ -25,6 +25,9 @@ use App\Models\User;
 |
 */
 
+// Public branding remains available during maintenance and owner setup.
+Route::get('/site-branding/{kind}', [App\Http\Controllers\SiteBrandingController::class, 'show'])->where('kind', 'avatar|favicon')->name('siteBranding');
+
 // Prevents section below from being run by 'composer update'
 if(file_exists(base_path('storage/app/ISINSTALLED'))){
   // generates new APP KEY if no one is set

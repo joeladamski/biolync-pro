@@ -14,8 +14,8 @@
       @endif
 
       <!-- Favicon -->
-      @if(file_exists(base_path("assets/linkstack/images/").findFile('favicon')))
-      <link rel="icon" type="image/png" href="{{ asset('assets/linkstack/images/'.findFile('favicon')) }}">
+      @if(\App\Support\SiteBranding::exists('favicon'))
+      <link rel="icon" type="image/png" href="{{ \App\Support\SiteBranding::url('favicon') }}">
       @else
       <link rel="icon" type="image/svg+xml" href="{{ asset('assets/linkstack/images/logo.svg') }}">
       @endif

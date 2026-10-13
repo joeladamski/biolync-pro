@@ -25,8 +25,8 @@
     <meta property="og:type" content="website">
     <meta property="og:title" content="{{env('APP_NAME')}}">
     <meta property="og:description" content='{{ strip_tags($message->home_message === 'default' ? __('messages.HOME.MESSAGE') : $message->home_message) }}'>
-    @if(file_exists(base_path("assets/linkstack/images/").findFile('avatar')))
-    <meta property="og:image" content="{{ asset('assets/linkstack/images/'.findFile('avatar')) }}">
+    @if(\App\Support\SiteBranding::exists('avatar'))
+    <meta property="og:image" content="{{ \App\Support\SiteBranding::url('avatar') }}">
     @else
     <meta property="og:image" content="{{ asset('assets/linkstack/images/logo.svg') }}">
     @endif
@@ -37,8 +37,8 @@
     <meta property="twitter:url" content="{{ url('') }}">
     <meta name="twitter:title" content="{{env('APP_NAME')}}">
     <meta name="twitter:description" content='{{ strip_tags($message->home_message === 'default' ? __('messages.HOME.MESSAGE') : $message->home_message) }}'>
-    @if(file_exists(base_path("assets/linkstack/images/").findFile('avatar')))
-    <meta name="twitter:image" content="{{ asset('assets/linkstack/images/'.findFile('avatar')) }}">
+    @if(\App\Support\SiteBranding::exists('avatar'))
+    <meta name="twitter:image" content="{{ \App\Support\SiteBranding::url('avatar') }}">
     @else
     <meta name="twitter:image" content="{{ asset('assets/linkstack/images/logo.svg') }}">
     @endif
@@ -47,8 +47,8 @@
       @endif
 
       <!-- Favicon -->
-      @if(file_exists(base_path("assets/linkstack/images/").findFile('favicon')))
-      <link rel="icon" type="image/png" href="{{ asset('assets/linkstack/images/'.findFile('favicon')) }}">
+      @if(\App\Support\SiteBranding::exists('favicon'))
+      <link rel="icon" type="image/png" href="{{ \App\Support\SiteBranding::url('favicon') }}">
       @else
       <link rel="icon" type="image/svg+xml" href="{{ asset('assets/linkstack/images/logo.svg') }}">
       @endif
@@ -162,8 +162,8 @@
               @endif
               <div class="card-body justify-content-center text-center">
     
-                @if(file_exists(base_path("assets/linkstack/images/").findFile('avatar')))
-                <img alt="avatar" src="{{ asset('assets/linkstack/images/'.findFile('avatar')) }}" width="auto" height="128px">
+                @if(\App\Support\SiteBranding::exists('avatar'))
+                <img alt="avatar" src="{{ \App\Support\SiteBranding::url('avatar') }}" width="auto" height="128px">
                 @else
                 <div class="logo-container fadein">
                   <img src="{{ asset('assets/linkstack/images/logo-animated.svg') }}" alt="Logo" style="width:150px; height:150px;">

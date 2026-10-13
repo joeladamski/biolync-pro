@@ -87,8 +87,8 @@
     <div class="row">
       <div class="column" style="margin-top: 15%">
 
-        @if(file_exists(base_path("assets/linkstack/images/").findFile('avatar')))
-        <img alt="avatar" src="{{ asset('assets/linkstack/images/'.findFile('avatar')) }}" width="auto" height="128px">
+        @if(\App\Support\SiteBranding::exists('avatar'))
+        <img alt="avatar" src="{{ \App\Support\SiteBranding::url('avatar') }}" width="auto" height="128px">
         @else
         <div class="logo-container fadein">
           <img src="{{ asset('assets/linkstack/images/logo.svg') }}" alt="Logo" style="width:150px; height:150px;">

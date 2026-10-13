@@ -491,57 +491,22 @@ class AdminController extends Controller
   //Save home message, logo and favicon
   public function editSite(request $request)
   {
-    $data = $request->validate(['message' => 'nullable|string|max:20000']);
+    $data = $request->validate(['message' => 'nullable|string|max:20000', 'image' => 'nullable|image|mimes:png,jpg,jpeg,webp,gif|max:2048', 'icon' => 'nullable|image|mimes:png,jpg,jpeg,webp,gif|max:2048']);
     $message = \App\Support\RichText::render($data['message'] ?? '');
     $logo = $request->file("image");
     $icon = $request->file("icon");
 
     Page::first()->update(["home_message" => $message]);
 
-    if (!empty($logo)) {
-      // Delete existing image
-      $path = findFile("avatar");
-      $path = base_path("/assets/linkstack/images/" . $path);
-
-      // Delete existing image
-      if (File::exists($path)) {
-        File::delete($path);
-      }
-
-      $logo->move(
-        base_path("/assets/linkstack/images/"),
-        "avatar" . "_" . time() . "." . $request->file("image")->extension(),
-      );
-    }
-
-    if (!empty($icon)) {
-      // Delete existing image
-      $path = findFile("favicon");
-      $path = base_path("/assets/linkstack/images/" . $path);
-
-      // Delete existing image
-      if (File::exists($path)) {
-        File::delete($path);
-      }
-
-      $icon->move(
-        base_path("/assets/linkstack/images/"),
-        "favicon" . "_" . time() . "." . $request->file("icon")->extension(),
-      );
-    }
+    if ($logo) \App\Support\SiteBranding::save('avatar', $logo);
+    if ($icon) \App\Support\SiteBranding::save('favicon', $icon);
     return back()->with('site_saved', true);
   }
 
   //Delete avatar
   public function delAvatar()
   {
-    $path = findFile("avatar");
-    $path = base_path("/assets/linkstack/images/" . $path);
-
-    // Delete existing image
-    if (File::exists($path)) {
-      File::delete($path);
-    }
+    \App\Support\SiteBranding::remove('avatar');
 
     return back();
   }
@@ -550,13 +515,7 @@ class AdminController extends Controller
   public function delFavicon()
   {
     // Delete existing image
-    $path = findFile("favicon");
-    $path = base_path("/assets/linkstack/images/" . $path);
-
-    // Delete existing image
-    if (File::exists($path)) {
-      File::delete($path);
-    }
+    \App\Support\SiteBranding::remove('favicon');
 
     return back();
   }

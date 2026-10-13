@@ -8,12 +8,12 @@
               <a href="{{ url('') }}" class="d-flex align-items-center mb-3">
                 <!--Logo start-->
                 <div class="logo-main">
-                    @if(file_exists(base_path("assets/linkstack/images/").findFile('avatar')))
+                    @if(\App\Support\SiteBranding::exists('avatar'))
                     <div class="logo-normal">
-                      <img class="img logo" src="{{ asset('assets/linkstack/images/'.findFile('avatar')) }}" style="width:auto;height:30px;">
+                      <img class="img logo" src="{{ \App\Support\SiteBranding::url('avatar') }}" style="width:auto;height:30px;">
                   </div>
                   <div class="logo-mini">
-                    <img class="img logo" src="{{ asset('assets/linkstack/images/'.findFile('avatar')) }}" style="width:auto;height:30px;">
+                    <img class="img logo" src="{{ \App\Support\SiteBranding::url('avatar') }}" style="width:auto;height:30px;">
                   </div>
                     @else
                     <div class="logo-normal">

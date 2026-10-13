@@ -1,0 +1,17 @@
+name: Persistent estate branding
+on:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  branding:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: mbstring, xml, sqlite3, gd, zip
+          tools: composer
+      - run: composer install --no-interaction --prefer-dist --no-scripts
+      - run: php -l app/Support/SiteBranding.php && php -l app/Http/Controllers/SiteBrandingController.php && php -l app/Console/Commands/ImportSiteBranding.php && php tests/persistent-branding.php

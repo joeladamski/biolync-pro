@@ -32,8 +32,8 @@
                 <div class="mb-3">
                   @if(file_exists(base_path(findAvatar(Auth::id()))))
                     <img src="{{ url(findAvatar(Auth::id())) }}" class="profile-preview" width="112" height="112" alt="Current profile picture">
-                  @elseif(file_exists(base_path('assets/linkstack/images/').findFile('avatar')))
-                    <img src="{{ asset('assets/linkstack/images/'.findFile('avatar')) }}" class="profile-preview" width="112" height="112" alt="Default profile picture">
+                  @elseif(\App\Support\SiteBranding::exists('avatar'))
+                    <img src="{{ \App\Support\SiteBranding::url('avatar') }}" class="profile-preview" width="112" height="112" alt="Default profile picture">
                   @else
                     <img src="{{ asset('assets/linkstack/images/logo.svg') }}" class="profile-preview" width="112" height="112" alt="Default profile picture">
                   @endif

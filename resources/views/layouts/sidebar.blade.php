@@ -28,8 +28,8 @@ $usrhandl = Auth::user()->littlelink_name;
     @endphp
 
       <!-- Favicon -->
-      @if(file_exists(base_path("assets/linkstack/images/").findFile('favicon')))
-      <link rel="icon" type="image/png" href="{{ asset('assets/linkstack/images/'.findFile('favicon')) }}">
+      @if(\App\Support\SiteBranding::exists('favicon'))
+      <link rel="icon" type="image/png" href="{{ \App\Support\SiteBranding::url('favicon') }}">
       @else
       <link rel="icon" type="image/svg+xml" href="{{ asset('assets/linkstack/images/logo.svg') }}">
       @endif
@@ -82,12 +82,12 @@ $usrhandl = Auth::user()->littlelink_name;
                 
                 <!--Logo start-->
                 <div class="logo-main">
-                @if(file_exists(base_path("assets/linkstack/images/").findFile('avatar')))
+                @if(\App\Support\SiteBranding::exists('avatar'))
                 <div class="logo-normal">
-                  <img class="img logo" src="{{ asset('assets/linkstack/images/'.findFile('avatar')) }}" style="width:auto;height:30px;">
+                  <img class="img logo" src="{{ \App\Support\SiteBranding::url('avatar') }}" style="width:auto;height:30px;">
               </div>
               <div class="logo-mini">
-                <img class="img logo" src="{{ asset('assets/linkstack/images/'.findFile('avatar')) }}" style="width:auto;height:30px;">
+                <img class="img logo" src="{{ \App\Support\SiteBranding::url('avatar') }}" style="width:auto;height:30px;">
               </div>
                 @else
                 <div class="logo-normal">
@@ -274,12 +274,12 @@ $usrhandl = Auth::user()->littlelink_name;
                 
                 <!--Logo start-->
                 <div class="logo-main">
-                  @if(file_exists(base_path("assets/linkstack/images/").findFile('avatar')))
+                  @if(\App\Support\SiteBranding::exists('avatar'))
                   <div class="logo-normal">
-                    <img class="img logo" src="{{ asset('assets/linkstack/images/'.findFile('avatar')) }}" style="width:auto;height:30px;">
+                    <img class="img logo" src="{{ \App\Support\SiteBranding::url('avatar') }}" style="width:auto;height:30px;">
                 </div>
                 <div class="logo-mini">
-                  <img class="img logo" src="{{ asset('assets/linkstack/images/'.findFile('avatar')) }}" style="width:auto;height:30px;">
+                  <img class="img logo" src="{{ \App\Support\SiteBranding::url('avatar') }}" style="width:auto;height:30px;">
                 </div>
                   @else
                   <div class="logo-normal">
@@ -463,8 +463,8 @@ $usrhandl = Auth::user()->littlelink_name;
                   <a class="py-0 nav-link d-flex align-items-center dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" data-bs-target="#navbarDropdownIcon">
 					@if(file_exists(base_path(findAvatar(Auth::user()->id))))
 					<img src="{{ url(findAvatar(Auth::user()->id)) }}" alt="User-Profile" class="img-fluid avatar avatar-40 avatar-rounded" style="object-fit:cover;">
-          @elseif(file_exists(base_path("assets/linkstack/images/").findFile('avatar')))
-          <img src="{{ url("assets/linkstack/images/")."/".findFile('avatar') }}" alt="User-Profile" class="img logo" style="width:auto;height:30px;">
+          @elseif(\App\Support\SiteBranding::exists('avatar'))
+          <img src="{{ \App\Support\SiteBranding::url('avatar') }}" alt="User-Profile" class="img logo" style="width:auto;height:30px;">
 					@else
 					<img src="{{ asset('assets/linkstack/images/logo.svg') }}" alt="User-Profile" class="img-fluid avatar avatar-40 avatar-rounded">
 					@endif

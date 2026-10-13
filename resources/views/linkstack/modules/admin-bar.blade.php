@@ -99,8 +99,8 @@ if(Auth::user()->id == $userinfo->id){
                  <a class="ab-item" aria-haspopup="true" href="#"><span class="display-name">{{Auth::user()->name}}</span>
                   @if(file_exists(base_path(findAvatar(Auth::user()->id))))
                   <img src="{{ url(findAvatar(Auth::user()->id)) }}" class="avatar avatar-26 photo" height="26" width="26" style="object-fit:cover;">
-                  @elseif(file_exists(base_path("assets/linkstack/images/").findFile('avatar')))
-                  <img src="{{ url("assets/linkstack/images/")."/".findFile('avatar') }}" class="avatar avatar-26 photo" height="26" width="26" style="width:auto;height:30px;">
+                  @elseif(\App\Support\SiteBranding::exists('avatar'))
+                  <img src="{{ \App\Support\SiteBranding::url('avatar') }}" class="avatar avatar-26 photo" height="26" width="26" style="width:auto;height:30px;">
                   @else
                   <img src="{{ asset('assets/linkstack/images/logo.svg') }}" class="avatar avatar-26 photo avatar-rounded" height="26" width="26" height="64" width="64">
                   @endif
@@ -110,8 +110,8 @@ if(Auth::user()->id == $userinfo->id){
                        <li id="linkstack-admin-bar-user-info"><a class="ab-item" tabindex="-1" href="{{ url('/studio/page') }}">
                         @if(file_exists(base_path(findAvatar(Auth::user()->id))))
                         <img src="{{ url(findAvatar(Auth::user()->id)) }}" class="avatar avatar-64 photo" height="64" width="64" style="object-fit:cover;">
-                        @elseif(file_exists(base_path("assets/linkstack/images/").findFile('avatar')))
-                        <img src="{{ url("assets/linkstack/images/")."/".findFile('avatar') }}" class="avatar avatar-64 photo" height="64" width="64" style="width:auto;height:30px;">
+                        @elseif(\App\Support\SiteBranding::exists('avatar'))
+                        <img src="{{ \App\Support\SiteBranding::url('avatar') }}" class="avatar avatar-64 photo" height="64" width="64" style="width:auto;height:30px;">
                         @else
                         <img src="{{ asset('assets/linkstack/images/logo.svg') }}" class="avatar avatar-64 photo avatar-rounded" height="64" width="64">
                         @endif
