@@ -30,7 +30,7 @@
               <div class="form-group">
                 <label class="form-label fw-bold">Profile Picture</label>
                 <div class="mb-3">
-                  @if(file_exists(base_path(findAvatar(Auth::id()))))
+                  @if(file_exists(\App\Support\RuntimeMedia::path(findAvatar(Auth::id()))))
                     <img src="{{ url(findAvatar(Auth::id())) }}" class="profile-preview" width="112" height="112" alt="Current profile picture">
                   @elseif(\App\Support\SiteBranding::exists('avatar'))
                     <img src="{{ \App\Support\SiteBranding::url('avatar') }}" class="profile-preview" width="112" height="112" alt="Default profile picture">
@@ -41,7 +41,7 @@
                 <label class="form-label" for="profile-picture-upload">Upload / change profile picture</label>
                 <input id="profile-picture-upload" type="file" accept="image/jpeg,image/jpg,image/png,image/webp" name="image" class="form-control">
                 <div class="form-text">JPEG, PNG or WebP, up to 2MB.</div>
-                @if(file_exists(base_path(findAvatar(Auth::id()))))
+                @if(file_exists(\App\Support\RuntimeMedia::path(findAvatar(Auth::id()))))
                   <a class="btn btn-sm btn-outline-danger mt-2" href="{{ route('delProfilePicture') }}"><i class="bi bi-trash"></i> Remove custom picture</a>
                 @endif
               </div>

@@ -52,7 +52,7 @@ $usrhandl = Auth::user()->littlelink_name;
       <link rel="stylesheet" href="{{asset('assets/css/dark.min.css')}}" />
       
       <!-- Customizer Css -->
-            @if(file_exists(base_path("assets/dashboard-themes/dashboard.css")))
+            @if(file_exists(\App\Support\RuntimeMedia::path("assets/dashboard-themes/dashboard.css")))
       <link rel="stylesheet" href="{{asset('assets/dashboard-themes/dashboard.css')}}" />
       @else
       <link rel="stylesheet" href="{{asset('assets/css/customizer.min.css')}}" />
@@ -375,7 +375,7 @@ $usrhandl = Auth::user()->littlelink_name;
                 @if(env('NOTIFY_UPDATES') == 'true' or env('NOTIFY_UPDATES') === 'major' or env('NOTIFY_UPDATES') === 'all')
               
                               {{-- <! –– Checks if file version.json exists AND if version.json exists on server to continue (without this PHP will throw ErrorException ) ––> --}}
-                              @if(file_exists(base_path("version.json")))
+                              @if(file_exists(\App\Support\RuntimeMedia::path("version.json")))
               
                                 <?php // Requests newest version from server and sets it as variable
               
@@ -383,7 +383,7 @@ $usrhandl = Auth::user()->littlelink_name;
                                 $Vgit = external_file_get_contents("https://version.linkstack.org/"); 
               
                              // Requests current version from the local version file and sets it as variable
-                                $Vlocal = file_get_contents(base_path("version.json"));
+                                $Vlocal = file_get_contents(\App\Support\RuntimeMedia::path("version.json"));
                                 }
               
                                 catch (Exception $e){
@@ -421,7 +421,7 @@ $usrhandl = Auth::user()->littlelink_name;
                                         </thead>
                                         <tbody>
                                           <tr>
-                                            <td><center><span class="badge rounded-pill bg-primary"><?php  if(file_exists(base_path("vbeta.json"))) {echo file_get_contents(base_path("vbeta.json"));} else {echo "none";}  ?></span></center></td>
+                                            <td><center><span class="badge rounded-pill bg-primary"><?php  if(file_exists(\App\Support\RuntimeMedia::path("vbeta.json"))) {echo file_get_contents(\App\Support\RuntimeMedia::path("vbeta.json"));} else {echo "none";}  ?></span></center></td>
                                             <td><center><span class="badge rounded-pill bg-primary"><?php echo external_file_get_contents("https://beta.linkstack.org/vbeta.json"); ?></span></center></td>
                                           </tr>
                                         </tbody>
@@ -461,7 +461,7 @@ $usrhandl = Auth::user()->littlelink_name;
 
                 <li class="nav-item dropdown">
                   <a class="py-0 nav-link d-flex align-items-center dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" data-bs-target="#navbarDropdownIcon">
-					@if(file_exists(base_path(findAvatar(Auth::user()->id))))
+					@if(file_exists(\App\Support\RuntimeMedia::path(findAvatar(Auth::user()->id))))
 					<img src="{{ url(findAvatar(Auth::user()->id)) }}" alt="User-Profile" class="img-fluid avatar avatar-40 avatar-rounded" style="object-fit:cover;">
           @elseif(\App\Support\SiteBranding::exists('avatar'))
           <img src="{{ \App\Support\SiteBranding::url('avatar') }}" alt="User-Profile" class="img logo" style="width:auto;height:30px;">
@@ -526,7 +526,7 @@ $usrhandl = Auth::user()->littlelink_name;
                   </div>
               </div>
               <div style="z-index:0!important;" class="iq-header-img">
-                @php if(file_exists(base_path("assets/dashboard-themes/header.png"))){$headerImage = asset('assets/dashboard-themes/header.png');}else{$headerImage = asset('assets/images/dashboard/top-header-overlay.png');} @endphp
+                @php if(file_exists(\App\Support\RuntimeMedia::path("assets/dashboard-themes/header.png"))){$headerImage = asset('assets/dashboard-themes/header.png');}else{$headerImage = asset('assets/images/dashboard/top-header-overlay.png');} @endphp
                   <img src="{{$headerImage}}" draggable="false" alt="header" class="img-fluid w-100 h-100 animated-scaleX">
                   <img src="{{$headerImage}}" draggable="false" alt="header" class="theme-color-purple-img img-fluid w-100 h-100 animated-scaleX">
                   <img src="{{$headerImage}}" draggable="false" alt="header" class="theme-color-blue-img img-fluid w-100 h-100 animated-scaleX">

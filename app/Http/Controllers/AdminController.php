@@ -382,19 +382,19 @@ class AdminController extends Controller
     if ($request->hasFile("image")) {
       while (findAvatar($id) !== "error.error") {
         $avatar = findAvatar($id);
-        if (is_file(base_path($avatar))) {
-          File::delete(base_path($avatar));
+        if (is_file(\App\Support\RuntimeMedia::path($avatar))) {
+          File::delete(\App\Support\RuntimeMedia::path($avatar));
         } else {
           break;
         }
       }
       $image = $request->file("image");
-      $image->move(base_path("assets/img"), $id . "_" . time() . "." . $image->extension());
+      $image->move(\App\Support\RuntimeMedia::path("assets/img"), $id . "_" . time() . "." . $image->extension());
     }
 
     if ($request->hasFile("background")) {
       while (findBackground($id) !== "error.error") {
-        $path = base_path("assets/img/background-img/" . findBackground($id));
+        $path = \App\Support\RuntimeMedia::path("assets/img/background-img/" . findBackground($id));
         if (is_file($path)) {
           File::delete($path);
         } else {
@@ -403,7 +403,7 @@ class AdminController extends Controller
       }
       $background = $request->file("background");
       $background->move(
-        base_path("assets/img/background-img/"),
+        \App\Support\RuntimeMedia::path("assets/img/background-img/"),
         $id . "_" . time() . "." . $background->extension()
       );
     }
@@ -579,8 +579,8 @@ class AdminController extends Controller
   {
     if ($request->ResetAdvancedConfig == "RESET_DEFAULTS") {
       copy(
-        base_path("storage/templates/advanced-config.php"),
-        base_path("config/advanced-config.php"),
+        \App\Support\RuntimeMedia::path("storage/templates/advanced-config.php"),
+        \App\Support\RuntimeMedia::path("config/advanced-config.php"),
       );
     } else {
       file_put_contents("config/advanced-config.php", $request->AdvancedConfig);
@@ -616,7 +616,7 @@ class AdminController extends Controller
       echo 'window.location.href = "../studio/theme";';
       echo "</script>";
     } else {
-      $folderName = base_path() . "/themes/" . $del;
+      $folderName = \App\Support\RuntimeMedia::path() . "/themes/" . $del;
 
       function removeFolder($folderName)
       {
@@ -639,14 +639,14 @@ class AdminController extends Controller
   {
     if ($handle = opendir("themes")) {
       while (false !== ($entry = readdir($handle))) {
-        $configFile = base_path('themes/'.$entry.'/config.php');
+        $configFile = \App\Support\RuntimeMedia::path('themes/'.$entry.'/config.php');
         $themeConfig = is_file($configFile) ? include $configFile : [];
         if (($themeConfig['update_channel'] ?? '') === 'repository') {
           continue;
         }
-        if (file_exists(base_path("themes") . "/" . $entry . "/readme.md")) {
+        if (file_exists(\App\Support\RuntimeMedia::path("themes") . "/" . $entry . "/readme.md")) {
           $text = file_get_contents(
-            base_path("themes") . "/" . $entry . "/readme.md",
+            \App\Support\RuntimeMedia::path("themes") . "/" . $entry . "/readme.md",
           );
           $pattern = "/Theme Version:.*/";
           preg_match($pattern, $text, $matches, PREG_OFFSET_CAPTURE);
@@ -659,11 +659,11 @@ class AdminController extends Controller
         $themeVe = null;
 
         if ($entry != "." && $entry != "..") {
-          if (file_exists(base_path("themes") . "/" . $entry . "/readme.md")) {
+          if (file_exists(\App\Support\RuntimeMedia::path("themes") . "/" . $entry . "/readme.md")) {
             if (
               !strpos(
                 file_get_contents(
-                  base_path("themes") . "/" . $entry . "/readme.md",
+                  \App\Support\RuntimeMedia::path("themes") . "/" . $entry . "/readme.md",
                 ),
                 "Source code:",
               )
@@ -673,7 +673,7 @@ class AdminController extends Controller
               $hasSource = true;
 
               $text = file_get_contents(
-                base_path("themes") . "/" . $entry . "/readme.md",
+                \App\Support\RuntimeMedia::path("themes") . "/" . $entry . "/readme.md",
               );
               $pattern = "/Source code:.*/";
               preg_match($pattern, $text, $matches, PREG_OFFSET_CAPTURE);
@@ -714,17 +714,17 @@ class AdminController extends Controller
                     ".zip";
 
                   file_put_contents(
-                    base_path("themes/theme.zip"),
+                    \App\Support\RuntimeMedia::path("themes/theme.zip"),
                     fopen($fileUrl, "r"),
                   );
 
                   $zip = new ZipArchive();
-                  $zip->open(base_path() . "/themes/theme.zip");
-                  $zip->extractTo(base_path("themes"));
+                  $zip->open(\App\Support\RuntimeMedia::path() . "/themes/theme.zip");
+                  $zip->extractTo(\App\Support\RuntimeMedia::path("themes"));
                   $zip->close();
-                  unlink(base_path() . "/themes/theme.zip");
+                  unlink(\App\Support\RuntimeMedia::path() . "/themes/theme.zip");
 
-                  $folder = base_path("themes");
+                  $folder = \App\Support\RuntimeMedia::path("themes");
                   $regex = "/[0-9.-]/";
                   $files = scandir($folder);
 
@@ -796,7 +796,7 @@ class AdminController extends Controller
       return false;
     }
 
-    $envPath = base_path(".env");
+    $envPath = \App\Support\RuntimeMedia::path(".env");
     if (!is_file($envPath) || !is_readable($envPath) || !is_writable($envPath)) {
       return false;
     }
@@ -946,8 +946,8 @@ class AdminController extends Controller
       } else {
         $value = "false";
       }
-      if (file_exists(base_path("storage/MAINTENANCE"))) {
-        unlink(base_path("storage/MAINTENANCE"));
+      if (file_exists(\App\Support\RuntimeMedia::path("storage/MAINTENANCE"))) {
+        unlink(\App\Support\RuntimeMedia::path("storage/MAINTENANCE"));
       }
       if (EnvEditor::keyExists($entry)) {
         EnvEditor::editKey($entry, $value);

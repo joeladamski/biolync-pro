@@ -3,7 +3,7 @@ $header = \App\Models\UserData::getData(Auth::id(), 'profile_header');
 $header = is_array($header) ? $header : [];
 $validHeader = !empty($header['media'])
     && preg_match('#^assets/profile-media/' . Auth::id() . '_[a-f0-9]{32}\\.(jpg|jpeg|png|webp|mp4|webm)$#', $header['media'])
-    && file_exists(base_path($header['media']));
+    && file_exists(\App\Support\RuntimeMedia::path($header['media']));
 $defaultHeader = 'assets/images/dashboard/top-header-overlay.png';
 @endphp
 <div class="card mb-4">

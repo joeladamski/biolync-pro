@@ -22,7 +22,7 @@ class ProfileGallery
         $gallery = UserData::getData($userId, 'photo_gallery');
         $gallery = is_array($gallery) ? $gallery : [];
         $gallery['photos'] = array_values(array_filter($gallery['photos'] ?? [], function ($photo) use ($userId) {
-            return is_array($photo) && self::ownedPath($userId, $photo['path'] ?? null) && is_file(base_path($photo['path']));
+            return is_array($photo) && self::ownedPath($userId, $photo['path'] ?? null) && is_file(\App\Support\RuntimeMedia::path($photo['path']));
         }));
         return $gallery;
     }

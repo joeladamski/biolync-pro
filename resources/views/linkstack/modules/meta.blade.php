@@ -31,7 +31,7 @@
     <meta property="og:type" content="website">
     <meta property="og:title" content="{{ $userinfo->name }}">
     <meta property="og:description" content="{{ strip_tags($userinfo->littlelink_description) }}">
-    @if(file_exists(base_path(findAvatar($userinfo->id))))
+    @if(file_exists(\App\Support\RuntimeMedia::path(findAvatar($userinfo->id))))
     <meta property="og:image" content="{{ url(findAvatar($userinfo->id)) }}">
     @elseif(\App\Support\SiteBranding::exists('avatar'))
     <meta property="og:image" content="{{ \App\Support\SiteBranding::url('avatar') }}">
@@ -45,7 +45,7 @@
     <meta property="twitter:url" content="{{ url('') }}/{{ "@" . $littlelink_name }}">
     <meta name="twitter:title" content="{{ $userinfo->littlelink_name }}">
     <meta name="twitter:description" content="{{ strip_tags($userinfo->littlelink_description) }}">
-    @if(file_exists(base_path(findAvatar($userinfo->id))))
+    @if(file_exists(\App\Support\RuntimeMedia::path(findAvatar($userinfo->id))))
     <meta name="twitter:image" content="{{ url(findAvatar($userinfo->id)) }}">
     @elseif(\App\Support\SiteBranding::exists('avatar'))
     <meta name="twitter:image" content="{{ \App\Support\SiteBranding::url('avatar') }}">

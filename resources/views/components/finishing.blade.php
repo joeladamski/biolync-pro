@@ -162,9 +162,9 @@ if (EnvEditor::keyExists('ALLOW_REGISTRATION')) {
 }
 
 try {
-    $file = base_path('storage/RSTAC');
+    $file = \App\Support\RuntimeMedia::path('storage/RSTAC');
     if (file_exists($file)) {
-        copy(base_path('storage/templates/advanced-config.php'), base_path('config/advanced-config.php'));
+        copy(\App\Support\RuntimeMedia::path('storage/templates/advanced-config.php'), \App\Support\RuntimeMedia::path('config/advanced-config.php'));
         unlink($file);
     }
 } catch (Exception $e) {
@@ -251,7 +251,7 @@ if (strpos($data['page']->home_message, 'LittleLink Custom') !== false) {
     Page::first()->update(['home_message' => $home_message]);
 }
 
-$migrationFiles = glob(database_path('migrations/*.php'));
+$migrationFiles = glob(data\App\Support\RuntimeMedia::path('migrations/*.php'));
 
 $fileNames = array_map(function ($file) {
     return basename($file, '.php');
@@ -275,7 +275,7 @@ try {
     Schema::dropIfExists('buttons');
 
     $migrator = app('migrator');
-    $migrator->run(database_path('migrations'));
+    $migrator->run(data\App\Support\RuntimeMedia::path('migrations'));
 
     $seeder = new ButtonSeeder();
     $seeder->run();
@@ -333,11 +333,11 @@ try {
 
 // Moves all previous images to the new path
 try {
-    if (is_dir(base_path('assets/img'))) {
-        $files = File::files(base_path('img'));
+    if (is_dir(\App\Support\RuntimeMedia::path('assets/img'))) {
+        $files = File::files(\App\Support\RuntimeMedia::path('img'));
         foreach ($files as $file) {
             $filename = $file->getFilename();
-            $destination = base_path('assets/img/' . $filename);
+            $destination = \App\Support\RuntimeMedia::path('assets/img/' . $filename);
             if (!File::exists($destination)) {
                 if (!$file->isDir()) {
                     File::move($file, $destination);
@@ -348,11 +348,11 @@ try {
 } catch (exception $e) {
 }
 try {
-    if (is_dir(base_path('assets/img/background-img'))) {
-        $files = File::files(base_path('img/background-img'));
+    if (is_dir(\App\Support\RuntimeMedia::path('assets/img/background-img'))) {
+        $files = File::files(\App\Support\RuntimeMedia::path('img/background-img'));
         foreach ($files as $file) {
             $filename = $file->getFilename();
-            $destination = base_path('assets/img/background-img/' . $filename);
+            $destination = \App\Support\RuntimeMedia::path('assets/img/background-img/' . $filename);
             if (!File::exists($destination)) {
                 if (!$file->isDir()) {
                     File::move($file, $destination);
@@ -363,11 +363,11 @@ try {
 } catch (exception $e) {
 }
 try {
-    if (is_dir(base_path('littlelink/images'))) {
-        $files = File::files(base_path('littlelink/images'));
+    if (is_dir(\App\Support\RuntimeMedia::path('littlelink/images'))) {
+        $files = File::files(\App\Support\RuntimeMedia::path('littlelink/images'));
         foreach ($files as $file) {
             $filename = $file->getFilename();
-            $destination = base_path('assets/linkstack/images/' . $filename);
+            $destination = \App\Support\RuntimeMedia::path('assets/linkstack/images/' . $filename);
             if (!File::exists($destination)) {
                 if (!$file->isDir()) {
                     File::move($file, $destination);
@@ -378,11 +378,11 @@ try {
 } catch (exception $e) {
 }
 try {
-    if (is_dir(base_path('littlelink/images'))) {
-        $files = File::files(base_path('littlelink/images'));
+    if (is_dir(\App\Support\RuntimeMedia::path('littlelink/images'))) {
+        $files = File::files(\App\Support\RuntimeMedia::path('littlelink/images'));
         foreach ($files as $file) {
             $filename = $file->getFilename();
-            $destination = base_path('assets/linkstack/images/' . $filename);
+            $destination = \App\Support\RuntimeMedia::path('assets/linkstack/images/' . $filename);
             if (!File::exists($destination)) {
                 if (!$file->isDir()) {
                     File::move($file, $destination);
@@ -393,11 +393,11 @@ try {
 } catch (exception $e) {
 }
 try {
-    if (is_dir(base_path('studio/favicon/icons'))) {
-        $files = File::files(base_path('studio/favicon/icons'));
+    if (is_dir(\App\Support\RuntimeMedia::path('studio/favicon/icons'))) {
+        $files = File::files(\App\Support\RuntimeMedia::path('studio/favicon/icons'));
         foreach ($files as $file) {
             $filename = $file->getFilename();
-            $destination = base_path('assets/favicon/icons/' . $filename);
+            $destination = \App\Support\RuntimeMedia::path('assets/favicon/icons/' . $filename);
             if (!File::exists($destination)) {
                 if (!$file->isDir()) {
                     File::move($file, $destination);
@@ -417,8 +417,8 @@ try {
     foreach ($users as $user) {
         $oldName = $user->littlelink_name . '.png';
         $newName = $user->id . '.png';
-        $oldPath = base_path('assets/img/' . $oldName);
-        $newPath = base_path('assets/img/' . $newName);
+        $oldPath = \App\Support\RuntimeMedia::path('assets/img/' . $oldName);
+        $newPath = \App\Support\RuntimeMedia::path('assets/img/' . $newName);
 
         if (File::exists($oldPath)) {
             File::move($oldPath, $newPath);
@@ -454,7 +454,7 @@ session(['update_error' => $e->getMessage()]);
 
 try {
 
-    $themesPath = base_path('themes');
+    $themesPath = \App\Support\RuntimeMedia::path('themes');
     $regex = '/[0-9.-]/';
     $files = scandir($themesPath);
     $files = array_diff($files, array('.', '..'));

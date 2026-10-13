@@ -97,7 +97,7 @@ if(Auth::user()->id == $userinfo->id){
            <ul id="linkstack-admin-bar-top-secondary" class="ab-top-secondary ab-top-menu">
               <li id="linkstack-admin-bar-my-account" class="menupop with-avatar">
                  <a class="ab-item" aria-haspopup="true" href="#"><span class="display-name">{{Auth::user()->name}}</span>
-                  @if(file_exists(base_path(findAvatar(Auth::user()->id))))
+                  @if(file_exists(\App\Support\RuntimeMedia::path(findAvatar(Auth::user()->id))))
                   <img src="{{ url(findAvatar(Auth::user()->id)) }}" class="avatar avatar-26 photo" height="26" width="26" style="object-fit:cover;">
                   @elseif(\App\Support\SiteBranding::exists('avatar'))
                   <img src="{{ \App\Support\SiteBranding::url('avatar') }}" class="avatar avatar-26 photo" height="26" width="26" style="width:auto;height:30px;">
@@ -108,7 +108,7 @@ if(Auth::user()->id == $userinfo->id){
                  <div class="ab-sub-wrapper">
                     <ul id="linkstack-admin-bar-user-actions" class="ab-submenu">
                        <li id="linkstack-admin-bar-user-info"><a class="ab-item" tabindex="-1" href="{{ url('/studio/page') }}">
-                        @if(file_exists(base_path(findAvatar(Auth::user()->id))))
+                        @if(file_exists(\App\Support\RuntimeMedia::path(findAvatar(Auth::user()->id))))
                         <img src="{{ url(findAvatar(Auth::user()->id)) }}" class="avatar avatar-64 photo" height="64" width="64" style="object-fit:cover;">
                         @elseif(\App\Support\SiteBranding::exists('avatar'))
                         <img src="{{ \App\Support\SiteBranding::url('avatar') }}" class="avatar avatar-64 photo" height="64" width="64" style="width:auto;height:30px;">

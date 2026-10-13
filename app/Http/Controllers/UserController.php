@@ -228,7 +228,7 @@ class UserController extends Controller
                 'type' => $request->typename // Save the link type
             ];
         } else {
-            $linkTypePath = base_path("blocks/{$linkType->typename}/handler.php");
+            $linkTypePath = \App\Support\RuntimeMedia::path("blocks/{$linkType->typename}/handler.php");
             if (file_exists($linkTypePath)) {
                 include $linkTypePath;
                 $result = handleLinkType($request, $linkType);
@@ -417,7 +417,7 @@ class UserController extends Controller
         }
         
 
-        // $vcard->addPhoto(base_path('img/1.png'));
+        // $vcard->addPhoto(\App\Support\RuntimeMedia::path('img/1.png'));
         
         // Generate the vCard file contents
         $file_contents = $vcard->getOutput();
@@ -452,13 +452,13 @@ class UserController extends Controller
 
         Link::where('id', $linkId)->delete();
 
-        $directory = base_path("assets/favicon/icons");
+        $directory = \App\Support\RuntimeMedia::path("assets/favicon/icons");
         $files = scandir($directory);
         foreach($files as $file) {
         if (strpos($file, $linkId.".") !== false) {
         $pathinfo = pathinfo($file, PATHINFO_EXTENSION);}}
         if (isset($pathinfo)) {
-        try{File::delete(base_path("assets/favicon/icons")."/".$linkId.".".$pathinfo);} catch (exception $e) {}
+        try{File::delete(\App\Support\RuntimeMedia::path("assets/favicon/icons")."/".$linkId.".".$pathinfo);} catch (exception $e) {}
         }
 
         return redirect('/studio/links');
@@ -469,13 +469,13 @@ class UserController extends Controller
     {
         $linkId = $request->id;
 
-        $directory = base_path("assets/favicon/icons");
+        $directory = \App\Support\RuntimeMedia::path("assets/favicon/icons");
         $files = scandir($directory);
         foreach($files as $file) {
         if (strpos($file, $linkId.".") !== false) {
         $pathinfo = pathinfo($file, PATHINFO_EXTENSION);}}
         if (isset($pathinfo)) {
-        try{File::delete(base_path("assets/favicon/icons")."/".$linkId.".".$pathinfo);} catch (exception $e) {}
+        try{File::delete(\App\Support\RuntimeMedia::path("assets/favicon/icons")."/".$linkId.".".$pathinfo);} catch (exception $e) {}
         }
 
         return redirect('/studio/links');
@@ -629,8 +629,8 @@ class UserController extends Controller
         if ($request->hasFile('image')) {
             while (findAvatar($userId) !== "error.error") {
                 $avatarName = findAvatar($userId);
-                if (is_file(base_path($avatarName))) {
-                    unlink(base_path($avatarName));
+                if (is_file(\App\Support\RuntimeMedia::path($avatarName))) {
+                    unlink(\App\Support\RuntimeMedia::path($avatarName));
                 } else {
                     break;
                 }
@@ -638,7 +638,7 @@ class UserController extends Controller
 
             $profilePhoto = $request->file('image');
             $fileName = $userId . '_' . time() . "." . $profilePhoto->extension();
-            $profilePhoto->move(base_path('assets/img'), $fileName);
+            $profilePhoto->move(\App\Support\RuntimeMedia::path('assets/img'), $fileName);
         }
 
         if ($request->has('sharebtn')) {
@@ -670,7 +670,7 @@ class UserController extends Controller
             foreach (['header_media' => 'media', 'header_poster' => 'poster'] as $field => $key) {
                 if ($request->hasFile($field)) {
                     $file = $request->file($field);
-                    $directory = base_path('assets/profile-media');
+                    $directory = \App\Support\RuntimeMedia::path('assets/profile-media');
                     File::ensureDirectoryExists($directory);
                     $name = $userId . '_' . bin2hex(random_bytes(16)) . '.' . $file->extension();
                     $extension = $file->extension();
@@ -687,7 +687,7 @@ class UserController extends Controller
         UserData::saveData($userId, 'profile_header', $header);
         foreach ($oldFiles as $path) {
             if (is_string($path) && preg_match('#^assets/profile-media/' . $userId . '_[a-f0-9]{32}\.(jpg|jpeg|png|webp|mp4|webm)$#', $path)) {
-                File::delete(base_path($path));
+                File::delete(\App\Support\RuntimeMedia::path($path));
             }
         }
         return redirect('/studio/page')->with('success', 'Profile header saved.');
@@ -711,7 +711,7 @@ class UserController extends Controller
         $customBackground = $request->file('image');
     
         if ($customBackground) {
-            $directory = base_path('assets/img/background-img/');
+            $directory = \App\Support\RuntimeMedia::path('assets/img/background-img/');
             $files = scandir($directory);
             $pathinfo = "error.error";
             foreach ($files as $file) {
@@ -723,14 +723,14 @@ class UserController extends Controller
             // Delete the user's current background image if it exists
             while (findBackground($userId) !== "error.error") {
                 $avatarName = "assets/img/background-img/" . findBackground(Auth::id());
-                unlink(base_path($avatarName));
+                unlink(\App\Support\RuntimeMedia::path($avatarName));
             }
                 
             $fileName = $userId . '_' . time() . "." . $customBackground->extension();
-            $customBackground->move(base_path('assets/img/background-img/'), $fileName);
+            $customBackground->move(\App\Support\RuntimeMedia::path('assets/img/background-img/'), $fileName);
     
             if (extension_loaded('imagick')) {
-                $imagePath = base_path('assets/img/background-img/') . $fileName;
+                $imagePath = \App\Support\RuntimeMedia::path('assets/img/background-img/') . $fileName;
                 $image = new \Imagick($imagePath);
                 $image->stripImage();
                 $image->writeImage($imagePath);
@@ -750,7 +750,7 @@ class UserController extends Controller
         // Delete the user's current background image if it exists
         while (findBackground($userId) !== "error.error") {
             $avatarName = "assets/img/background-img/" . findBackground(Auth::id());
-            unlink(base_path($avatarName));
+            unlink(\App\Support\RuntimeMedia::path($avatarName));
         }
 
         return back();
@@ -787,8 +787,8 @@ class UserController extends Controller
 
         if (!empty($zipfile) && Auth::user()->role == 'admin') {
 
-            $themesPath = base_path('themes');
-            $tmpPath = base_path() . '/themes/temp.zip';
+            $themesPath = \App\Support\RuntimeMedia::path('themes');
+            $tmpPath = \App\Support\RuntimeMedia::path() . '/themes/temp.zip';
             $zipfile->move($themesPath, "temp.zip");
 
             $zip = new ZipArchive;
@@ -918,7 +918,7 @@ class UserController extends Controller
         // Delete the user's current avatar if it exists
         while (findAvatar($userId) !== "error.error") {
             $avatarName = findAvatar($userId);
-            unlink(base_path($avatarName));
+            unlink(\App\Support\RuntimeMedia::path($avatarName));
         }
 
         return back();
@@ -965,8 +965,8 @@ class UserController extends Controller
         $userData = $user->toArray();
         $userData['links'] = $links->toArray();
 
-        if (file_exists(base_path(findAvatar($userId)))){
-            $imagePath = base_path(findAvatar($userId));
+        if (file_exists(\App\Support\RuntimeMedia::path(findAvatar($userId)))){
+            $imagePath = \App\Support\RuntimeMedia::path(findAvatar($userId));
             $imageData = base64_encode(file_get_contents($imagePath));
             $userData['image_data'] = $imageData;
     
@@ -1023,12 +1023,12 @@ class UserController extends Controller
                 // Delete the user's current avatar if it exists
                 while (findAvatar(Auth::id()) !== "error.error") {
                     $avatarName = findAvatar(Auth::id());
-                    unlink(base_path($avatarName));
+                    unlink(\App\Support\RuntimeMedia::path($avatarName));
                 }
                 
                 // Save the image to the correct path with the correct file name and extension
                 $filename = $user->id . '.' . $userExtension;
-                file_put_contents(base_path('assets/img/' . $filename), $imageData);
+                file_put_contents(\App\Support\RuntimeMedia::path('assets/img/' . $filename), $imageData);
                 
                 // Update the user's image field with the correct file name
                 $user->image = $filename;

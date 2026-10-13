@@ -33,20 +33,20 @@ try {
  verifyGallery(UserData::getData($owner->id,'profile_header')['position']==='top' && count(ProfileGallery::get($owner->id)['photos'])===3, 'metadata removal preserves header and gallery');
  $gallery=ProfileGallery::get($owner->id);$first=$gallery['photos'][0];$second=$gallery['photos'][1];
  verifyGallery(count($gallery['photos'])===3 && $first['height']===160 && $second['width']===160,'mixed photo proportions persist');
- verifyGallery(UserData::getData($owner->id,'profile_header')['media']===$header['media'] && is_file(base_path($header['media'])),'gallery saves preserve header image and file');
+ verifyGallery(UserData::getData($owner->id,'profile_header')['media']===$header['media'] && is_file(\App\Support\RuntimeMedia::path($header['media'])),'gallery saves preserve header image and file');
  verifyGallery(str_contains(view('linkstack.elements.profile-header',['userinfo'=>$owner])->render(),$header['media']) && str_contains(view('linkstack.elements.photo-gallery',['userinfo'=>$owner])->render(),$first['path']),'header and gallery both render on the public profile');
  Auth::login($other);
  saveGallery(['remove'=>[$first['id']],'captions'=>[$first['id']=>'Changed']]);
- verifyGallery(is_file(base_path($first['path'])) && ProfileGallery::get($owner->id)['photos'][0]['caption']==='','another account cannot edit or remove owner photos');
+ verifyGallery(is_file(\App\Support\RuntimeMedia::path($first['path'])) && ProfileGallery::get($owner->id)['photos'][0]['caption']==='','another account cannot edit or remove owner photos');
  Auth::login($owner);
  saveGallery(['captions'=>[$first['id']=>'<script>alert(1)</script>'],'positions'=>[$first['id']=>3,$second['id']=>1]]);
  verifyGallery(ProfileGallery::get($owner->id)['photos'][0]['id']===$second['id'],'display order saves');
  $html=view('linkstack.elements.photo-gallery',['userinfo'=>$owner])->render();
  verifyGallery(!str_contains($html,'<script>alert(1)</script>') && str_contains($html,'&lt;script&gt;'),'captions escape HTML');
- @mkdir(base_path('test-output'));
- @mkdir(base_path('test-output/gallery-assets'));
- foreach(ProfileGallery::get($owner->id)['photos'] as $photo) copy(base_path($photo['path']),base_path('test-output/gallery-assets/'.basename($photo['path'])));
- file_put_contents(base_path('test-output/gallery.html'),'<meta name="viewport" content="width=device-width"><style>body{margin:0;padding:16px;box-sizing:border-box}.biolync-gallery{color:#fff}body{background:#151826}</style>'.$html);
+ @mkdir(\App\Support\RuntimeMedia::path('test-output'));
+ @mkdir(\App\Support\RuntimeMedia::path('test-output/gallery-assets'));
+ foreach(ProfileGallery::get($owner->id)['photos'] as $photo) copy(\App\Support\RuntimeMedia::path($photo['path']),\App\Support\RuntimeMedia::path('test-output/gallery-assets/'.basename($photo['path'])));
+ file_put_contents(\App\Support\RuntimeMedia::path('test-output/gallery.html'),'<meta name="viewport" content="width=device-width"><style>body{margin:0;padding:16px;box-sizing:border-box}.biolync-gallery{color:#fff}body{background:#151826}</style>'.$html);
  foreach ([UploadedFile::fake()->create('bad.php',1,'application/x-php'),UploadedFile::fake()->image('huge.jpg')->size(2049)] as $bad) {
   try {saveGallery([],['photos'=>[$bad]]);throw new RuntimeException('Invalid upload accepted');}catch(Illuminate\Validation\ValidationException $e) {}
  }
@@ -55,10 +55,10 @@ try {
  try {saveGallery([],['photos'=>$many]);throw new RuntimeException('Photo limit ignored');}catch(Illuminate\Validation\ValidationException $e) {}
  verifyGallery(count(ProfileGallery::get($owner->id)['photos'])===3,'total photo limit enforced');
  saveGallery(['enabled'=>0]);
- verifyGallery(!str_contains(view('linkstack.elements.photo-gallery',['userinfo'=>$owner])->render(),'biolync-gallery-columns') && is_file(base_path($first['path'])),'hiding gallery preserves photos');
+ verifyGallery(!str_contains(view('linkstack.elements.photo-gallery',['userinfo'=>$owner])->render(),'biolync-gallery-columns') && is_file(\App\Support\RuntimeMedia::path($first['path'])),'hiding gallery preserves photos');
  saveGallery(['remove'=>[$first['id']]]);
- verifyGallery(!is_file(base_path($first['path'])) && count(ProfileGallery::get($owner->id)['photos'])===2,'removal deletes only selected photo');
- verifyGallery(is_file(base_path($header['media'])) && UserData::getData($owner->id,'profile_header')['media']===$header['media'],'gallery removal leaves header intact');
+ verifyGallery(!is_file(\App\Support\RuntimeMedia::path($first['path'])) && count(ProfileGallery::get($owner->id)['photos'])===2,'removal deletes only selected photo');
+ verifyGallery(is_file(\App\Support\RuntimeMedia::path($header['media'])) && UserData::getData($owner->id,'profile_header')['media']===$header['media'],'gallery removal leaves header intact');
  verifyGallery(!ProfileGallery::ownedPath($owner->id,'assets/profile-gallery/../secret.jpg'),'traversal path rejected');
  $standard=User::create(['name'=>'Standard','email'=>'standard@example.test','password'=>'unused']);
  Auth::login($standard);
@@ -73,6 +73,6 @@ try {
  $response=saveGallery();verifyGallery(str_ends_with($response->getTargetUrl(),'/studio/photo-gallery'),'gallery save returns to dedicated page');
  // Keep fixture assets for the browser job; all uploads are disposable CI files.
 } catch (Throwable $e) {
- foreach(glob(base_path('assets/profile-gallery/*')) as $file) unlink($file);
+ foreach(glob(\App\Support\RuntimeMedia::path('assets/profile-gallery/*')) as $file) unlink($file);
  throw $e;
 }
