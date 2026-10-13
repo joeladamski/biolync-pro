@@ -133,6 +133,7 @@
       .metal-phone-reflection {border-radius:30px;isolation:isolate;}
       .metal-phone-reflection .metal-reflection {padding:2px;}
       .metal-reflection-beam {position:absolute;inset:-100%;background:conic-gradient(from 0deg,transparent 0deg,#8e641c 8deg,#f8df8d 15deg,#fff6ca 18deg,#bb8c30 23deg,transparent 32deg);opacity:.8;}
+      .metal-phone-reflection .metal-reflection-pair {inset:auto;left:50%;top:50%;width:200%;height:auto;aspect-ratio:1;margin-left:-100%;margin-top:-100%;background:conic-gradient(from 0deg,transparent 0deg,#8e641c 8deg,#f8df8d 15deg,#fff6ca 18deg,#bb8c30 23deg,transparent 32deg,transparent 180deg,#8e641c 188deg,#f8df8d 195deg,#fff6ca 198deg,#bb8c30 203deg,transparent 212deg);}
       .metal-reflection-beam:nth-child(2) {transform:rotate(180deg);}
       @media(max-width:767px){
         .home-layout {min-height:0;}
@@ -203,7 +204,7 @@
               <div class="card-body justify-content-center text-center">
                 <div class="iframe-container {{ $metalEstate ? 'metal-phone-reflection' : '' }}"><iframe title="Homepage profile preview" src="{{ \App\Support\AiDiscovery::featuredUrl() }}"></iframe>
                   @if($metalEstate)
-                  <div class="metal-reflection" data-direction="counterclockwise" aria-hidden="true"><span class="metal-reflection-beam"></span><span class="metal-reflection-beam"></span></div>
+                  <div class="metal-reflection" data-direction="counterclockwise" aria-hidden="true"><span class="metal-reflection-beam metal-reflection-pair"></span></div>
                   @endif
                 </div>
                 @include('components.home-preview-copy')
