@@ -30,10 +30,15 @@ class ActivityAudit
             }
 
             if ($value instanceof \Illuminate\Http\UploadedFile) {
+                try {
+                    $size = $value->getSize();
+                } catch (\Throwable $error) {
+                    $size = null; // The controller may already have moved the temporary file.
+                }
                 $clean[$key] = [
                     'file' => $value->getClientOriginalName(),
                     'mime' => $value->getClientMimeType(),
-                    'size' => $value->getSize(),
+                    'size' => $size,
                 ];
             } elseif (is_array($value)) {
                 $clean[$key] = self::sanitize($value);
