@@ -99,7 +99,9 @@ foreach ([true, false] as $manual) {
     $social->shouldReceive('getNickname')->andReturn($key);
     $provider = Mockery::mock(Laravel\Socialite\Contracts\Provider::class);
     $provider->shouldReceive('user')->andReturn($social);
-    Laravel\Socialite\Facades\Socialite::shouldReceive('driver')->with('github')->andReturn($provider);
+    $socialite = Mockery::mock();
+    $socialite->shouldReceive('driver')->with('github')->andReturn($provider);
+    Laravel\Socialite\Facades\Socialite::swap($socialite);
     (new SocialLoginController)->providerCallback('github');
     $user = User::where('email', $key.'@example.test')->firstOrFail();
     approvalCheck($user->block === ($manual ? 'yes' : 'no') && $user->hasVerifiedEmail(), 'social email ownership does not bypass approval policy');

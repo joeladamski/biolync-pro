@@ -21,7 +21,7 @@ class RegistrationApproval
                     'user' => $user->name,
                     'email' => $user->email,
                 ], function ($message) {
-                    $message->to(env('ADMIN_EMAIL'))->subject('New user registration');
+                    $message->to(config('registration.admin_email'))->subject('New user registration');
                 });
             } catch (\Exception $e) {
                 // A notification failure must never approve or discard the account.
