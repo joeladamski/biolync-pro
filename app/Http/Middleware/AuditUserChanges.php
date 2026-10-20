@@ -10,6 +10,12 @@ class AuditUserChanges
 {
     public function handle(Request $request, Closure $next)
     {
+        // Controllers may move uploaded files, invalidating their temporary paths.
+        // Snapshot only sanitized metadata while those files still exist.
+        $changes = $request->user() && $this->isChange($request)
+            ? ActivityAudit::sanitize(array_merge($request->except(['_token']), $request->allFiles()))
+            : [];
+
         $response = $next($request);
 
         if (!$request->user() || $response->getStatusCode() >= 400 || !$this->isChange($request)) {
@@ -20,21 +26,26 @@ class AuditUserChanges
         if ($route === 'testActivityMonitoring') {
             return $response;
         }
-        $meta = [];
+        try {
+            $meta = [];
 
-        $settings = \App\Support\ActivityMonitoring::settings();
-        if ($settings['include_ip'] ?? false) {
-            $meta['ip'] = $request->ip();
-        }
-        if ($settings['include_user_agent'] ?? false) {
-            $meta['user_agent'] = mb_substr((string)$request->userAgent(), 0, 300);
-        }
+            $settings = \App\Support\ActivityMonitoring::settings();
+            if ($settings['include_ip'] ?? false) {
+                $meta['ip'] = $request->ip();
+            }
+            if ($settings['include_user_agent'] ?? false) {
+                $meta['user_agent'] = mb_substr((string)$request->userAgent(), 0, 300);
+            }
 
-        ActivityAudit::record(
-            $this->actionName($route),
-            array_merge($request->except(['_token']), $request->allFiles()),
-            $meta
-        );
+            ActivityAudit::record(
+                $this->actionName($route),
+                $changes,
+                $meta
+            );
+        } catch (\Throwable $error) {
+            // A monitoring failure must not turn an already saved change into HTTP 500.
+            report($error);
+        }
 
         return $response;
     }

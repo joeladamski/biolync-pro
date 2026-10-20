@@ -16,7 +16,7 @@ jobs:
           extensions: mbstring, xml, sqlite3, gd, zip
           tools: composer
       - run: composer install --no-interaction --prefer-dist --no-scripts
-      - run: php -l app/Support/PublicSiteStyle.php && php -l app/Support/RichText.php && php -l app/Http/Controllers/PublicSiteStyleController.php && php -l app/Http/Controllers/UserController.php && php tests/landing-content.php
+      - run: php -l app/Support/PublicSiteStyle.php && php -l app/Support/RichText.php && php -l app/Http/Controllers/PublicSiteStyleController.php && php -l app/Http/Controllers/UserController.php && php tests/background-upload-audit.php && php tests/landing-content.php
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
