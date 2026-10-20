@@ -62,3 +62,26 @@ try { $controller->show((string)$user->id,'9999'); throw new RuntimeException('U
 catch(Symfony\Component\HttpKernel\Exception\HttpException $e) { iconCheck($e->getStatusCode()===404,'unbounded dimensions rejected'); }
 $route=app('router')->getRoutes()->getByName('profileIcon');
 iconCheck($route && $route->matches(Illuminate\Http\Request::create('/profile-icons/987654321/180.png')),'public PNG route resolves');
+
+$jpeg=$root.'/phone.jpg';
+$image=imagecreatetruecolor(120,80);
+$colors=[[240,20,20],[20,240,20],[20,20,240],[240,240,20]];
+foreach($colors as $i=>$rgb) imagefilledrectangle($image,($i%2)*60,(int)($i/2)*40,($i%2)*60+59,(int)($i/2)*40+39,imagecolorallocate($image,...$rgb));
+ob_start();imagejpeg($image,null,100);$original=ob_get_clean();imagedestroy($image);
+$expected=[1=>[0,1,2,3],2=>[1,0,3,2],3=>[3,2,1,0],4=>[2,3,0,1],5=>[0,2,1,3],6=>[2,0,3,1],7=>[3,1,2,0],8=>[1,3,0,2]];
+foreach(['little','big'] as $endian) foreach($expected as $orientation=>$corners) {
+    $short=$endian==='little'?'v':'n';$long=$endian==='little'?'V':'N';
+    $exif="Exif\0\0".($endian==='little'?'II':'MM').pack($short,42).pack($long,8).pack($short,1)
+        .pack($short,0x112).pack($short,3).pack($long,1).pack($short,$orientation)."\0\0".pack($long,0);
+    file_put_contents($jpeg,substr($original,0,2)."\xFF\xE1".pack('n',strlen($exif)+2).$exif.substr($original,2));
+    $icon=imagecreatefromstring(ProfileIcon::png($jpeg,180));
+    foreach([[30,30],[150,30],[30,150],[150,150]] as $i=>$point) {
+        $pixel=imagecolorat($icon,...$point);
+        $actual=[($pixel>>16)&255,($pixel>>8)&255,$pixel&255];
+        foreach($actual as $channel=>$value) iconCheck(abs($value-$colors[$corners[$i]][$channel])<20,'JPEG orientation '.$orientation.' '.$endian.' corner '.$i.' channel '.$channel);
+    }
+    imagedestroy($icon);
+}
+file_put_contents($jpeg,"\xFF\xD8\xFF\xE1\x00\x20Exif\0\0II");
+$info=getimagesizefromstring(ProfileIcon::png($jpeg,180));
+iconCheck($info[0]===180,'malformed JPEG metadata falls back safely');
