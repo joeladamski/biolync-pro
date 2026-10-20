@@ -52,6 +52,14 @@ const server=http.createServer((req,res)=>{
    assert.equal(values.get('param'),'add_more');assert(values.get('text').includes('<strong>Save and add more 💋</strong>'),'source editor synchronizes on native submit');
    await page.goto(base+'/landing.html');
    assert.equal(await page.title(),'BioLync landing QA');
+   for (const mode of ['light','dark','auto']) {
+    await page.locator('html').evaluate((el,mode)=>{el.className=mode;},mode);
+    for (const selector of ['.wrapper','.login-content','.home-layout','.home-copy','.card-body']) {
+     assert.equal(await page.locator(selector).evaluate(el=>getComputedStyle(el).backgroundColor),'rgba(0, 0, 0, 0)',mode+' leaves '+selector+' transparent');
+    }
+    assert.equal(await page.locator('.auth-card').evaluate(el=>getComputedStyle(el).backgroundColor),'rgba(255, 255, 255, 0.35)',mode+' preserves saved card opacity');
+    assert(await page.locator('body').evaluate(el=>getComputedStyle(el).backgroundImage.includes('0_landing')),mode+' retains landing background');
+   }
    assert(await page.locator('body').evaluate(el=>getComputedStyle(el).backgroundImage.includes('0_landing')),'landing image renders');
    assert(await page.locator('body').evaluate(async el=>{const image=new Image();image.src=getComputedStyle(el).backgroundImage.slice(5,-2);await image.decode();return image.naturalWidth>0;}),'landing image actually loads');
    const frame=page.frameLocator('iframe');
