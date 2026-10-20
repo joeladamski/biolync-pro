@@ -28,6 +28,7 @@ class SocialLoginController extends Controller
             // If Social Account Exist then Find User and Login
             if ($account) {
                 auth()->login($account->user);
+                request()->session()->regenerate();
                 return redirect('/studio/index');
             }
 
@@ -38,13 +39,14 @@ class SocialLoginController extends Controller
 
             // If User not found, then create new user
             if (!$user) {
-                $user = User::create([
+                $user = new User([
                     'email' => $social_user->getEmail(),
                     'name' => $social_user->getName(),
                     'image' => $social_user->getAvatar(),
                     'littlelink_name' => $social_user->getNickname(),
                     'email_verified_at' => now(),
                 ]);
+                \App\Support\RegistrationApproval::create($user);
             }
 
             // Create Social Accounts
@@ -55,6 +57,7 @@ class SocialLoginController extends Controller
 
             // Login
             auth()->login($user);
+            request()->session()->regenerate();
             return redirect('/studio/index');
         } catch (\Exception $e) {
             return redirect()->route('login')->withErrors($e->getMessage());
