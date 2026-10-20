@@ -1,12 +1,14 @@
 @extends('layouts.sidebar')
 
+@include('components.admin-rich-text')
+
 @section('content')
 
 @push('sidebar-stylesheets')
 <script src="{{ asset('assets/external-dependencies/fontawesome.js') }}" crossorigin="anonymous"></script>
 @endpush
 
-<div class="conatiner-fluid content-inner mt-n5 py-0">
+<div class="container-fluid content-inner py-4 biolync-block-editor">
     <div class="row">   
         
      <div class="col-lg-12">
@@ -20,8 +22,10 @@
                     @endpush
                     
                     <section class='text-gray-400'>
+                    <p class="text-muted">Build your page with links, formatted text and headings. Choose a block, edit its content, then save.</p>
+                    @if($errors->any())<div class="alert alert-danger" role="alert">@foreach($errors->all() as $error)<p>{{ $error }}</p>@endforeach</div>@endif
                     
-                        <h3 class="card-header"><i class="bi bi-journal-plus"> @if($LinkID !== 0) {{__('messages.Edit')}} @else {{__('messages.Add')}} @endif {{__('messages.Block')}}</i></h3>
+                        <h3 class="card-header"><i class="bi bi-journal-plus me-2" aria-hidden="true"></i>@if($LinkID !== 0) {{__('messages.Edit')}} @else {{__('messages.Add')}} @endif {{__('messages.Block')}}</h3>
                     
                         <div class='card-body'>
                             <form action="{{ route('addLink') }}" method="post" id="my-form">
@@ -44,26 +48,10 @@
                     
                                 <div id='link_params' class='col-lg-8'></div>
                     
-                                <div class="d-flex align-items-center pt-4">
+                                <div class="d-flex flex-wrap gap-2 align-items-center pt-4">
                                     <a class="btn btn-danger me-3" href="{{ url('studio/links') }}">{{__('messages.Cancel')}}</a>
                                     <button type="submit" class="btn btn-primary me-3">{{__('messages.Save')}}</button>
-                                    <button type="button" class="btn btn-soft-primary me-3" onclick="submitFormWithParam('add_more')">{{__('messages.Save and Add More')}}</button>
-                                    <script>
-                                        function submitFormWithParam(paramValue) {
-                                            // get the form element
-                                            var form = document.getElementById("my-form");
-                                            
-                                            // create a hidden input field with the parameter value
-                                            var paramField = document.createElement("input");
-                                            paramField.setAttribute("type", "hidden");
-                                            paramField.setAttribute("name", "param");
-                                            paramField.setAttribute("value", paramValue);
-                                            // append the hidden input field to the form
-                                            form.appendChild(paramField);
-                                            // submit the form
-                                            form.submit();
-                                        }
-                                        </script>
+                                    <button type="submit" name="param" value="add_more" class="btn btn-soft-primary">{{__('messages.Save and Add More')}}</button>
                                 </div>                                
                     
                             </form>
@@ -124,7 +112,7 @@ $(function() {
 
     $('.doSelectLinkType').on('click', function() {
         $("input[name='typename']").val($(this).data('typeid'));
-        $("#btnLinkType").html($(this).data('typename'));
+        $("#btnLinkType").text($(this).data('typename'));
 
         LoadLinkTypeParams($(this).data('typeid'), $("input[name=linkid]").val());
 
@@ -132,10 +120,22 @@ $(function() {
     });
 
 
+    var pendingForm;
     function LoadLinkTypeParams($TypeId, $LinkId) {
         var baseURL = <?php echo "\"" . url('') . "\""; ?>;
-        $("#link_params").html('<div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div>').load(baseURL + `/studio/linkparamform_part/${$TypeId}/${$LinkId}`);
-        setTimeout(function() { document.dispatchEvent(new Event('contentLoaded')); }, 300);
+        if (pendingForm) pendingForm.abort();
+        window.BioLyncEditors?.destroyWithin(document.getElementById('link_params'));
+        const buttons = $('#my-form button[type="submit"]');
+        buttons.prop('disabled', true);
+        $('#link_params').html('<p role="status">Loading block…</p>');
+        pendingForm = $.get(baseURL + `/studio/linkparamform_part/${encodeURIComponent($TypeId)}/${$LinkId}`)
+          .done(function (html) {
+            $('#link_params').html(html);
+            document.dispatchEvent(new Event('contentLoaded'));
+            buttons.prop('disabled', false);
+          }).fail(function (_, status) {
+            if (status !== 'abort') $('#link_params').html('<p class="text-danger" role="alert">Unable to load this block. Select it again to retry.</p>');
+          });
     }
 });
 </script>

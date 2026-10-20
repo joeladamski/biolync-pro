@@ -11,7 +11,7 @@
     --pk-primary: {{ $pkStyles['primary'] }};
     --pk-accent: {{ $pkStyles['accent'] }};
     --pk-bg: {{ $pkStyles['background'] }};
-    --pk-surface: {{ $pkStyles['surface'] }};
+    --pk-surface: {{ \App\Support\PublicSiteStyle::surfaceColor($pkStyles) }};
     --pk-text-light: {{ $pkStyles['text_light'] }};
     --pk-text-dark: {{ $pkStyles['text_dark'] }};
     --pk-button-radius: {{ (int) $pkStyles['button_radius'] }}px;
@@ -52,12 +52,12 @@
     background: var(--pk-bg)!important;
     color: var(--pk-text-light)!important;
 }
-.pk-public-home .home-copy .auth-card,
-.pk-public-home .home-copy .card-body {
+.pk-public-home .home-copy .auth-card {
     background: var(--pk-surface)!important;
     color: var(--pk-text-dark)!important;
     border-radius: var(--pk-card-radius)!important;
 }
+.pk-public-home .home-copy .card-body { background:transparent!important; }
 .pk-public-home .home-copy .auth-card {
     overflow: hidden;
 }
@@ -129,4 +129,16 @@
 .pk-public-page .content-inner {
     border-radius: var(--pk-card-radius);
 }
+@if(\App\Support\PublicSiteStyle::backgroundUrl())
+.pk-public-home {
+    background-image: url(@json(\App\Support\PublicSiteStyle::backgroundUrl()))!important;
+    background-size:cover!important;
+    background-position:center!important;
+    background-repeat:no-repeat!important;
+    background-attachment:fixed!important;
+    min-height:100vh;
+}
+.pk-public-home .wrapper, .pk-public-home .login-content, .pk-public-home .home-layout,
+.pk-public-home .home-copy, .pk-public-home .home-preview { background:transparent!important; }
+@endif
 </style>

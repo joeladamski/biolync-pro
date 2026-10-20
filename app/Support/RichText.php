@@ -26,6 +26,13 @@ class RichText
         }
     }
 
+    public static function inline(?string $value): string
+    {
+        $html = self::render($value);
+        $html = preg_replace('#</?(?:p|div|h[1-6]|li|ul|ol|blockquote|pre)[^>]*>#i', ' ', $html);
+        return trim(strip_tags($html, '<span><strong><b><em><i><u><s><strike><sub><sup><a><code><br>'));
+    }
+
     private static function copy(\DOMNode $node, \DOMNode $parent, \DOMDocument $output): void
     {
         if ($node instanceof \DOMText) {

@@ -614,11 +614,8 @@ class UserController extends Controller
         }
 
         if ($request->has('pageDescription')) {
-            $pageDescription = strip_tags((string)$request->pageDescription, '<a><p><strong><i><ul><ol><li><blockquote><h2><h3><h4>');
-            $pageDescription = preg_replace("/\\bon\\w+\\s*=\\s*([\"']).*?\\1/i", '', $pageDescription);
-            $pageDescription = preg_replace('/\\bon\\w+\\s*=\\s*[^\\s>]*/i', '', $pageDescription);
-            $pageDescription = preg_replace("/<a([^>]*)>/i", '<a $1 rel="noopener noreferrer nofollow">', $pageDescription);
-            $pageDescription = strip_tags_except_allowed_protocols($pageDescription);
+            $raw = (string) $request->pageDescription;
+            $pageDescription = \App\Support\RichText::render($raw, preg_match('/<[a-z]/i', $raw) ? 'html' : 'plain');
             $updates['littlelink_description'] = $pageDescription;
         }
 

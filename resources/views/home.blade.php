@@ -202,7 +202,7 @@
           <div class="col-md-6 bg-light p-0 order-1 home-preview">
             <div class="d-flex">
               <div class="card-body justify-content-center text-center">
-                <div class="iframe-container {{ $metalEstate ? 'metal-phone-reflection' : '' }}"><iframe title="Homepage profile preview" src="{{ \App\Support\AiDiscovery::featuredUrl() }}"></iframe>
+                <div class="iframe-container {{ $metalEstate ? 'metal-phone-reflection' : '' }}"><iframe title="Homepage profile preview" src="{{ \App\Support\AiDiscovery::featuredUrl() }}{{ str_contains(\App\Support\AiDiscovery::featuredUrl(), '?') ? '&' : '?' }}spotlight_preview=1"></iframe>
                   @if($metalEstate)
                   <div class="metal-reflection" data-direction="counterclockwise" aria-hidden="true"><span class="metal-reflection-beam metal-reflection-pair"></span></div>
                   @endif

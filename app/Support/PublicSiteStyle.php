@@ -14,6 +14,8 @@ class PublicSiteStyle
             'accent' => '#FF5DD3',
             'background' => '#33003B',
             'surface' => '#FFFFFF',
+            'surface_opacity' => 100,
+            'background_image' => null,
             'text_light' => '#FFFFFF',
             'text_dark' => '#000000',
             'heading_font' => 'system',
@@ -46,7 +48,28 @@ class PublicSiteStyle
 
     public static function reset(): void
     {
+        $path = self::backgroundPath(self::settings()['background_image']);
+        if ($path && is_file($path)) unlink($path);
         Storage::disk('local')->delete('public-site-styles.json');
+    }
+
+    public static function backgroundPath(?string $logical): ?string
+    {
+        if (!$logical || !preg_match('#^assets/img/background-img/0_landing[a-f0-9]{32}\.(jpg|png|webp)$#D', $logical)) return null;
+        return RuntimeMedia::path($logical);
+    }
+
+    public static function backgroundUrl(): ?string
+    {
+        $logical = self::settings()['background_image'];
+        $path = self::backgroundPath($logical);
+        return $path && is_file($path) ? asset($logical) : null;
+    }
+
+    public static function surfaceColor(array $settings): string
+    {
+        $hex = ltrim($settings['surface'], '#');
+        return 'rgba('.hexdec(substr($hex, 0, 2)).','.hexdec(substr($hex, 2, 2)).','.hexdec(substr($hex, 4, 2)).','.(max(0, min(100, (int)$settings['surface_opacity'])) / 100).')';
     }
 
     public static function googleFonts(): array
