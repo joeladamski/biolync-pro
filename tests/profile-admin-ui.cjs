@@ -32,7 +32,7 @@ const http = require('http');
      const icon = getComputedStyle(document.querySelector('.social-icon'));
      return {avatar:a.width,badge:b.width,height:b.height,top:b.top-a.top,right:b.right-a.right,overflow:document.documentElement.scrollWidth>innerWidth,paddingTop:icon.paddingTop,paddingBottom:icon.paddingBottom};
     });
-    if (Math.abs(geometry.avatar-128.8)>0.1 || geometry.badge>90 || geometry.height>28 || Math.abs(geometry.top)>2 || geometry.right<0 || geometry.right>16 || geometry.overflow || geometry.paddingTop!=='5px' || geometry.paddingBottom!=='5px') throw Error(JSON.stringify({theme,width,geometry}));
+    if (Math.abs(geometry.avatar-150)>0.1 || geometry.badge>90 || geometry.height>28 || Math.abs(geometry.top)>2 || geometry.right<0 || geometry.right>16 || geometry.overflow || geometry.paddingTop!=='5px' || geometry.paddingBottom!=='5px') throw Error(JSON.stringify({theme,width,geometry}));
     await page.locator('[data-pk-vip-open]').click();
     if (await page.locator('[data-pk-vip-modal]').getAttribute('hidden') !== null) throw Error('VIP recognition did not open');
     await page.locator('[data-pk-vip-close]').click();
