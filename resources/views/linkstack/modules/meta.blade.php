@@ -70,11 +70,7 @@
 @include('components.favicon')
 @include('components.favicon-extension')
 
-@if(\App\Support\SiteBranding::exists('favicon'))
-<link rel="icon" type="image/png" href="{{ \App\Support\SiteBranding::url('favicon') }}">
-@else
-<link rel="icon" type="image/svg+xml" href="{{ asset('assets/linkstack/images/logo.svg') }}">
-@endif
+@include('components.profile-icons')
 
 @include('layouts.analytics')
 @if(\App\Support\AiDiscovery::publishedProfile($userinfo->id))

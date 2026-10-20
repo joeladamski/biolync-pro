@@ -88,6 +88,7 @@ Route::get('/panel/diagnose', function () {
 });
 
 //Public route
+Route::get('/profile-icons/{user}/{size}.png', [App\Http\Controllers\ProfileIconController::class, 'show'])->where(['user' => '[0-9]+', 'size' => '32|180'])->name('profileIcon')->middleware('disableCookies');
 Route::get('/llms.txt', [App\Http\Controllers\AiDiscoveryController::class, 'site'])->name('aiSiteSummary');
 Route::get('/llms-full.txt', [App\Http\Controllers\AiDiscoveryController::class, 'site'])->defaults('full', true)->name('aiSiteFull');
 Route::get('/@{littlelink}/llms.txt', [App\Http\Controllers\AiDiscoveryController::class, 'profile'])->name('aiProfileSummary');
