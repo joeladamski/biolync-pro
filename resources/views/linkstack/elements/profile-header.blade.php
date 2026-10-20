@@ -10,7 +10,7 @@
 <style>
 body {padding-top:0!important;}
 html, body {background-color:var(--biolync-bg, var(--bgColor, #151826));}
-.container.biolync-profile {box-sizing:border-box;width:100%!important;max-width:none!important;padding:0!important;margin:0!important;}
+.container.biolync-profile {box-sizing:border-box;width:100%!important;max-width:600px!important;padding:0!important;margin:0 auto!important;}
 .biolync-profile > .row {box-sizing:border-box;width:100%!important;margin:0!important;padding:0!important;}
 .biolync-profile > .row > .biolync-profile-column {box-sizing:border-box;width:100%!important;max-width:none!important;margin:0!important;padding:0 8px!important;}
 .biolync-cover { position:relative; box-sizing:border-box;width:100%;max-width:100%;height:220px;margin:0;padding:0;left:auto;transform:none; border-radius:0 0 20px 20px; overflow:hidden; background:var(--biolync-bg-art, #263342); }
