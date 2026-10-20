@@ -11,7 +11,7 @@ const server=http.createServer((req,res)=>{
  if(name.includes('/assets/img/background-img/0_landing'))file=path.join(fixtures,'background.png');
  if(![root+path.sep,fixtures+path.sep].some(p=>file.startsWith(p)) || !fs.existsSync(file)){res.writeHead(404);return res.end();}
  res.setHeader('Content-Type',file.endsWith('.css')?'text/css':file.endsWith('.js')?'application/javascript':file.endsWith('.png')?'image/png':'text/html;charset=utf-8');
- let data=fs.readFileSync(file);if(file.endsWith('.html'))data=data.toString().replaceAll('http://localhost','http://'+req.headers.host);
+ let data=fs.readFileSync(file);if(file.endsWith('.html'))data=data.toString().replaceAll('\\/', '/').replaceAll('http://localhost','http://'+req.headers.host);
  res.end(data);
 });
 (async()=>{
@@ -53,10 +53,11 @@ const server=http.createServer((req,res)=>{
    await page.goto(base+'/landing.html');
    assert.equal(await page.title(),'BioLync landing QA');
    assert(await page.locator('body').evaluate(el=>getComputedStyle(el).backgroundImage.includes('0_landing')),'landing image renders');
+   assert(await page.locator('body').evaluate(async el=>{const image=new Image();image.src=getComputedStyle(el).backgroundImage.slice(5,-2);await image.decode();return image.naturalWidth>0;}),'landing image actually loads');
    const frame=page.frameLocator('iframe');
    assert.equal(await frame.locator('html').evaluate(el=>getComputedStyle(el).scrollbarColor),'rgb(80, 82, 94) rgb(24, 24, 32)');
    await page.screenshot({path:path.join(fixtures,'landing-'+width+'.png'),fullPage:false});
-   assert.deepEqual(errors,[],'no browser runtime or console errors');
+   assert.deepEqual(errors,[],'no browser runtime or console errors: '+JSON.stringify(errors));
    await page.close();
    console.log('PASS browser: styles, background preview, editor lifecycle, Save and Add More, dark scrollbar at '+width);
   }
