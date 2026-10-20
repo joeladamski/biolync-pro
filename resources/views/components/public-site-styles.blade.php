@@ -138,7 +138,10 @@
     background-attachment:fixed!important;
     min-height:100vh;
 }
-.pk-public-home .wrapper, .pk-public-home .login-content, .pk-public-home .home-layout,
-.pk-public-home .home-copy, .pk-public-home .home-preview { background:transparent!important; }
+/* Beat the dashboard rule .dark .login-content .bg-white, which otherwise
+   paints an opaque layer over the saved image. */
+body.pk-public-home .wrapper, body.pk-public-home .login-content,
+body.pk-public-home .login-content .home-layout,
+body.pk-public-home .home-copy, body.pk-public-home .home-preview { background:transparent!important; }
 @endif
 </style>
