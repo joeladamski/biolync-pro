@@ -5,11 +5,12 @@
       if (field.dataset.editorReady || field.closest('details:not([open])') || !field.getClientRects().length) return;
       if (!window.Jodit) return; // The original textarea remains usable if an asset fails.
       var wasRequired = field.required;
+      var inline = field.hasAttribute('data-rich-text-inline');
       try {
         var editor = Jodit.make(field, {
-          theme: 'dark', language: 'en', height: 360, minHeight: 240,
+          theme: 'dark', language: 'en', height: inline ? 180 : 360, minHeight: inline ? 120 : 240,
           toolbarAdaptive: false, toolbarSticky: false,
-          buttons: ['undo', 'redo', '|', 'paragraph', 'bold', 'italic', 'underline', 'strikethrough', '|', 'ul', 'ol', 'outdent', 'indent', 'align', '|', 'link', 'image', 'table', 'hr', 'brush', '|', 'eraser', 'source', 'fullsize'],
+          buttons: inline ? ['undo', 'redo', '|', 'bold', 'italic', 'underline', 'strikethrough', 'brush', 'link', '|', 'eraser', 'source'] : ['undo', 'redo', '|', 'paragraph', 'bold', 'italic', 'underline', 'strikethrough', '|', 'ul', 'ol', 'outdent', 'indent', 'align', '|', 'link', 'image', 'table', 'hr', 'brush', '|', 'eraser', 'source', 'fullsize'],
           controls: { paragraph: { list: { p: 'Paragraph', h2: 'Heading 2', h3: 'Heading 3', h4: 'Heading 4', blockquote: 'Quote', pre: 'Code' } } },
           beautifyHTML: false,
           sourceEditor: 'area', // No remote Ace editor dependency.
@@ -20,10 +21,12 @@
           defaultActionOnPaste: 'insert_clear_html',
           events: { change: function (value) { field.value = value; } }
         });
+        field._richTextEditor = editor;
         field.dataset.editorReady = 'true';
         field.required = false; // Hidden textarea must not block native form validation.
         editor.editor.setAttribute('aria-label', field.dataset.richTextLabel || 'Content editor');
         field.form.addEventListener('submit', function (event) {
+          if (!field.isConnected || field._richTextEditor !== editor) return;
           var source = editor.container.querySelector('.jodit-source__mirror');
           if (editor.getRealMode() === Jodit.MODE_SOURCE && source) {
             // Capture immediately, even before the source plugin's debounced sync.
@@ -51,6 +54,14 @@
       }
     });
   }
+  window.BioLyncEditors = { initialize: initialize, destroyWithin: function (root) {
+    root.querySelectorAll('textarea[data-rich-text]').forEach(function (field) {
+      if (field._richTextEditor) field._richTextEditor.destruct();
+      delete field._richTextEditor;
+      delete field.dataset.editorReady;
+    });
+  } };
+  document.addEventListener('contentLoaded', initialize);
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initialize);
   else initialize();
   document.addEventListener('toggle', initialize, true);

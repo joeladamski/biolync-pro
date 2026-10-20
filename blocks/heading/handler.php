@@ -13,13 +13,13 @@ function handleLinkType($request, $linkType) {
         'title' => [
             'required',
             'string',
-            'max:255',
+            'max:5000',
         ],
     ];
 
     // Prepare the link data
     $linkData = [
-        'title' => $request->title,
+        'title' => \App\Support\RichText::inline((string)$request->title, true),
         'button_id' => "42",
     ];
 

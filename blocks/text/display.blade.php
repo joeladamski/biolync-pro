@@ -1,1 +1,1 @@
-<div class="fadein"><span style="">@if(env('ALLOW_USER_HTML') === true){!! $link->title !!}@else{{ $link->title }}@endif</span></div>
+<div class="fadein biolync-text-block">{!! \App\Support\RichText::render($link->title, preg_match('/<[a-z]/i', $link->title ?? '') ? 'html' : 'plain', true) !!}</div>

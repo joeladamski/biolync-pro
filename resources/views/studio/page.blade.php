@@ -58,10 +58,10 @@
                 <div class="locked-handle">
                   <span class="input-group-text">@</span>
                   <input class="form-control" value="{{ $page->littlelink_name }}" readonly aria-readonly="true">
-                  <span title="Only a PinkKiss.Love administrator can change your handle">🔒</span>
+                  <span title="Only a {{ config('app.name') }} administrator can change your handle">🔒</span>
                 </div>
-                <div class="form-text">Managed by PinkKiss.Love. Contact an administrator if your handle needs to change.</div>
-                <div class="form-text">{{ url('') }}/@{{ $page->littlelink_name }}</div>
+                <div class="form-text">Managed by {{ config('app.name') }}. Contact an administrator if your handle needs to change.</div>
+                <div class="form-text">{{ url('@'.$page->littlelink_name) }}</div>
               </div>
 
               <div class="form-group">
@@ -71,7 +71,7 @@
 
               <div class="form-group">
                 <label class="form-label" for="page-description">{{ __('messages.Page Description') }}</label>
-                <textarea id="page-description" class="form-control @if(env('ALLOW_USER_HTML') === true) ckeditor @endif" name="pageDescription" rows="4">{{ old('pageDescription', $page->littlelink_description ?? '') }}</textarea>
+                <textarea id="page-description" class="form-control" data-rich-text data-rich-text-label="Page Description" name="pageDescription" rows="4">{{ old('pageDescription', $page->littlelink_description ?? '') }}</textarea>
               </div>
 
               <div class="form-group">
@@ -96,13 +96,5 @@
   </div>
 </div>
 
-@if(env('ALLOW_USER_HTML') === true)
-<script src="{{ asset('assets/external-dependencies/ckeditor.js') }}"></script>
-<script>
-ClassicEditor.create(document.querySelector('.ckeditor'), {
-  toolbar: {items:['heading','|','bold','italic','underline','link','bulletedList','numberedList','|','undo','redo'],shouldNotGroupWhenFull:false},
-  link:{addTargetToExternalLinks:true,defaultProtocol:'https://'}
-}).catch(error => console.error(error));
-</script>
-@endif
+@include('components.admin-rich-text')
 @endsection

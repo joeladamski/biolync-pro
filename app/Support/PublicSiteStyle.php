@@ -14,6 +14,8 @@ class PublicSiteStyle
             'accent' => '#FF5DD3',
             'background' => '#33003B',
             'surface' => '#FFFFFF',
+            'surface_opacity' => 100,
+            'background_image' => null,
             'text_light' => '#FFFFFF',
             'text_dark' => '#000000',
             'heading_font' => 'system',
@@ -38,15 +40,62 @@ class PublicSiteStyle
     public static function save(array $settings): void
     {
         $clean = array_intersect_key($settings, self::defaults());
-        Storage::disk('local')->put(
-            'public-site-styles.json',
-            json_encode(array_replace(self::defaults(), $clean), JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR)
-        );
+        $disk = Storage::disk('local');
+        $temporary = 'public-site-styles.'.bin2hex(random_bytes(12)).'.tmp';
+        try {
+            if (!$disk->put($temporary, json_encode(array_replace(self::defaults(), $clean), JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR))
+                || !$disk->move($temporary, 'public-site-styles.json')) {
+                throw new \RuntimeException('Unable to save public site styles.');
+            }
+        } finally {
+            $disk->delete($temporary);
+        }
+    }
+
+    /** Serialize background read/modify/write and cleanup across admin requests. */
+    public static function withLock(callable $action)
+    {
+        $path = Storage::disk('local')->path('public-site-styles.lock');
+        if (!is_dir(dirname($path))) mkdir(dirname($path), 0750, true);
+        $lock = fopen($path, 'c');
+        if (!$lock) throw new \RuntimeException('Unable to open public style lock.');
+        try {
+            if (!flock($lock, LOCK_EX)) throw new \RuntimeException('Unable to lock public site styles.');
+            return $action();
+        } finally {
+            flock($lock, LOCK_UN);
+            fclose($lock);
+        }
     }
 
     public static function reset(): void
     {
-        Storage::disk('local')->delete('public-site-styles.json');
+        self::withLock(function () {
+            $path = self::backgroundPath(self::settings()['background_image']);
+            if (!Storage::disk('local')->delete('public-site-styles.json')) {
+                throw new \RuntimeException('Unable to reset public site styles.');
+            }
+            if ($path && is_file($path)) unlink($path);
+        });
+    }
+
+    public static function backgroundPath(?string $logical): ?string
+    {
+        if (!$logical || !preg_match('#^assets/img/background-img/0_landing[a-f0-9]{32}\.(jpg|png|webp)$#D', $logical)) return null;
+        return RuntimeMedia::path($logical);
+    }
+
+    public static function backgroundUrl(): ?string
+    {
+        $logical = self::settings()['background_image'];
+        $path = self::backgroundPath($logical);
+        return $path && is_file($path) ? asset($logical) : null;
+    }
+
+    public static function surfaceColor(array $settings): string
+    {
+        $hex = ltrim($settings['surface'], '#');
+        return 'rgba('.hexdec(substr($hex, 0, 2)).','.hexdec(substr($hex, 2, 2)).','.hexdec(substr($hex, 4, 2)).','.(max(0, min(100, (int)$settings['surface_opacity'])) / 100).')';
     }
 
     public static function googleFonts(): array

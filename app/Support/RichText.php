@@ -5,7 +5,7 @@ namespace App\Support;
 /** Public editorial HTML. Never render editor input without this allowlist. */
 class RichText
 {
-    public static function render(?string $value, string $format = 'html'): string
+    public static function render(?string $value, string $format = 'html', bool $creatorLinks = false): string
     {
         if ($format !== 'html') return nl2br(e($value ?? ''));
         $document = new \DOMDocument('1.0', 'UTF-8');
@@ -16,7 +16,7 @@ class RichText
             $root = $output->createElement('div');
             $output->appendChild($root);
             $body = $document->getElementsByTagName('body')->item(0);
-            if ($body) foreach ($body->childNodes as $child) self::copy($child, $root, $output);
+            if ($body) foreach ($body->childNodes as $child) self::copy($child, $root, $output, $creatorLinks);
             $html = '';
             foreach ($root->childNodes as $child) $html .= $output->saveHTML($child);
             return $html;
@@ -26,7 +26,14 @@ class RichText
         }
     }
 
-    private static function copy(\DOMNode $node, \DOMNode $parent, \DOMDocument $output): void
+    public static function inline(?string $value, bool $creatorLinks = false): string
+    {
+        $html = self::render($value, 'html', $creatorLinks);
+        $html = preg_replace('#</?(?:p|div|h[1-6]|li|ul|ol|blockquote|pre)[^>]*>#i', ' ', $html);
+        return trim(strip_tags($html, '<span><strong><b><em><i><u><s><strike><sub><sup><a><code><br>'));
+    }
+
+    private static function copy(\DOMNode $node, \DOMNode $parent, \DOMDocument $output, bool $creatorLinks): void
     {
         if ($node instanceof \DOMText) {
             $parent->appendChild($output->createTextNode($node->textContent));
@@ -44,9 +51,10 @@ class RichText
             $parent->appendChild($target);
             if ($tag === 'a' && self::safeUrl($node->getAttribute('href'))) {
                 $target->setAttribute('href', trim($node->getAttribute('href')));
+                if ($creatorLinks) $target->setAttribute('rel', 'noopener noreferrer nofollow');
                 if ($node->getAttribute('target') === '_blank') {
                     $target->setAttribute('target', '_blank');
-                    $target->setAttribute('rel', 'noopener noreferrer');
+                    $target->setAttribute('rel', $creatorLinks ? 'noopener noreferrer nofollow' : 'noopener noreferrer');
                 }
             }
             if ($tag === 'img') {
@@ -75,7 +83,7 @@ class RichText
             }
             if ($styles) $target->setAttribute('style', implode(';', $styles));
         }
-        foreach ($node->childNodes as $child) self::copy($child, $target, $output);
+        foreach ($node->childNodes as $child) self::copy($child, $target, $output, $creatorLinks);
     }
 
     private static function safeUrl(string $value, bool $image = false): bool

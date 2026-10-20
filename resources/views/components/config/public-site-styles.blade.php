@@ -8,11 +8,11 @@ foreach (array_keys(\App\Support\PublicSiteStyle::fontOptions()) as $fontKey) {
 <h2 class="mb-3 card-header">Public Site Styles</h2>
 <p>Choose heading and body fonts, including Google Fonts. Selected Google Fonts load from Google with a local fallback.</p>
 @if($errors->any())<div class="alert alert-danger" role="alert"><ul class="mb-0">@foreach($errors->all() as $error)<li>{{ $error }}</li>@endforeach</ul></div>@endif
-<p>Global design tokens for the landing page and public PinkKiss.Love pages. Profile themes keep their own presentation layer.</p>
+<p>Global design tokens for the landing page and public BioLync pages. Profile themes keep their own presentation layer.</p>
 @if(session('public_site_styles_saved'))<div class="alert alert-success">Public site styles saved.</div>@endif
-@if(session('public_site_styles_reset'))<div class="alert alert-success">Public site styles reset to PinkKiss defaults.</div>@endif
+@if(session('public_site_styles_reset'))<div class="alert alert-success">Public site styles reset to BioLync defaults.</div>@endif
 
-<form method="POST" action="{{ route('savePublicSiteStyles') }}" id="pk-public-style-form">
+<form method="POST" action="{{ route('savePublicSiteStyles') }}" id="pk-public-style-form" enctype="multipart/form-data">
     @csrf
     <div class="row">
         <div class="col-lg-8">
@@ -42,6 +42,19 @@ foreach (array_keys(\App\Support\PublicSiteStyle::fontOptions()) as $fontKey) {
                 @endforeach
             </div>
 
+            <div class="mb-3">
+                <label class="form-label" for="pk-surface-opacity">Surface / Card opacity: <output id="pk-opacity-value">{{ old('surface_opacity', $styles['surface_opacity']) }}%</output></label>
+                <input id="pk-surface-opacity" name="surface_opacity" class="form-range" type="range" min="0" max="100" value="{{ old('surface_opacity', $styles['surface_opacity']) }}">
+                <p class="text-muted">0% is fully transparent. 100% is solid. Text stays fully opaque.</p>
+            </div>
+            <div class="mb-4">
+                <label class="form-label" for="pk-background-image">Landing page background image</label>
+                <input id="pk-background-image" class="form-control" type="file" name="background_image_upload" accept="image/jpeg,image/png,image/webp">
+                <p class="text-muted">JPEG, PNG or WebP, up to 8 MB. Covers the landing page; profile themes keep their own backgrounds.</p>
+                @if(\App\Support\PublicSiteStyle::backgroundUrl())
+                <label><input id="pk-remove-background" type="checkbox" name="remove_background_image" value="1"> Remove current background image</label>
+                @endif
+            </div>
             <div class="row">
                 <div class="col-md-6 mb-3">
                     <label class="form-label" for="pk-heading-font">Heading font</label>
@@ -80,7 +93,7 @@ foreach (array_keys(\App\Support\PublicSiteStyle::fontOptions()) as $fontKey) {
         <div class="col-lg-4 mt-4 mt-lg-0">
             <div id="pk-style-preview" class="p-4" style="min-height:260px;border-radius:18px;background:{{ $styles['background'] }};color:{{ $styles['text_light'] }}">
                 <div id="pk-style-preview-card" style="background:{{ $styles['surface'] }};color:{{ $styles['text_dark'] }};border-radius:{{ (int)$styles['card_radius'] }}px;padding:22px">
-                    <div id="pk-style-preview-title" style="font-size:1.5rem;font-weight:700">PinkKiss.Love</div>
+                    <div id="pk-style-preview-title" style="font-size:1.5rem;font-weight:700">BioLync</div>
                     <p class="mb-3">Public style preview</p>
                     <button id="pk-style-preview-button" type="button" class="btn" style="background:{{ $styles['accent'] }};color:{{ $styles['text_dark'] }};border-radius:{{ (int)$styles['button_radius'] }}px">Featured CTA</button>
                 </div>
@@ -89,9 +102,9 @@ foreach (array_keys(\App\Support\PublicSiteStyle::fontOptions()) as $fontKey) {
     </div>
 </form>
 
-<form method="POST" action="{{ route('resetPublicSiteStyles') }}" class="mt-3" onsubmit="return confirm('Reset all public site styles to the PinkKiss.Love defaults?');">
+<form method="POST" action="{{ route('resetPublicSiteStyles') }}" class="mt-3" onsubmit="return confirm('Reset all public site styles to the BioLync defaults?');">
     @csrf
-    <button class="btn btn-outline-danger" type="submit">Reset to PinkKiss defaults</button>
+    <button class="btn btn-outline-danger" type="submit">Reset to BioLync defaults</button>
 </form>
 
 <script>
@@ -122,12 +135,21 @@ document.addEventListener('DOMContentLoaded', () => {
         link.href = fontUrl;
     };
 
+    const savedBackground = @json(\App\Support\PublicSiteStyle::backgroundUrl());
+    let selectedBackground = null;
     const syncPreview = () => {
         const val = id => document.getElementById(id)?.value;
         loadPreviewFonts([val('pk-heading-font'), val('pk-body-font')]);
         preview.style.background = val('pk-background');
         preview.style.color = val('pk-text_light');
-        previewCard.style.background = val('pk-surface');
+        const hex = val('pk-surface');
+        const opacity = Number(val('pk-surface-opacity')) / 100;
+        previewCard.style.background = /^#[0-9a-f]{6}$/i.test(hex) ? `rgba(${parseInt(hex.slice(1,3),16)},${parseInt(hex.slice(3,5),16)},${parseInt(hex.slice(5,7),16)},${opacity})` : '';
+        document.getElementById('pk-opacity-value').value = Math.round(opacity * 100) + '%';
+        const background = selectedBackground || (document.getElementById('pk-remove-background')?.checked ? null : savedBackground);
+        preview.style.backgroundImage = background ? 'url(' + JSON.stringify(background) + ')' : 'none';
+        preview.style.backgroundSize = 'cover';
+        preview.style.backgroundPosition = 'center';
         previewCard.style.color = val('pk-text_dark');
         previewCard.style.borderRadius = (val('pk-card-radius') || 18) + 'px';
         previewButton.style.background = val('pk-accent');
@@ -150,11 +172,16 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    form.querySelectorAll('select,input[type="number"]').forEach(el => {
+    form.querySelectorAll('select,input[type="number"],input[type="range"],input[type="checkbox"]').forEach(el => {
         el.addEventListener('input', syncPreview);
         el.addEventListener('change', syncPreview);
     });
 
+    document.getElementById('pk-background-image').addEventListener('change', event => {
+        if (selectedBackground) URL.revokeObjectURL(selectedBackground);
+        selectedBackground = event.target.files[0] ? URL.createObjectURL(event.target.files[0]) : null;
+        syncPreview();
+    });
     syncPreview();
 });
 </script>
