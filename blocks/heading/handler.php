@@ -19,7 +19,7 @@ function handleLinkType($request, $linkType) {
 
     // Prepare the link data
     $linkData = [
-        'title' => \App\Support\RichText::inline((string)$request->title),
+        'title' => \App\Support\RichText::inline((string)$request->title, true),
         'button_id' => "42",
     ];
 

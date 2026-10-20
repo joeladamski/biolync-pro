@@ -17,7 +17,7 @@ function handleLinkType($request, $linkType) {
         ],
     ];
 
-    $sanitizedText = \App\Support\RichText::render((string)$request->text, preg_match('/<[a-z]/i', (string)$request->text) ? 'html' : 'plain');
+    $sanitizedText = \App\Support\RichText::render((string)$request->text, preg_match('/<[a-z]/i', (string)$request->text) ? 'html' : 'plain', true);
 
     // Prepare the link data
     $linkData = [

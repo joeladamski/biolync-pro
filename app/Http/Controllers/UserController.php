@@ -615,7 +615,7 @@ class UserController extends Controller
 
         if ($request->has('pageDescription')) {
             $raw = (string) $request->pageDescription;
-            $pageDescription = \App\Support\RichText::render($raw, preg_match('/<[a-z]/i', $raw) ? 'html' : 'plain');
+            $pageDescription = \App\Support\RichText::render($raw, preg_match('/<[a-z]/i', $raw) ? 'html' : 'plain', true);
             $updates['littlelink_description'] = $pageDescription;
         }
 

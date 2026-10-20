@@ -10,6 +10,12 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 function contentCheck($ok,$message) { if (!$ok) throw new RuntimeException($message); echo "PASS content: $message\n"; }
+if (($argv[1] ?? '') === '--save-worker') {
+    config(['filesystems.disks.local.root'=>$argv[2], 'estate-media.profile_path'=>$argv[3]]);
+    file_put_contents($argv[4], 'ready');
+    (new App\Http\Controllers\PublicSiteStyleController)->save(Request::create('/admin/public-site-styles','POST',PublicSiteStyle::defaults()));
+    exit;
+}
 Storage::fake('local');
 $directory = sys_get_temp_dir().'/biolync-ui-media-'.bin2hex(random_bytes(5));
 config(['estate-media.profile_path'=>$directory]);
@@ -36,8 +42,10 @@ try { $controller->save($bad); throw new RuntimeException('Unsafe image accepted
 catch (ValidationException $e) { contentCheck(isset($e->errors()['background_image_upload']),'SVG upload rejected'); }
 contentCheck(PublicSiteStyle::backgroundPath('../../.env') === null, 'background path cannot escape managed images');
 $body = '<p style="text-align:center"><strong>Bold 💋</strong><em>Italic</em></p><script>alert(1)</script><a href="javascript:alert(1)" onclick="x()">Bad</a>';
-$clean = RichText::render($body);
+$clean = RichText::render($body, 'html', true);
 contentCheck(str_contains($clean,'<strong>Bold 💋</strong>') && !str_contains($clean,'script') && !str_contains($clean,'onclick') && !str_contains($clean,'javascript:'), 'editor formatting survives sanitization');
+contentCheck(str_contains(RichText::render('<a href="https://example.test">Creator</a>', 'html', true), 'rel="noopener noreferrer nofollow"'), 'creator links preserve nofollow');
+contentCheck(!str_contains(RichText::render('<a href="https://example.test">Editorial</a>'), 'nofollow'), 'editorial links retain their existing policy');
 $heading=RichText::inline($body);
 contentCheck(str_contains($heading,'<strong>') && !str_contains($heading,'<p') && !str_contains($heading,'script'), 'heading allows safe inline formatting without nested paragraphs');
 config(['database.default'=>'sqlite','database.connections.sqlite.database'=>':memory:','linkstack.disable_random_user_ids'=>'true','session.driver'=>'array']);
@@ -75,6 +83,30 @@ $controller->save(Request::create('/admin/public-site-styles','POST',array_repla
 contentCheck(PublicSiteStyle::backgroundUrl() === null && !is_file($imagePath),'remove image deletes managed background');
 $controller->reset();
 contentCheck(PublicSiteStyle::settings()['surface_opacity'] === 100,'reset restores solid cards');
+// A save that starts during replacement must read the new image after acquiring the lock.
+$firstLogical='assets/img/background-img/0_landing'.str_repeat('a',32).'.png';
+$secondLogical='assets/img/background-img/0_landing'.str_repeat('b',32).'.png';
+copy($fixtures.'/background.png',PublicSiteStyle::backgroundPath($firstLogical));
+copy($fixtures.'/background.png',PublicSiteStyle::backgroundPath($secondLogical));
+PublicSiteStyle::save(array_replace($payload,['background_image'=>$firstLogical]));
+$ready=$fixtures.'/save-worker-ready';@unlink($ready);
+$worker=null;$pipes=[];
+PublicSiteStyle::withLock(function () use ($payload,$firstLogical,$secondLogical,$ready,&$worker,&$pipes) {
+    $worker=proc_open([PHP_BINARY,__FILE__,'--save-worker',Storage::disk('local')->path(''),config('estate-media.profile_path'),$ready],[0=>['pipe','r'],1=>['pipe','w'],2=>['pipe','w']],$pipes);
+    if (!is_resource($worker)) throw new RuntimeException('Unable to launch save worker');
+    fclose($pipes[0]);
+    $deadline=microtime(true)+5;
+    while(!is_file($ready) && microtime(true)<$deadline) usleep(10000);
+    contentCheck(is_file($ready),'concurrent style request starts');
+    usleep(100000);
+    contentCheck(proc_get_status($worker)['running'],'style save waits for background replacement lock');
+    PublicSiteStyle::save(array_replace($payload,['background_image'=>$secondLogical]));
+    unlink(PublicSiteStyle::backgroundPath($firstLogical));
+});
+$workerOutput=stream_get_contents($pipes[1]).stream_get_contents($pipes[2]);fclose($pipes[1]);fclose($pipes[2]);
+contentCheck(proc_close($worker)===0,'concurrent save completes: '.$workerOutput);
+contentCheck(PublicSiteStyle::settings()['background_image']===$secondLogical && is_file(PublicSiteStyle::backgroundPath($secondLogical)),'ordinary concurrent save preserves replacement image');
+$controller->reset();
 $compiler=app('blade.compiler');
 foreach (['studio/page','studio/edit-link','home','components/config/public-site-styles','components/public-site-styles'] as $name) {
  $temp=tempnam(sys_get_temp_dir(),'content-blade-');file_put_contents($temp,$compiler->compileString(file_get_contents(resource_path('views/'.$name.'.blade.php'))));

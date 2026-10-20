@@ -30,32 +30,34 @@ class PublicSiteStyleController extends Controller
             'content_width' => 'required|integer|min:720|max:1600',
         ]);
 
-        $current = PublicSiteStyle::settings();
-        $data['surface_opacity'] = $data['surface_opacity'] ?? $current['surface_opacity'];
-        $data['background_image'] = $current['background_image'];
-        if ($request->hasFile('background_image_upload')) {
-            $upload = $request->file('background_image_upload');
-            $extension = $upload->extension() === 'jpeg' ? 'jpg' : $upload->extension();
-            $logical = 'assets/img/background-img/0_landing'.bin2hex(random_bytes(16)).'.'.$extension;
-            $directory = \App\Support\RuntimeMedia::path('assets/img/background-img');
-            $upload->move($directory, basename($logical));
-            $data['background_image'] = $logical;
-        } elseif ($request->boolean('remove_background_image')) {
-            $data['background_image'] = null;
-        }
-        try {
-            PublicSiteStyle::save($data);
-        } catch (\Throwable $error) {
-            if ($data['background_image'] !== $current['background_image']) {
-                $newPath = PublicSiteStyle::backgroundPath($data['background_image']);
-                if ($newPath && is_file($newPath)) unlink($newPath);
+        PublicSiteStyle::withLock(function () use ($request, $data) {
+            $current = PublicSiteStyle::settings();
+            $data['surface_opacity'] = $data['surface_opacity'] ?? $current['surface_opacity'];
+            $data['background_image'] = $current['background_image'];
+            if ($request->hasFile('background_image_upload')) {
+                $upload = $request->file('background_image_upload');
+                $extension = $upload->extension() === 'jpeg' ? 'jpg' : $upload->extension();
+                $logical = 'assets/img/background-img/0_landing'.bin2hex(random_bytes(16)).'.'.$extension;
+                $directory = \App\Support\RuntimeMedia::path('assets/img/background-img');
+                $upload->move($directory, basename($logical));
+                $data['background_image'] = $logical;
+            } elseif ($request->boolean('remove_background_image')) {
+                $data['background_image'] = null;
             }
-            throw $error;
-        }
-        if ($data['background_image'] !== $current['background_image']) {
-            $oldPath = PublicSiteStyle::backgroundPath($current['background_image']);
-            if ($oldPath && is_file($oldPath)) unlink($oldPath);
-        }
+            try {
+                PublicSiteStyle::save($data);
+            } catch (\Throwable $error) {
+                if ($data['background_image'] !== $current['background_image']) {
+                    $newPath = PublicSiteStyle::backgroundPath($data['background_image']);
+                    if ($newPath && is_file($newPath)) unlink($newPath);
+                }
+                throw $error;
+            }
+            if ($data['background_image'] !== $current['background_image']) {
+                $oldPath = PublicSiteStyle::backgroundPath($current['background_image']);
+                if ($oldPath && is_file($oldPath)) unlink($oldPath);
+            }
+        });
 
         return redirect(url('/admin/config') . '#site-styles')->with('public_site_styles_saved', true);
     }
