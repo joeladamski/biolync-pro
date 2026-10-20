@@ -60,7 +60,7 @@
         @endif
 
         <div class="jumbotron" style="margin-top: 10%">
-          <h1 class="display-4">{{env('TITLE_FOOTER_'.strtoupper($name))}}</h1>
+          <h1 class="display-4">{{footer(ucfirst($name))}}</h1>
           <hr class="my-4">
           <p>
             <?php echo $data['page']->$name; ?>
@@ -75,7 +75,7 @@
             <div class="left-panel"></div>
             <div class="right-panel">
               {{__('messages.Copyright')}} &copy; @php echo date('Y'); @endphp {{ config('app.name') }}
-              @if(env('DISPLAY_CREDIT_FOOTER') === true)
+              @if(config('footer.DISPLAY_CREDIT_FOOTER') === true)
                 <span class="">
                   - {{__('messages.Made with')}} 
                     <svg class="icon-15" width="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">

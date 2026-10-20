@@ -163,6 +163,10 @@ input[type=radio] + label {
 
 <?php 
 function toggle($key){
+    $footerSettings = config('footer', []);
+    $enabled = array_key_exists($key, $footerSettings)
+        ? $footerSettings[$key]
+        : EnvEditor::getKey($key) != 'false';
 	echo '
     <form id="'.$key.'-form" action="'.route('editConfig').'" enctype="multipart/form-data" method="post">
 	<div class="form-group col-lg-8">
@@ -171,7 +175,7 @@ function toggle($key){
 	<h5 style="margin-top:50px">'; echo __('messages.'.$key.'.title'); echo '</h5>
     <p class="text-muted">'; echo __('messages.'.$key.'.description'); echo '</p>
 	<div class="input-group">
-	<div class="mb-3 form-check form-switch toggle-btn"><input type="hidden" name="toggle" value="0"><input name="toggle" value="1" class="switch toggle-btn" type="checkbox" id="'.$key.'"'; if(EnvEditor::getKey($key) == 'false'){echo '/>';}else{echo 'checked>';} echo '<label for="'.$key.'" class="form-check-label">'.__('messages.Enable').'</label></div>
+	<div class="mb-3 form-check form-switch toggle-btn"><input type="hidden" name="toggle" value="0"><input name="toggle" value="1" class="switch toggle-btn" type="checkbox" id="'.$key.'"'; if(!$enabled){echo '/>';}else{echo 'checked>';} echo '<label for="'.$key.'" class="form-check-label">'.__('messages.Enable').'</label></div>
 	</div></div>
     <input type="hidden" name="_token" value="'.csrf_token().'">
     <script type="text/javascript">
@@ -211,7 +215,9 @@ document.getElementById("'.$key.'-form").addEventListener("change", function() {
 
 <?php 
 function text($key){
-    $configValue = str_replace('"', "", EnvEditor::getKey($key));
+    $configValue = array_key_exists($key, config('footer', []))
+        ? e(config('footer.'.$key))
+        : str_replace('"', "", EnvEditor::getKey($key));
 	echo '
     <form id="'.$key.'-form" action="'.route('editConfig').'" enctype="multipart/form-data" method="post">
     <div class="form-group col-lg-8">
@@ -416,7 +422,7 @@ document.getElementById("MAINTENANCE_MODE-form").addEventListener("change", func
 {{text('TITLE_FOOTER_HOME')}}
 
 @php
-    $configValue = str_replace('"', "", EnvEditor::getKey('HOME_FOOTER_LINK'));
+    $configValue = config('footer.HOME_FOOTER_LINK');
 @endphp
     <form id="HOME_FOOTER_LINK-form" action="{{route('editConfig')}}" enctype="multipart/form-data" method="post">
     <div class="form-group col-lg-8">

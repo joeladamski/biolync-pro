@@ -192,10 +192,10 @@ function uri($path) {
 function footer($key)
 {
     $upperStr = strtoupper($key);
-    if (env('TITLE_FOOTER_'.$upperStr) == "") {
+    if (config('footer.TITLE_FOOTER_'.$upperStr) == "") {
         $title = __('messages.footer.'.$key);
     } else {
-        $title = env('TITLE_FOOTER_'.$upperStr);
+        $title = config('footer.TITLE_FOOTER_'.$upperStr);
     }
     return $title;
 }

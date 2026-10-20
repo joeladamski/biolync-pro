@@ -241,13 +241,13 @@ $usrhandl = Auth::user()->littlelink_name;
                             <span class="mini-icon">-</span>
                         </a>
                     </li>
-                    @if(env('DISPLAY_FOOTER_TERMS') === true)
+                    @if(config('footer.DISPLAY_FOOTER_TERMS') === true)
                     <li class="nav-item"><a class="nav-link" href="{{ route('pagesTerms') }}" target="_blank" rel="noopener"><i class="bi bi-file-text"></i><span class="item-name">{{ footer('Terms') }}</span></a></li>
                     @endif
-                    @if(env('DISPLAY_FOOTER_PRIVACY') === true)
+                    @if(config('footer.DISPLAY_FOOTER_PRIVACY') === true)
                     <li class="nav-item"><a class="nav-link" href="{{ route('pagesPrivacy') }}" target="_blank" rel="noopener"><i class="bi bi-shield-check"></i><span class="item-name">{{ footer('Privacy') }}</span></a></li>
                     @endif
-                    @if(env('DISPLAY_FOOTER_CONTACT') === true)
+                    @if(config('footer.DISPLAY_FOOTER_CONTACT') === true)
                     <li class="nav-item"><a class="nav-link" href="{{ route('pagesContact') }}" target="_blank" rel="noopener"><i class="bi bi-envelope"></i><span class="item-name">{{ footer('Contact') }}</span></a></li>
                     @endif
                     <li class="nav-item">
@@ -543,16 +543,16 @@ $usrhandl = Auth::user()->littlelink_name;
       <footer class="footer">
           <div class="footer-body">
               <ul class="left-panel list-inline mb-0 p-0">
-                @if(env('DISPLAY_FOOTER') === true)
-                  @if(env('DISPLAY_FOOTER_HOME') === true)<li class="list-inline-item"><a class="list-inline-item" href="@if(str_replace('"', "", EnvEditor::getKey('HOME_FOOTER_LINK')) === "" ){{ url('') }}@else{{ str_replace('"', "", EnvEditor::getKey('HOME_FOOTER_LINK')) }}@endif">{{footer('Home')}}</a></li>@endif
-                  @if(env('DISPLAY_FOOTER_TERMS') === true)<li class="list-inline-item"><a class="list-inline-item" href="{{ url('') }}/pages/{{ strtolower(footer('Terms')) }}">{{footer('Terms')}}</a></li>@endif
-                  @if(env('DISPLAY_FOOTER_PRIVACY') === true)<li class="list-inline-item"><a class="list-inline-item" href="{{ url('') }}/pages/{{ strtolower(footer('Privacy')) }}">{{footer('Privacy')}}</a></li>@endif
-                  @if(env('DISPLAY_FOOTER_CONTACT') === true)<li class="list-inline-item"><a class="list-inline-item" href="{{ url('') }}/pages/{{ strtolower(footer('Contact')) }}">{{footer('Contact')}}</a></li>@endif
+                @if(config('footer.DISPLAY_FOOTER') === true)
+                  @if(config('footer.DISPLAY_FOOTER_HOME') === true)<li class="list-inline-item"><a class="list-inline-item" href="@if(config('footer.HOME_FOOTER_LINK') === "" ){{ url('') }}@else{{ config('footer.HOME_FOOTER_LINK') }}@endif">{{footer('Home')}}</a></li>@endif
+                  @if(config('footer.DISPLAY_FOOTER_TERMS') === true)<li class="list-inline-item"><a class="list-inline-item" href="{{ url('') }}/pages/{{ strtolower(footer('Terms')) }}">{{footer('Terms')}}</a></li>@endif
+                  @if(config('footer.DISPLAY_FOOTER_PRIVACY') === true)<li class="list-inline-item"><a class="list-inline-item" href="{{ url('') }}/pages/{{ strtolower(footer('Privacy')) }}">{{footer('Privacy')}}</a></li>@endif
+                  @if(config('footer.DISPLAY_FOOTER_CONTACT') === true)<li class="list-inline-item"><a class="list-inline-item" href="{{ url('') }}/pages/{{ strtolower(footer('Contact')) }}">{{footer('Contact')}}</a></li>@endif
                 @endif
               </ul>
               <div class="right-panel">
                 {{__('messages.Copyright')}} &copy; @php echo date('Y'); @endphp {{ config('app.name') }}
-                @if(env('DISPLAY_CREDIT_FOOTER') === true)
+                @if(config('footer.DISPLAY_CREDIT_FOOTER') === true)
                   <span class="">
                     - {{__('messages.Made with')}} 
                       <svg class="icon-15" width="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
