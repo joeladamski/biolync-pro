@@ -29,9 +29,10 @@ imagefilledellipse($image,460,220,500,500,imagecolorallocate($image,235,88,155))
 imagefilledrectangle($image,0,360,800,500,imagecolorallocate($image,27,60,70));
 imagepng($image,$fixtures.'/album.png');imagedestroy($image);
 function photoUpload($fixtures){$temp=tempnam(sys_get_temp_dir(),'album-upload-');copy($fixtures.'/album.png',$temp);return new UploadedFile($temp,'photo.png','image/png',UPLOAD_ERR_OK,true);}
+function albumRequest($uri,$method,$data){foreach($data['album'] ?? [] as $i=>$row)unset($data['album'][$i]['image']);return Request::create($uri,$method,$data);}
 $controller=new App\Http\Controllers\HomeAlbumController;
 $rows=[];foreach([580,250,250,400] as $i=>$width)$rows[]=['width'=>$width,'alt'=>'Featured photo '.($i+1),'caption'=>'Meet the community '.($i+1),'url'=>'https://example.test/creator/'.$i,'icon'=>'instagram','new_tab'=>1,'order'=>$i];
-$request=Request::create('/admin/home-album','POST',['album_enabled'=>1,'album'=>$rows]);
+$request=albumRequest('/admin/home-album','POST',['album_enabled'=>1,'album'=>$rows]);
 $fileRows=[];foreach($rows as $i=>$row)$fileRows[$i]=['image'=>photoUpload($fixtures)];$request->files->set('album',$fileRows);
 $response=$controller->save($request);
 albumCheck($response->getStatusCode()===302 && count(HomeAlbum::items())===4,'real uploads save album and redirect');
@@ -39,15 +40,15 @@ $saved=HomeAlbum::settings()['items'];
 foreach($saved as $item){$path=HomeAlbum::path($item['image']);albumCheck(is_file($path) && str_starts_with($path,$root.'/media'),'album media persists outside deployment root');$served=(new App\Http\Controllers\RuntimeMediaController)->show(substr($item['image'],7));albumCheck($served->headers->get('Content-Type')==='image/png','album image is public via runtime route');copy($path,$fixtures.'/'.basename($path));}
 $paths=array_column($saved,'image');
 foreach($saved as &$item)$item['caption']='Saved caption';unset($item);
-$controller->save(Request::create('/admin/home-album','POST',['album_enabled'=>1,'album'=>$saved]));
+$controller->save(albumRequest('/admin/home-album','POST',['album_enabled'=>1,'album'=>$saved]));
 albumCheck(array_column(HomeAlbum::items(),'image')===$paths,'metadata-only save preserves image files');
 $bad=$saved;$bad[0]['url']='javascript:alert(1)';
-try{$controller->save(Request::create('/admin/home-album','POST',['album_enabled'=>1,'album'=>$bad]));throw new RuntimeException('Unsafe destination accepted');}catch(Illuminate\Validation\ValidationException $e){albumCheck(HomeAlbum::items()[0]['caption']==='Saved caption','unsafe link rejected without changing album');}
+try{$controller->save(albumRequest('/admin/home-album','POST',['album_enabled'=>1,'album'=>$bad]));throw new RuntimeException('Unsafe destination accepted');}catch(Illuminate\Validation\ValidationException $e){albumCheck(HomeAlbum::items()[0]['caption']==='Saved caption','unsafe link rejected without changing album');}
 $bad=$saved;$bad[0]['icon']='../../evil';
-try{$controller->save(Request::create('/admin/home-album','POST',['album_enabled'=>1,'album'=>$bad]));throw new RuntimeException('Unsafe logo accepted');}catch(Illuminate\Validation\ValidationException $e){}
+try{$controller->save(albumRequest('/admin/home-album','POST',['album_enabled'=>1,'album'=>$bad]));throw new RuntimeException('Unsafe logo accepted');}catch(Illuminate\Validation\ValidationException $e){}
 $bad=$saved;$bad[0]['width']=999;
-try{$controller->save(Request::create('/admin/home-album','POST',['album_enabled'=>1,'album'=>$bad]));throw new RuntimeException('Unsafe width accepted');}catch(Illuminate\Validation\ValidationException $e){}
-$badRequest=Request::create('/admin/home-album','POST',['album_enabled'=>1,'album'=>[['width'=>250]]]);$badRequest->files->set('album',[0=>['image'=>UploadedFile::fake()->createWithContent('evil.svg','<svg onload="alert(1)"/>')]]);
+try{$controller->save(albumRequest('/admin/home-album','POST',['album_enabled'=>1,'album'=>$bad]));throw new RuntimeException('Unsafe width accepted');}catch(Illuminate\Validation\ValidationException $e){}
+$badRequest=albumRequest('/admin/home-album','POST',['album_enabled'=>1,'album'=>[['width'=>250]]]);$badRequest->files->set('album',[0=>['image'=>UploadedFile::fake()->createWithContent('evil.svg','<svg onload="alert(1)"/>')]]);
 try{$controller->save($badRequest);throw new RuntimeException('SVG accepted');}catch(Illuminate\Validation\ValidationException $e){}
 albumCheck(HomeAlbum::path('../../.env')===null && !RuntimeMedia::allowed('assets/home-album/../../.env'),'media path traversal rejected');
 $album=view('components.home-album')->render();
@@ -55,11 +56,11 @@ albumCheck(str_contains($album,'target="_blank" rel="noopener noreferrer"') && s
 $form=view('components.config.home-album',['errors'=>new Illuminate\Support\ViewErrorBag])->render();
 file_put_contents($fixtures.'/album.html','<!doctype html><title>BioLync album QA</title><meta name="viewport" content="width=device-width"><link rel="stylesheet" href="/assets/css/hope-ui.min.css"><style>body{margin:0;background:#230033;color:white;padding:10px}main{max-width:620px;margin:auto}</style><main><h1>Featured community</h1><p>Photo album below the description</p>'.$album.'</main>');
 file_put_contents($fixtures.'/admin.html','<!doctype html><title>BioLync album settings QA</title><meta name="viewport" content="width=device-width"><link rel="stylesheet" href="/assets/css/hope-ui.min.css"><style>body{margin:0;background:#232838;color:white;padding:20px}form{max-width:900px;margin:auto}label{max-width:100%}</style>'.$form);
-$replace=Request::create('/admin/home-album','POST',['album_enabled'=>1,'album'=>$saved]);$replace->files->set('album',[0=>['image'=>photoUpload($fixtures)]]);$controller->save($replace);
+$replace=albumRequest('/admin/home-album','POST',['album_enabled'=>1,'album'=>$saved]);$replace->files->set('album',[0=>['image'=>photoUpload($fixtures)]]);$controller->save($replace);
 albumCheck(!is_file(HomeAlbum::path($paths[0])) && is_file(HomeAlbum::path(HomeAlbum::items()[0]['image'])),'replacement cleans old image after saving');
-$rows=HomeAlbum::settings()['items'];$removed=$rows[1]['image'];$rows[1]['remove']=1;$controller->save(Request::create('/admin/home-album','POST',['album_enabled'=>0,'album'=>$rows]));
+$rows=HomeAlbum::settings()['items'];$removed=$rows[1]['image'];$rows[1]['remove']=1;$controller->save(albumRequest('/admin/home-album','POST',['album_enabled'=>0,'album'=>$rows]));
 albumCheck(HomeAlbum::items()===[] && count(HomeAlbum::settings()['items'])===3 && !is_file(HomeAlbum::path($removed)),'remove deletes selected photo while hide preserves others');
-$rows=HomeAlbum::settings()['items'];$rows[0]['id']='0000000000000000';try{$controller->save(Request::create('/admin/home-album','POST',['album_enabled'=>1,'album'=>$rows]));throw new RuntimeException('Unknown photo ID accepted');}catch(Illuminate\Validation\ValidationException $e){}
+$rows=HomeAlbum::settings()['items'];$rows[0]['id']='0000000000000000';try{$controller->save(albumRequest('/admin/home-album','POST',['album_enabled'=>1,'album'=>$rows]));throw new RuntimeException('Unknown photo ID accepted');}catch(Illuminate\Validation\ValidationException $e){}
 
 albumCheck(SeoDiscovery::text('<p>Welcome &amp;#13; &amp;#13; friends 💋</p><p>A&nbsp;B &amp; C</p>')==='Welcome friends 💋 A B & C','encoded line breaks normalize without removing emoji');
 $seo=new App\Http\Controllers\SeoDiscoveryController;
