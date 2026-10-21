@@ -58,6 +58,7 @@ class SeoDiscovery
         $value=(string)$value;
         for($i=0;$i<3;$i++) {
             $decoded=html_entity_decode($value,ENT_QUOTES|ENT_HTML5,'UTF-8');
+            $decoded=preg_replace('/&#(?:0*(?:10|13)|x0*(?:a|d));?/i',' ',$decoded);
             if($decoded===$value)break;
             $value=$decoded;
         }

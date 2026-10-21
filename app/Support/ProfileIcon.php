@@ -57,14 +57,14 @@ class ProfileIcon
     {
         $image = @imagecreatefromstring(file_get_contents($source));
         if ($image) {
-                $orientation = self::orientation($source);
-                if (in_array($orientation, [2, 5, 7], true)) imageflip($image, IMG_FLIP_HORIZONTAL);
-                if ($orientation === 4) imageflip($image, IMG_FLIP_VERTICAL);
-                $angle = [3 => 180, 5 => 90, 6 => -90, 7 => -90, 8 => 90][$orientation] ?? 0;
-                if ($angle) {
-                    $rotated = imagerotate($image, $angle, 0);
-                    if ($rotated) { imagedestroy($image); $image = $rotated; }
-                }
+            $orientation = self::orientation($source);
+            if (in_array($orientation, [2, 5, 7], true)) imageflip($image, IMG_FLIP_HORIZONTAL);
+            if ($orientation === 4) imageflip($image, IMG_FLIP_VERTICAL);
+            $angle = [3 => 180, 5 => 90, 6 => -90, 7 => -90, 8 => 90][$orientation] ?? 0;
+            if ($angle) {
+                $rotated = imagerotate($image, $angle, 0);
+                if ($rotated) { imagedestroy($image); $image = $rotated; }
+            }
         }
         return $image;
     }
