@@ -52,7 +52,10 @@
             "php artisan vendor:publish --tag=laravel-assets --ansi --force"        ],
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
-            "@php artisan package:discover --ansi"
+            "@php artisan package:discover --ansi",
+            "@php artisan config:clear --ansi",
+            "@php artisan route:clear --ansi",
+            "@php artisan view:clear --ansi"
         ]
     },
     "extra": {

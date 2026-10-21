@@ -1,0 +1,35 @@
+name: Deployment cache cleanup
+on:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  deployment-cache:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: mbstring, xml, sqlite3, gd, zip
+          tools: composer
+      - run: composer install --no-interaction --prefer-dist --no-scripts
+      - name: Check cleanup with an unchanged dependency lock file
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p storage/framework/views
+          printf 'stale compiled Blade view\n' > storage/framework/views/deployment-cache-probe.php
+          printf '<?php /* stale route cache */\n' > bootstrap/cache/routes-v7.php
+          composer install --no-interaction --prefer-dist
+          test ! -e storage/framework/views/deployment-cache-probe.php
+          test ! -e bootstrap/cache/routes-v7.php
+      - name: Check cleanup after regenerating the autoloader
+        shell: bash
+        run: |
+          set -euo pipefail
+          printf 'stale compiled Blade view\n' > storage/framework/views/deployment-cache-probe.php
+          printf '<?php /* stale route cache */\n' > bootstrap/cache/routes-v7.php
+          composer dump-autoload --no-interaction
+          test ! -e storage/framework/views/deployment-cache-probe.php
+          test ! -e bootstrap/cache/routes-v7.php
