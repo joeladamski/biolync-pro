@@ -23,37 +23,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 @endif
 
-<!--#### BEGIN Meta Tags social media preview images  ####-->
-  <!-- This shows a preview for title, description and avatar image of users profiles if shared on social media sites -->
-
-    <!-- Facebook Meta Tags -->
-    <meta property="og:url" content="{{ url('') }}/{{ "@" . $littlelink_name }}">
-    <meta property="og:type" content="website">
-    <meta property="og:title" content="{{ $userinfo->name }}">
-    <meta property="og:description" content="{{ strip_tags($userinfo->littlelink_description) }}">
-    @if(file_exists(\App\Support\RuntimeMedia::path(findAvatar($userinfo->id))))
-    <meta property="og:image" content="{{ url(findAvatar($userinfo->id)) }}">
-    @elseif(\App\Support\SiteBranding::exists('avatar'))
-    <meta property="og:image" content="{{ \App\Support\SiteBranding::url('avatar') }}">
-    @else
-    <meta property="og:image" content="{{ asset('assets/linkstack/images/logo.svg') }}">
-    @endif
-
-    <!-- Twitter Meta Tags -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta property="twitter:domain" content="{{ url('') }}/{{ "@" . $littlelink_name }}">
-    <meta property="twitter:url" content="{{ url('') }}/{{ "@" . $littlelink_name }}">
-    <meta name="twitter:title" content="{{ $userinfo->littlelink_name }}">
-    <meta name="twitter:description" content="{{ strip_tags($userinfo->littlelink_description) }}">
-    @if(file_exists(\App\Support\RuntimeMedia::path(findAvatar($userinfo->id))))
-    <meta name="twitter:image" content="{{ url(findAvatar($userinfo->id)) }}">
-    @elseif(\App\Support\SiteBranding::exists('avatar'))
-    <meta name="twitter:image" content="{{ \App\Support\SiteBranding::url('avatar') }}">
-    @else
-    <meta name="twitter:image" content="{{ asset('assets/linkstack/images/logo.svg') }}">
-    @endif
-
-<!--#### END Meta Tags social media preview images  ####-->
+@include('components.seo.social-head', ['seo' => \App\Support\SeoDiscovery::profileMeta($userinfo)])
 
 @if(config('advanced-config.linkstack_title') != '' and env('HOME_URL') === '')
 <title>{{ $userinfo->name }} {{ config('advanced-config.linkstack_title') }}</title>

@@ -19,6 +19,7 @@ class SeoDiscovery
             'og_description'=>'',
             'og_image'=>'',
             'schema_enabled'=>true,
+            'share_revision'=>'',
         ],is_array($saved)?$saved:[]);
     }
 
@@ -53,9 +54,17 @@ class SeoDiscovery
 
     public static function text($value): string
     {
-        $value=preg_replace('#</(?:p|div|li|h[1-6])>|<br\s*/?>#i',"\n",(string)$value);
-        $value=html_entity_decode(strip_tags($value),ENT_QUOTES|ENT_HTML5,'UTF-8');
-        return trim(preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/u','',$value));
+        // Editors can store encoded CR/LF twice. Decode before stripping markup, then flatten whitespace.
+        $value=(string)$value;
+        for($i=0;$i<3;$i++) {
+            $decoded=html_entity_decode($value,ENT_QUOTES|ENT_HTML5,'UTF-8');
+            if($decoded===$value)break;
+            $value=$decoded;
+        }
+        $value=preg_replace('#</(?:p|div|li|h[1-6])>|<br\s*/?>#i'," ",$value);
+        $value=strip_tags($value);
+        $value=preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/u','',$value);
+        return trim(preg_replace('/[\s\x{00A0}]+/u',' ',$value));
     }
 
     private static function siteDescription(): string
@@ -67,9 +76,8 @@ class SeoDiscovery
 
     private static function imageUrl(string $configured=''): string
     {
-        if($configured!=='' && filter_var($configured,FILTER_VALIDATE_URL))return $configured;
-        if(function_exists('findFile') && file_exists(\App\Support\RuntimeMedia::path('assets/linkstack/images/'.findFile('avatar'))))return asset('assets/linkstack/images/'.findFile('avatar'));
-        return asset('assets/linkstack/images/logo.svg');
+        if($configured!=='' && filter_var($configured,FILTER_VALIDATE_URL) && in_array(strtolower(parse_url($configured,PHP_URL_SCHEME)),['http','https'],true))return $configured;
+        return SocialPreview::url();
     }
 
     public static function siteMeta(): array
@@ -94,7 +102,7 @@ class SeoDiscovery
         $description=self::text($s['description']) ?: preg_replace('/\s+/u',' ',self::text($user->littlelink_description));
         $title=self::text($s['title']) ?: trim($user->name.' | '.config('app.name'));
         $robots=!$s['indexable'] ? 'noindex,nofollow' : (self::text($s['robots']) ?: ($global['robots'] ?: 'index,follow'));
-        $avatar=file_exists(\App\Support\RuntimeMedia::path(findAvatar($user->id))) ? url(findAvatar($user->id)) : self::imageUrl((string)$global['og_image']);
+        $avatar=SocialPreview::url($user);
         return [
             'title'=>$title,
             'description'=>$description,

@@ -15,7 +15,7 @@ class SiteBranding
 
     private static function kind(string $kind): void
     {
-        if (!in_array($kind, ['avatar', 'favicon'], true)) throw new \InvalidArgumentException('Unknown branding kind.');
+        if (!in_array($kind, ['avatar', 'favicon', 'share'], true)) throw new \InvalidArgumentException('Unknown branding kind.');
     }
 
     public static function path(string $kind, bool $legacy = true): ?string

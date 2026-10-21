@@ -6,3 +6,5 @@
 @if($previewCopy['description'] !== '')<div class="home-preview-description pk-editorial">{!! \App\Support\RichText::render($previewCopy['description'], $previewCopy['description_format']) !!}</div>@endif
 </div>
 @endif
+
+@include('components.home-album')

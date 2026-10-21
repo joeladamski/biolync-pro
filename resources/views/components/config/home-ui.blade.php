@@ -32,3 +32,5 @@
   @endforeach
   <button class="btn btn-primary" type="submit">Save homepage settings</button>
 </form>
+
+@include('components.config.home-album')
