@@ -25,6 +25,11 @@
 <button class="btn btn-outline-secondary" type="submit" name="reset" value="1">Reset overrides to automatic</button>
 </form>
 
+<a class="btn btn-outline-primary mt-3" href="{{ url('/admin/edit-user/'.$user->id).'?seo_refresh='.time().'#seo-discovery' }}">Refresh saved profile preview</a>
+<a class="btn btn-outline-secondary mt-3" href="{{ url('/@'.$user->littlelink_name) }}" target="_blank" rel="noopener noreferrer">Open profile</a>
+<h4 class="mt-4">Message card preview</h4>
+<img src="{{ $profileSeoMeta['og_image'] }}" alt="Profile share artwork" style="max-width:580px;width:100%;height:auto;border-radius:15px" loading="lazy">
+<p>{{ $profileSeoMeta['og_title'] }}</p>
 <h4 class="mt-4">Resolved preview</h4>
 <p><strong>Title:</strong> {{ $profileSeoMeta['title'] }}<br>
 <strong>Description:</strong> {{ $profileSeoMeta['description'] }}<br>

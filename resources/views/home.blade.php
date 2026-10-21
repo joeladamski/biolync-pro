@@ -17,33 +17,7 @@
       <title>{{ config('app.name') }}</title>
       @endif
       
-<!--#### BEGIN Meta Tags social media preview images  ####-->
-  <!-- This shows a preview for title, description and avatar image of users profiles if shared on social media sites -->
-
-    <!-- Facebook Meta Tags -->
-    <meta property="og:url" content="{{ url('') }}">
-    <meta property="og:type" content="website">
-    <meta property="og:title" content="{{env('APP_NAME')}}">
-    <meta property="og:description" content='{{ strip_tags($message->home_message === 'default' ? __('messages.HOME.MESSAGE') : $message->home_message) }}'>
-    @if(\App\Support\SiteBranding::exists('avatar'))
-    <meta property="og:image" content="{{ \App\Support\SiteBranding::url('avatar') }}">
-    @else
-    <meta property="og:image" content="{{ asset('assets/linkstack/images/logo.svg') }}">
-    @endif
-    
-    <!-- Twitter Meta Tags -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta property="twitter:domain" content="{{ url('') }}">
-    <meta property="twitter:url" content="{{ url('') }}">
-    <meta name="twitter:title" content="{{env('APP_NAME')}}">
-    <meta name="twitter:description" content='{{ strip_tags($message->home_message === 'default' ? __('messages.HOME.MESSAGE') : $message->home_message) }}'>
-    @if(\App\Support\SiteBranding::exists('avatar'))
-    <meta name="twitter:image" content="{{ \App\Support\SiteBranding::url('avatar') }}">
-    @else
-    <meta name="twitter:image" content="{{ asset('assets/linkstack/images/logo.svg') }}">
-    @endif
-
-<!--#### END Meta Tags social media preview images  ####-->
+@include('components.seo.social-head', ['seo' => \App\Support\SeoDiscovery::siteMeta()])
       @endif
 
       <!-- Favicon -->

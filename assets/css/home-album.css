@@ -1,0 +1,9 @@
+.home-album{display:flex;flex-wrap:wrap;justify-content:center;align-items:flex-start;gap:16px;width:100%;max-width:580px;margin:24px auto;box-sizing:border-box}
+.home-album .home-album-photo{flex:0 1 var(--album-width);width:var(--album-width);max-width:100%;min-width:0;margin:0;box-sizing:border-box}
+.home-album .home-album-link{display:block;position:relative;overflow:hidden;border-radius:15px;line-height:0}
+.home-album .home-album-image{display:block;width:100%;height:auto;border-radius:15px}
+.home-album .home-album-logo{position:absolute;top:5px;left:5px;width:30px;height:30px;padding:4px;display:flex;align-items:center;justify-content:center;box-sizing:border-box;border-radius:7px;background:rgba(0,0,0,.75);pointer-events:none}
+.home-album .home-album-logo img{display:block;width:22px;height:22px;object-fit:contain}
+.home-album figcaption{font-size:.875rem;line-height:1.5;margin:8px 0 0;text-align:center;overflow-wrap:anywhere}
+.home-album-link:focus-visible{outline:3px solid var(--pk-accent,#ff5dd3);outline-offset:3px}
+.album-admin-row{min-width:0}.album-admin-row img{max-width:150px;max-height:100px;object-fit:contain;border-radius:15px}

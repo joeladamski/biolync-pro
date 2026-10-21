@@ -29,17 +29,9 @@ class ProfileIcon
         if (!in_array($size, [32, 180], true)) throw new \InvalidArgumentException('Invalid icon size.');
         $canvas = imagecreatetruecolor($size, $size);
         imagefill($canvas, 0, 0, imagecolorallocate($canvas, 255, 255, 255));
-        $image = $source ? @imagecreatefromstring(file_get_contents($source)) : false;
+        $image = $source ? self::raster($source) : false;
         try {
             if ($image) {
-                $orientation = self::orientation($source);
-                if (in_array($orientation, [2, 5, 7], true)) imageflip($image, IMG_FLIP_HORIZONTAL);
-                if ($orientation === 4) imageflip($image, IMG_FLIP_VERTICAL);
-                $angle = [3 => 180, 5 => 90, 6 => -90, 7 => -90, 8 => 90][$orientation] ?? 0;
-                if ($angle) {
-                    $rotated = imagerotate($image, $angle, 0);
-                    if ($rotated) { imagedestroy($image); $image = $rotated; }
-                }
                 $width = imagesx($image); $height = imagesy($image); $edge = min($width, $height);
                 imagecopyresampled($canvas, $image, 0, 0, (int)(($width-$edge)/2), (int)(($height-$edge)/2), $size, $size, $edge, $edge);
             } else {
@@ -59,6 +51,22 @@ class ProfileIcon
             if ($image) imagedestroy($image);
             imagedestroy($canvas);
         }
+    }
+
+    public static function raster(string $source)
+    {
+        $image = @imagecreatefromstring(file_get_contents($source));
+        if ($image) {
+            $orientation = self::orientation($source);
+            if (in_array($orientation, [2, 5, 7], true)) imageflip($image, IMG_FLIP_HORIZONTAL);
+            if ($orientation === 4) imageflip($image, IMG_FLIP_VERTICAL);
+            $angle = [3 => 180, 5 => 90, 6 => -90, 7 => -90, 8 => 90][$orientation] ?? 0;
+            if ($angle) {
+                $rotated = imagerotate($image, $angle, 0);
+                if ($rotated) { imagedestroy($image); $image = $rotated; }
+            }
+        }
+        return $image;
     }
 
     /** Read the JPEG APP1 orientation without requiring the optional PHP EXIF extension. */

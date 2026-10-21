@@ -25,7 +25,7 @@ use App\Models\User;
 |
 */
 
-Route::get('/assets/{path}', [App\Http\Controllers\RuntimeMediaController::class, 'show'])->where('path', '(?:img/|profile-media/|profile-gallery/).+')->name('runtimeMedia');
+Route::get('/assets/{path}', [App\Http\Controllers\RuntimeMediaController::class, 'show'])->where('path', '(?:img/|profile-media/|profile-gallery/|home-album/).+')->name('runtimeMedia');
 
 // Public branding remains available during maintenance and owner setup.
 Route::get('/site-branding/{kind}', [App\Http\Controllers\SiteBrandingController::class, 'show'])->where('kind', 'avatar|favicon')->name('siteBranding');
@@ -88,6 +88,8 @@ Route::get('/panel/diagnose', function () {
 });
 
 //Public route
+Route::get('/social-preview/site.jpg', [App\Http\Controllers\SocialPreviewController::class, 'site'])->name('socialSiteImage')->middleware('disableCookies');
+Route::get('/social-preview/profile/{user}.jpg', [App\Http\Controllers\SocialPreviewController::class, 'profile'])->where('user','[0-9]+')->name('socialProfileImage')->middleware('disableCookies');
 Route::get('/profile-icons/{user}/{size}.png', [App\Http\Controllers\ProfileIconController::class, 'show'])->where(['user' => '[0-9]+', 'size' => '32|180'])->name('profileIcon')->middleware('disableCookies');
 Route::get('/llms.txt', [App\Http\Controllers\AiDiscoveryController::class, 'site'])->name('aiSiteSummary');
 Route::get('/llms-full.txt', [App\Http\Controllers\AiDiscoveryController::class, 'site'])->defaults('full', true)->name('aiSiteFull');
@@ -200,10 +202,12 @@ Route::group([
     Route::get('/admin/advanced-config', [AdminController::class, 'showFileEditor'])->name('showFileEditor');
     Route::post('/admin/advanced-config', [AdminController::class, 'editAC'])->name('editAC');
     Route::post('/admin/ai-discovery', [App\Http\Controllers\AiDiscoveryController::class, 'saveSite'])->name('saveAiSite');
+    Route::post('/admin/seo-discovery/refresh', [App\Http\Controllers\SeoDiscoveryController::class, 'refresh'])->name('refreshSeoPreview');
     Route::post('/admin/seo-discovery', [App\Http\Controllers\SeoDiscoveryController::class, 'saveSite'])->name('saveSeoSite');
     Route::post('/admin/edit-user/{id}/seo-discovery', [App\Http\Controllers\SeoDiscoveryController::class, 'saveProfile'])->name('saveSeoProfile');
     Route::post('/admin/featured-profile', [App\Http\Controllers\AiDiscoveryController::class, 'saveFeatured'])->name('saveFeaturedProfile');
     Route::post('/admin/edit-user/{id}/ai-discovery', [App\Http\Controllers\AiDiscoveryController::class, 'saveProfile'])->name('saveAiProfile');
+    Route::post('/admin/home-album', [App\Http\Controllers\HomeAlbumController::class, 'save'])->name('saveHomeAlbum');
     Route::post('/admin/home-ui', [AdminController::class, 'editHomeUi'])->name('editHomeUi');
     Route::post('/admin/public-site-styles', [PublicSiteStyleController::class, 'save'])->name('savePublicSiteStyles');
     Route::post('/admin/public-site-styles/reset', [PublicSiteStyleController::class, 'reset'])->name('resetPublicSiteStyles');

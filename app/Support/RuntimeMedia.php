@@ -3,7 +3,7 @@ namespace App\Support;
 
 class RuntimeMedia
 {
-    public const DIRECTORIES = ['assets/img/background-img', 'assets/img', 'assets/profile-media', 'assets/profile-gallery'];
+    public const DIRECTORIES = ['assets/img/background-img', 'assets/img', 'assets/profile-media', 'assets/profile-gallery', 'assets/home-album'];
 
     public static function root(): string
     {
@@ -50,6 +50,6 @@ class RuntimeMedia
 
     public static function allowed(string $path): bool
     {
-        return preg_match('#^assets/(?:img/(?:background-img/)?[0-9]+(?:_[a-zA-Z0-9]+)?\.(?:png|jpe?g|gif|webp)|profile-(?:media|gallery)/[0-9]+_[a-f0-9]{32}\.(?:png|jpe?g|webp|mp4|webm))$#', $path) === 1;
+        return preg_match('#^assets/(?:home-album/[a-f0-9]{32}\.(?:jpg|png|webp)|img/(?:background-img/)?[0-9]+(?:_[a-zA-Z0-9]+)?\.(?:png|jpe?g|gif|webp)|profile-(?:media|gallery)/[0-9]+_[a-f0-9]{32}\.(?:png|jpe?g|webp|mp4|webm))$#', $path) === 1;
     }
 }
