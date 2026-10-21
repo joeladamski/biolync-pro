@@ -103,7 +103,8 @@
     <!-- loader END -->
     
     @php
-      $metalEstate = in_array(strtolower(parse_url(config('app.url'), PHP_URL_HOST) ?? ''), ['orderofthemetal.one', 'metalqueen.one', 'metalking.one', 'metalgod.one', 'metalwarrior.one'], true);
+      $deviceReflection = \App\Support\HomeUi::deviceReflection();
+      $metalEstate = in_array(strtolower(parse_url(config('app.url'), PHP_URL_HOST) ?? ''), ['orderofthemetal.one', 'metalking.one', 'metalgod.one', 'metalwarrior.one'], true);
     @endphp
     <style>
       .home-layout {width:100%;min-height:calc(100vh - 120px);min-height:calc(100svh - 120px);}
@@ -151,7 +152,7 @@
         .iframe-container iframe {transform:scale(.7);}
       }
     </style>
-    @if($metalEstate)<script src="{{ asset('assets/js/metal-home-reflections.js') }}" defer></script>@endif
+    @if($metalEstate || $deviceReflection)<script src="{{ asset('assets/js/metal-home-reflections.js') }}" defer></script>@endif
     <div class="wrapper d-flex">
       <section class="login-content">
         <div class="row m-0 align-items-stretch bg-white home-layout">
@@ -202,8 +203,8 @@
           <div class="col-md-6 bg-light p-0 order-1 home-preview">
             <div class="d-flex">
               <div class="card-body justify-content-center text-center">
-                <div class="iframe-container {{ $metalEstate ? 'metal-phone-reflection' : '' }}"><iframe title="Homepage profile preview" src="{{ \App\Support\AiDiscovery::featuredUrl() }}{{ str_contains(\App\Support\AiDiscovery::featuredUrl(), '?') ? '&' : '?' }}spotlight_preview=1"></iframe>
-                  @if($metalEstate)
+                <div class="iframe-container {{ $deviceReflection ? 'metal-phone-reflection' : '' }}"><iframe title="Homepage profile preview" src="{{ \App\Support\AiDiscovery::featuredUrl() }}{{ str_contains(\App\Support\AiDiscovery::featuredUrl(), '?') ? '&' : '?' }}spotlight_preview=1"></iframe>
+                  @if($deviceReflection)
                   <div class="metal-reflection" data-direction="counterclockwise" aria-hidden="true"><span class="metal-reflection-beam metal-reflection-pair"></span></div>
                   @endif
                 </div>

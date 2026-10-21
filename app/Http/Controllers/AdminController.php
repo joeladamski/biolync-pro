@@ -451,6 +451,7 @@ class AdminController extends Controller
     $rules = [
       'buttons' => 'required|array|size:' . count($buttons),
       'preview_copy' => 'nullable|array',
+      'device_reflection' => 'sometimes|boolean',
       'preview_copy.title' => 'nullable|string|max:120',
       'preview_copy.tagline' => 'nullable|string|max:200',
       'preview_copy.description' => 'nullable|string|max:10000',
@@ -475,7 +476,7 @@ class AdminController extends Controller
       $copy['description_format'] = $data['preview_copy']['description_format'] ?? 'text';
       if ($copy['description_format'] === 'html') $copy['description'] = \App\Support\RichText::render($copy['description']);
     }
-    if (!\Illuminate\Support\Facades\Storage::disk('local')->put('home-ui.json', json_encode(['buttons' => $clean, 'preview_copy' => $copy], JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR))) {
+    if (!\Illuminate\Support\Facades\Storage::disk('local')->put('home-ui.json', json_encode(['buttons' => $clean, 'preview_copy' => $copy, 'device_reflection' => $request->has('device_reflection') ? $request->boolean('device_reflection') : \App\Support\HomeUi::deviceReflection()], JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR))) {
       throw new \RuntimeException('Unable to save homepage links. Check storage permissions.');
     }
     return redirect(url('/admin/config') . '#ui-controls')->with('home_ui_saved', true);

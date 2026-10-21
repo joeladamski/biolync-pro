@@ -11,6 +11,12 @@
   @csrf
   @php($previewCopy = \App\Support\HomeUi::previewCopy())
   <fieldset class="border rounded p-3 mb-4">
+    <legend class="float-none w-auto px-2 fs-5">Device frame reflection</legend>
+    <input type="hidden" name="device_reflection" value="0">
+    <label><input type="checkbox" name="device_reflection" value="1" @checked(old('device_reflection', \App\Support\HomeUi::deviceReflection()))> Animate the device frame counterclockwise</label>
+    <p class="mt-2 mb-0">Two gold highlights travel around the device frame twice, then stop. Reduced-motion preferences are respected.</p>
+  </fieldset>
+  <fieldset class="border rounded p-3 mb-4">
     <legend class="float-none w-auto px-2 fs-5">Text beneath the phone preview</legend>
     <p>Optional text for the preview column. Leave a field blank to hide it.</p>
     <label for="preview-title" class="form-label">Title</label>
