@@ -32,7 +32,7 @@ function photoUpload($fixtures){$temp=tempnam(sys_get_temp_dir(),'album-upload-'
 $controller=new App\Http\Controllers\HomeAlbumController;
 $rows=[];foreach([580,250,250,400] as $i=>$width)$rows[]=['width'=>$width,'alt'=>'Featured photo '.($i+1),'caption'=>'Meet the community '.($i+1),'url'=>'https://example.test/creator/'.$i,'icon'=>'instagram','new_tab'=>1,'order'=>$i];
 $request=Request::create('/admin/home-album','POST',['album_enabled'=>1,'album'=>$rows]);
-foreach($rows as $i=>$row)$request->files->set('album',array_replace($request->file('album',[]),[$i=>['image'=>photoUpload($fixtures)]]));
+$fileRows=[];foreach($rows as $i=>$row)$fileRows[$i]=['image'=>photoUpload($fixtures)];$request->files->set('album',$fileRows);
 $response=$controller->save($request);
 albumCheck($response->getStatusCode()===302 && count(HomeAlbum::items())===4,'real uploads save album and redirect');
 $saved=HomeAlbum::settings()['items'];

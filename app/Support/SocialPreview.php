@@ -20,7 +20,7 @@ class SocialPreview
     public static function url(?User $user=null): string
     {
         $source=self::source($user);
-        $version=substr(hash('sha256',($source ? hash_file('sha256',$source) : config('app.name')).'|'.(SeoDiscovery::settings()['share_revision'] ?? '')),0,16);
+        $version=substr(hash('sha256',($source ? hash_file('sha256',$source) : config('app.name')).'|'.($user?->name ?? '').'|'.(SeoDiscovery::settings()['share_revision'] ?? '')),0,16);
         return ($user ? route('socialProfileImage',['user'=>$user->id]) : route('socialSiteImage')).'?v='.$version;
     }
 

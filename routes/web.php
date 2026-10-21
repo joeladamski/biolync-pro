@@ -28,7 +28,7 @@ use App\Models\User;
 Route::get('/assets/{path}', [App\Http\Controllers\RuntimeMediaController::class, 'show'])->where('path', '(?:img/|profile-media/|profile-gallery/|home-album/).+')->name('runtimeMedia');
 
 // Public branding remains available during maintenance and owner setup.
-Route::get('/site-branding/{kind}', [App\Http\Controllers\SiteBrandingController::class, 'show'])->where('kind', 'avatar|favicon|share')->name('siteBranding');
+Route::get('/site-branding/{kind}', [App\Http\Controllers\SiteBrandingController::class, 'show'])->where('kind', 'avatar|favicon')->name('siteBranding');
 
 // Prevents section below from being run by 'composer update'
 if(file_exists(base_path('storage/app/ISINSTALLED'))){
