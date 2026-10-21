@@ -30,8 +30,8 @@ const server=http.createServer((req,res)=>{
   assert.equal(await page.locator('.home-album-logo').first().evaluate(e=>getComputedStyle(e).top),'5px');
   assert.equal(await page.locator('.home-album-logo').first().evaluate(e=>getComputedStyle(e).left),'5px');
   assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'album has no horizontal overflow');
-  await page.route('https://example.test/**',r=>r.fulfill({contentType:'text/html',body:'<title>Creator destination</title><h1>Creator</h1>'}));
-  const popupPromise=page.waitForEvent('popup');await page.locator('.home-album-link').first().click();const popup=await popupPromise;await popup.waitForLoadState();assert.equal(await popup.title(),'Creator destination');assert.equal(await popup.evaluate(()=>window.opener),null);await popup.close();
+  await page.context().route('https://example.test/**',r=>r.fulfill({contentType:'text/html',body:'<title>Creator destination</title><h1>Creator</h1>'}));
+  const popupPromise=page.waitForEvent('popup');await page.locator('.home-album-link').first().click();const popup=await popupPromise;await popup.waitForURL('https://example.test/**');await popup.waitForFunction(()=>document.title==='Creator destination');assert.equal(await popup.title(),'Creator destination');assert.equal(await popup.evaluate(()=>window.opener),null);await popup.close();
   await page.screenshot({path:path.join(fixtures,'album-'+width+'.png'),fullPage:true});
   await page.goto(base+'/admin.html');assert.equal(await page.title(),'BioLync album settings QA');
   const count=await page.locator('.album-admin-row').count();await page.getByRole('button',{name:'Add photo',exact:true}).click();assert.equal(await page.locator('.album-admin-row').count(),count+1);
