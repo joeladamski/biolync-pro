@@ -163,12 +163,12 @@
                               <div class="form-check form-switch mb-3">
                                 <input type="hidden" name="vip_badge_enabled" value="0">
                                 <input class="form-check-input" type="checkbox" id="vip-badge-enabled" name="vip_badge_enabled" value="1" @checked(old('vip_badge_enabled', $adminVip['enabled'] ?? ($user->role === 'vip')))>
-                                <label class="form-check-label" for="vip-badge-enabled">Enable PinkKiss VIP icon and recognition panel</label>
+                                <label class="form-check-label" for="vip-badge-enabled">Enable BioLync VIP icon and recognition panel</label>
                               </div>
-                              <p class="form-text">Only administrators control this status. VIP is a PinkKiss.Love platform designation, not identity verification.</p>
+                              <p class="form-text">Only administrators control this status. VIP is a BioLync platform designation, not identity verification.</p>
 
                               <label class="form-label" for="vip-headline">Personal VIP headline</label>
-                              <input class="form-control mb-3" id="vip-headline" name="vip_headline" maxlength="220" value="{{ old('vip_headline', $adminVip['headline'] ?? '') }}" placeholder="{{ old('name', $user->name) }} has earned a place in the PinkKiss.Love VIP community.">
+                              <input class="form-control mb-3" id="vip-headline" name="vip_headline" maxlength="220" value="{{ old('vip_headline', $adminVip['headline'] ?? '') }}" placeholder="{{ old('name', $user->name) }} has earned a place in the BioLync VIP community.">
 
                               <label class="form-label" for="vip-message">Personal VIP message</label>
                               <textarea class="form-control mb-3" id="vip-message" name="vip_message" maxlength="800" rows="4">{{ old('vip_message', $adminVip['message'] ?? '') }}</textarea>

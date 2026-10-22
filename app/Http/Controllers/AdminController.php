@@ -819,7 +819,7 @@ class AdminController extends Controller
       $updated = rtrim($contents) . PHP_EOL . $line . PHP_EOL;
     }
 
-    $tempPath = $envPath . ".pinkkiss.tmp";
+    $tempPath = $envPath . ".biolync.tmp";
     if (file_put_contents($tempPath, $updated, LOCK_EX) === false) {
       return false;
     }

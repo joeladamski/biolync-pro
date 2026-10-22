@@ -51,7 +51,7 @@ $fxEmojis = is_array($fx['emojis'] ?? null) ? $fx['emojis'] : ['💋', '💗', '
         <input class="form-control mb-3" id="live-url" type="url" name="live_url" value="{{ old('live_url', $live['url'] ?? '') }}" placeholder="https://">
         <label class="form-label" for="live-click-behavior">When tapped</label>
         <select class="form-control" id="live-click-behavior" name="live_click_behavior">
-          <option value="preview" @selected(old('live_click_behavior', $live['click_behavior'] ?? 'preview') === 'preview')>Open PinkKiss info panel first</option>
+          <option value="preview" @selected(old('live_click_behavior', $live['click_behavior'] ?? 'preview') === 'preview')>Open BioLync info panel first</option>
           <option value="direct" @selected(old('live_click_behavior', $live['click_behavior'] ?? 'preview') === 'direct')>Go directly to destination</option>
         </select>
       </fieldset>

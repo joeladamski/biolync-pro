@@ -89,7 +89,7 @@ class ActivityAudit
         try {
             $response = Http::timeout(3)->asJson()->post($settings['webhook'], [
                 'embeds' => [[
-                    'title' => '💋 PinkKiss.Love Activity Monitor',
+                    'title' => '💋 BioLync Activity Monitor',
                     'description' => 'Discord activity monitoring is connected.',
                     'color' => 16735699,
                     'timestamp' => now()->toIso8601String(),
