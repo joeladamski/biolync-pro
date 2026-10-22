@@ -78,7 +78,7 @@ $owner->forceFill([
     'name' => 'Owner', 'email' => 'owner@example.test', 'littlelink_name' => 'owner',
     'password' => Hash::make('owner-test-secret'), 'role' => 'admin',
 ])->save();
-$ownerBefore = $owner->getRawOriginal();
+$ownerBefore = $owner->fresh()->getRawOriginal();
 
 foreach (['https://pinkkiss.love', 'https://discipleship.earth.evil.test', 'https://evil.test/discipleship.earth', 'discipleship.earth', ''] as $url) {
     config(['app.url' => $url]);
