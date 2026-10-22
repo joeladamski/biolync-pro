@@ -49,6 +49,11 @@ class DisciplesSeeder extends Seeder
             if (!User::where('role', 'admin')->lockForUpdate()->first()) {
                 throw new RuntimeException('Create your administrator through /setup-owner before seeding the Twelve.');
             }
+            if (!is_file(storage_path('app/ISINSTALLED'))
+                || file_exists(base_path('INSTALLING'))
+                || file_exists(base_path('INSTALLERLOCK'))) {
+                throw new RuntimeException('Complete owner setup and finalization before seeding the Twelve (ISINSTALLED must exist and installer locks must be cleared).');
+            }
 
             $managed = [];
             foreach (User::where('image', 'like', '%' . self::COLLECTION . '%')->lockForUpdate()->get() as $user) {

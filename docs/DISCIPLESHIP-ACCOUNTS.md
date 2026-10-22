@@ -28,7 +28,9 @@ https://www.linkedword.com/matt/10/
 ## Deploy and seed
 
 Complete migrations and the normal `/setup-owner` workflow first. The seed
-refuses to run without an administrator, preserving first-owner setup.
+refuses to run without an administrator or before owner finalization completes.
+It requires `storage/app/ISINSTALLED` and the absence of the root `INSTALLING`
+and `INSTALLERLOCK` markers, preserving the installer's single-owner state.
 `APP_URL` must have the exact host `discipleship.earth` or
 `www.discipleship.earth`; other estates and lookalike hosts are rejected.
 
@@ -88,7 +90,8 @@ invented ages, biographical claims, or broken media links are seeded.
 
 `php tests/disciples-seeder.php` exercises the real Laravel seeder and User model
 against an isolated in-memory SQLite schema. It checks estate/owner gates, the
-original roster, role/gallery eligibility, native random IDs, passwords, Scripture
+original roster, pending finalization and installer locks, role/gallery eligibility,
+native random IDs, passwords, Scripture
 attribution, rerun preservation, renamed identity tracking, case-insensitive
 collisions, transaction rollback and the absence of registration email events.
 The dedicated pull-request workflow runs these checks on PHP 8.2.

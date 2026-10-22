@@ -34,6 +34,25 @@ DB::purge();
 Mail::fake();
 Event::fake([Registered::class]);
 
+$installed = storage_path('app/ISINSTALLED');
+$installerMarkers = [$installed, base_path('INSTALLING'), base_path('INSTALLERLOCK')];
+$markerSnapshot = [];
+foreach ($installerMarkers as $path) {
+    $markerSnapshot[$path] = is_file($path) ? file_get_contents($path) : null;
+}
+register_shutdown_function(function () use ($markerSnapshot) {
+    foreach ($markerSnapshot as $path => $content) {
+        if ($content !== null) {
+            file_put_contents($path, $content);
+        } elseif (is_file($path)) {
+            unlink($path);
+        }
+    }
+});
+foreach ($installerMarkers as $path) {
+    if (is_file($path)) unlink($path);
+}
+
 function disciplesCheck($ok, string $message): void
 {
     if (!$ok) {
@@ -79,6 +98,20 @@ $owner->forceFill([
     'password' => Hash::make('owner-test-secret'), 'role' => 'admin',
 ])->save();
 $ownerBefore = $owner->fresh()->getRawOriginal();
+
+// A created owner is not yet a completed installation: finalization requires one user.
+file_put_contents(base_path('INSTALLERLOCK'), '');
+disciplesReject('Complete owner setup and finalization');
+disciplesCheck(User::count() === 1, 'pending owner finalization keeps exactly one user');
+unlink(base_path('INSTALLERLOCK'));
+disciplesReject('Complete owner setup and finalization');
+file_put_contents($installed, '');
+foreach ([base_path('INSTALLERLOCK'), base_path('INSTALLING')] as $path) {
+    file_put_contents($path, '');
+    disciplesReject('Complete owner setup and finalization');
+    disciplesCheck(User::count() === 1, 'stale installer marker leaves owner finalization intact');
+    unlink($path);
+}
 
 foreach (['https://pinkkiss.love', 'https://discipleship.earth.evil.test', 'https://evil.test/discipleship.earth', 'discipleship.earth', ''] as $url) {
     config(['app.url' => $url]);
