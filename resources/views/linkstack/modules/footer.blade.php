@@ -1,14 +1,14 @@
 <div class="container">
 	<div class="footer fadein" style="margin:5% 0px 35px 0px;">
-	@if(env('DISPLAY_FOOTER') === true)
-		@if(env('DISPLAY_FOOTER_HOME') === true)<a class="footer-hover spacing" href="@if(str_replace('"', "", EnvEditor::getKey('HOME_FOOTER_LINK')) === "" ){{ url('') }}@else{{ str_replace('"', "", EnvEditor::getKey('HOME_FOOTER_LINK')) }}@endif">{{footer('Home')}}</a>@endif
-		@if(env('DISPLAY_FOOTER_TERMS') === true)<a class="footer-hover spacing" href="{{ url('') }}/pages/{{ strtolower(footer('Terms')) }}">{{footer('Terms')}}</a>@endif
-		@if(env('DISPLAY_FOOTER_PRIVACY') === true)<a class="footer-hover spacing" href="{{ url('') }}/pages/{{ strtolower(footer('Privacy')) }}">{{footer('Privacy')}}</a>@endif
-		@if(env('DISPLAY_FOOTER_CONTACT') === true)<a class="footer-hover spacing" href="{{ url('') }}/pages/{{ strtolower(footer('Contact')) }}">{{footer('Contact')}}</a>@endif
+	@if(config('footer.DISPLAY_FOOTER') === true)
+		@if(config('footer.DISPLAY_FOOTER_HOME') === true)<a class="footer-hover spacing" href="@if(config('footer.HOME_FOOTER_LINK') === "" ){{ url('') }}@else{{ config('footer.HOME_FOOTER_LINK') }}@endif">{{footer('Home')}}</a>@endif
+		@if(config('footer.DISPLAY_FOOTER_TERMS') === true)<a class="footer-hover spacing" href="{{ url('') }}/pages/{{ strtolower(footer('Terms')) }}">{{footer('Terms')}}</a>@endif
+		@if(config('footer.DISPLAY_FOOTER_PRIVACY') === true)<a class="footer-hover spacing" href="{{ url('') }}/pages/{{ strtolower(footer('Privacy')) }}">{{footer('Privacy')}}</a>@endif
+		@if(config('footer.DISPLAY_FOOTER_CONTACT') === true)<a class="footer-hover spacing" href="{{ url('') }}/pages/{{ strtolower(footer('Contact')) }}">{{footer('Contact')}}</a>@endif
 	@endif
 	</div>
 
-	@if(env('DISPLAY_CREDIT') === true)
+	@if(config('footer.DISPLAY_CREDIT') === true)
 	{{-- Removed class spacing --}}
 	<div style="vertical-align:middle;display:inline-flex;flex-direction:column;align-items:center;gap:8px;padding-bottom:50px;" class="credit-hover fadein">
 		<a style="text-decoration:none;" href="{{ config('branding.url') }}" title="{{__('messages.Learn more about LinkStack')}}">

@@ -759,7 +759,7 @@ class AdminController extends Controller
     return Redirect("/studio/theme");
   }
 
-  private function persistConfigToggle(string $key, string $value): bool
+  private function persistConfigSetting(string $key, string $value): bool
   {
     $toggleKeys = [
       "ALLOW_REGISTRATION",
@@ -791,6 +791,11 @@ class AdminController extends Controller
       "DISPLAY_FOOTER_TERMS",
       "DISPLAY_FOOTER_PRIVACY",
       "DISPLAY_FOOTER_CONTACT",
+      "TITLE_FOOTER_HOME",
+      "TITLE_FOOTER_TERMS",
+      "TITLE_FOOTER_PRIVACY",
+      "TITLE_FOOTER_CONTACT",
+      "HOME_FOOTER_LINK",
     ];
 
     if (!in_array($key, $toggleKeys, true)) {
@@ -809,7 +814,7 @@ class AdminController extends Controller
 
     $line = $key . "=" . $value;
     $pattern = "/^" . preg_quote($key, "/") . "\\s*=.*$/m";
-    $updated = preg_replace($pattern, $line, $contents, -1, $count);
+    $updated = preg_replace_callback($pattern, static fn () => $line, $contents, -1, $count);
 
     if ($updated === null) {
       return false;
@@ -857,16 +862,22 @@ class AdminController extends Controller
 
     if ($type === "toggle") {
       $value = $request->boolean("toggle") ? "true" : "false";
-      if (!$this->persistConfigToggle($entry, $value)) {
+      if (!$this->persistConfigSetting($entry, $value)) {
         return Redirect("/admin/config")->with("config_save_error", $entry);
       }
     } elseif ($type === "toggle2") {
       $value = $request->boolean("toggle") ? "verified" : "auth";
-      if (!$this->persistConfigToggle($entry, $value)) {
+      if (!$this->persistConfigSetting($entry, $value)) {
         return Redirect("/admin/config")->with("config_save_error", $entry);
       }
     } elseif ($type === "text") {
-      if (EnvEditor::keyExists($entry)) {
+      if (in_array($entry, ['TITLE_FOOTER_HOME', 'TITLE_FOOTER_TERMS', 'TITLE_FOOTER_PRIVACY', 'TITLE_FOOTER_CONTACT', 'HOME_FOOTER_LINK'], true)) {
+        $request->validate(['value' => ['nullable', 'string', 'max:2048', 'not_regex:/[\r\n]/']]);
+        $encoded = '"' . addcslashes((string) $value, '\\"$') . '"';
+        if (!$this->persistConfigSetting($entry, $encoded)) {
+          return Redirect("/admin/config")->with("config_save_error", $entry);
+        }
+      } elseif (EnvEditor::keyExists($entry)) {
         EnvEditor::editKey($entry, '"' . $value . '"');
       }
     } elseif ($type === "debug") {

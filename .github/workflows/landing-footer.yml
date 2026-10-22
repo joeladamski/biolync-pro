@@ -1,0 +1,17 @@
+name: Landing footer
+on:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  footer:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: mbstring, xml, sqlite3, gd, zip
+          tools: composer
+      - run: composer install --no-interaction --prefer-dist --no-scripts
+      - run: php -l config/footer.php && php -l app/Http/Controllers/AdminController.php && php tests/landing-footer.php
