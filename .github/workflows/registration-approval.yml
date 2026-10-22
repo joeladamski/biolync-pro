@@ -1,0 +1,17 @@
+name: Registration approval
+on:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  approval:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: mbstring, xml, sqlite3, gd, zip
+          tools: composer
+      - run: composer install --no-interaction --prefer-dist --no-scripts
+      - run: php -l config/registration.php && php -l app/Support/RegistrationApproval.php && php -l app/Http/Controllers/Auth/RegisteredUserController.php && php -l app/Http/Controllers/Auth/SocialLoginController.php && php tests/registration-approval.php
