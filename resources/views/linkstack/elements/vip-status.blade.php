@@ -12,12 +12,12 @@ $displayName = $userinfo->name ?: $userinfo->littlelink_name;
   <section class="pk-vip-sheet" role="dialog" aria-modal="true">
     <button type="button" class="pk-vip-close" data-pk-vip-close aria-label="Close">×</button>
     <div class="pk-vip-seal">💋</div>
-    <div class="pk-vip-eyebrow">PINKKISS.LOVE VIP</div>
+    <div class="pk-vip-eyebrow">BIOLYNC VIP</div>
     <h2>{{ $displayName }}</h2>
-    <p class="pk-vip-headline">{{ trim((string)($vip['headline'] ?? '')) ?: $displayName . ' has earned a place in the PinkKiss.Love VIP community.' }}</p>
-    <p>{{ trim((string)($vip['message'] ?? '')) ?: 'Their profile represents the personality, creativity, and presence we want VIP to stand for across PinkKiss.Love.' }}</p>
+    <p class="pk-vip-headline">{{ trim((string)($vip['headline'] ?? '')) ?: $displayName . ' has earned a place in the BioLync VIP community.' }}</p>
+    <p>{{ trim((string)($vip['message'] ?? '')) ?: 'Their profile represents the personality, creativity, and presence we want VIP to stand for across BioLync.' }}</p>
     <div class="pk-vip-tenure">💋 VIP FOR {{ number_format($vipDays) }} {{ \Illuminate\Support\Str::plural('DAY', $vipDays) }} AND COUNTING</div>
-    @if(!empty($vip['cta_url']))<a class="pk-vip-cta" href="{{ $vip['cta_url'] }}">{{ $vip['cta_label'] ?: 'Learn About PinkKiss VIP' }}</a>@endif
+    @if(!empty($vip['cta_url']))<a class="pk-vip-cta" href="{{ $vip['cta_url'] }}">{{ $vip['cta_label'] ?: 'Learn About BioLync VIP' }}</a>@endif
   </section>
 </div>
 <style>

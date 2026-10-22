@@ -9,7 +9,7 @@ $defaultHeader = 'assets/images/dashboard/top-header-overlay.png';
 <div class="card mb-4">
   <div class="card-body">
     <h4>Public Profile Header</h4>
-    <p>Choose the cover visitors see above your profile. If you do not upload one, PinkKiss.Love uses the system header shown below.</p>
+    <p>Choose the cover visitors see above your profile. If you do not upload one, BioLync uses the system header shown below.</p>
 
     <div class="mb-4" style="max-width:600px">
       @if($validHeader && ($header['type'] ?? '') === 'video')
@@ -17,8 +17,8 @@ $defaultHeader = 'assets/images/dashboard/top-header-overlay.png';
       @elseif($validHeader)
         <img src="{{ asset($header['media']) }}" alt="Current profile cover" style="width:100%;height:200px;object-fit:cover;object-position:{{ $header['position'] ?? 'center' }};border-radius:12px">
       @else
-        <img src="{{ asset($defaultHeader) }}" alt="PinkKiss.Love default profile cover" style="width:100%;height:200px;object-fit:cover;object-position:center;border-radius:12px">
-        <div class="form-text mt-2">Default PinkKiss.Love header currently in use.</div>
+        <img src="{{ asset($defaultHeader) }}" alt="BioLync default profile cover" style="width:100%;height:200px;object-fit:cover;object-position:center;border-radius:12px">
+        <div class="form-text mt-2">Default BioLync header currently in use.</div>
       @endif
     </div>
 
@@ -42,7 +42,7 @@ $defaultHeader = 'assets/images/dashboard/top-header-overlay.png';
       @if($validHeader)
       <div class="form-check mb-3">
         <input id="remove-header" class="form-check-input" type="checkbox" name="remove_header" value="1">
-        <label class="form-check-label" for="remove-header">Remove my custom header and restore the PinkKiss.Love default</label>
+        <label class="form-check-label" for="remove-header">Remove my custom header and restore the BioLync default</label>
       </div>
       @endif
 
